@@ -34,7 +34,7 @@ open class Funcionario(
 
     @Column(length = 255)
     @field:NotBlank(message = "A senha nao pode estar vazia")
-    open var senhaHash: String = "",
+    open var senha: String = "",
 
     open var ativo: Boolean = true,
 

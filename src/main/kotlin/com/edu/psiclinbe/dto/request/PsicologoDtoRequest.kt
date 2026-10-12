@@ -15,7 +15,7 @@ data class PsicologoDtoRequest(
     @field:NotBlank(message = "O telefone nao pode estar vazio")
     val telefone: String = "",
     @field:NotBlank(message = "A senha nao pode estar vazia")
-    val senhaHash: String = "",
+    val senha: String = "",
     @field:NotBlank(message = "O CRP nao pode estar vazio")
     val crp: String = "",
     @field:NotBlank(message = "A especialidade nao pode estar vazia")

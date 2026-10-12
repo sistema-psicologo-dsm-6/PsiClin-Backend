@@ -13,7 +13,7 @@ class FuncionarioMapper {
         cpf = dto.cpf,
         email = dto.email,
         telefone = dto.telefone,
-        senhaHash = dto.senhaHash,
+        senha = dto.senha,
         ativo = dto.ativo,
     )
 
@@ -24,7 +24,7 @@ class FuncionarioMapper {
             cpf = funcionario.cpf,
             email = funcionario.email,
             telefone = funcionario.telefone,
-            senhaHash = null,
+            senha = null,
             ativo = funcionario.ativo,
         )
 }

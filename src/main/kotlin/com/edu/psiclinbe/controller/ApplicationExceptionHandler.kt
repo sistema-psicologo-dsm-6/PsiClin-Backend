@@ -1,4 +1,4 @@
-package edu.curso.projetos.controller
+package com.edu.psiclinbe.controller
 
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity

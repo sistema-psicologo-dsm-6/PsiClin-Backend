@@ -48,7 +48,7 @@ class FuncionarioService(
             cpf = dto.cpf,
             email = dto.email,
             telefone = dto.telefone,
-            senhaHash = dto.senhaHash,
+            senha = dto.senha,
             ativo = dto.ativo
         )
 
@@ -65,8 +65,8 @@ class FuncionarioService(
         funcionario.telefone = dto.telefone
         funcionario.ativo = dto.ativo
 
-        if (dto.senhaHash.isNotBlank()) {
-            funcionario.senhaHash = dto.senhaHash
+        if (dto.senha.isNotBlank()) {
+            funcionario.senha = dto.senha
         }
 
         return funcionarioRepository.save(funcionario).toDto()
@@ -93,7 +93,7 @@ class FuncionarioService(
         cpf = this.cpf,
         email = this.email,
         telefone = this.telefone,
-        senhaHash = null,
+        senha = null,
         ativo = this.ativo
     )
 }

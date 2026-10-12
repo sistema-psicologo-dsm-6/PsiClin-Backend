@@ -14,7 +14,7 @@ class RecepcionistaMapper {
             cpf = dto.cpf
             email = dto.email
             telefone = dto.telefone
-            senhaHash = dto.senhaHash
+            senha = dto.senha
             ativo = dto.ativo
         }
 
@@ -25,7 +25,7 @@ class RecepcionistaMapper {
             cpf = recepcionista.cpf,
             email = recepcionista.email,
             telefone = recepcionista.telefone,
-            senhaHash = "",
+            senha = "",
             setor = recepcionista.setor,
             ativo = recepcionista.ativo,
         )

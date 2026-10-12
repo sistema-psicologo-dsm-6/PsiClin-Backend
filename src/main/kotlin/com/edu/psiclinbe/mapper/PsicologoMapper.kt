@@ -15,7 +15,7 @@ class PsicologoMapper {
             cpf = dto.cpf
             email = dto.email
             telefone = dto.telefone
-            senhaHash = dto.senhaHash
+            senha = dto.senha
             ativo = dto.ativo
             crp = dto.crp
             especialidade = dto.especialidade

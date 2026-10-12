@@ -15,6 +15,6 @@ data class FuncionarioDtoRequest(
     @field:NotBlank(message = "O telefone nao pode estar vazio")
     val telefone: String = "",
     @field:NotBlank(message = "A senha nao pode estar vazia")
-    val senhaHash: String = "",
+    val senha: String = "",
     val ativo: Boolean = true,
 )

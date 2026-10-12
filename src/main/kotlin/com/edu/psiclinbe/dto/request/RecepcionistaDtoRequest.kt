@@ -15,7 +15,7 @@ data class RecepcionistaDtoRequest(
     @field:NotBlank(message = "O telefone nao pode estar vazio")
     val telefone: String = "",
     @field:NotBlank(message = "A senha nao pode estar vazia")
-    val senhaHash: String = "",
+    val senha: String = "",
     @field:NotBlank(message = "O setor nao pode estar vazio")
     val setor: String = "",
     val ativo: Boolean = true,

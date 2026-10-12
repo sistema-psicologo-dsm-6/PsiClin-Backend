@@ -9,7 +9,7 @@ data class RecepcionistaDtoResponse(
     val cpf: String = "",
     val email: String = "",
     val telefone: String = "",
-    val senhaHash: String = "",
+    val senha: String = "",
     val setor: String = "",
     val ativo: Boolean = true,
 )

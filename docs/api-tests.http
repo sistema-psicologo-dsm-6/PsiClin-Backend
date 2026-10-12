@@ -1,0 +1,748 @@
+@baseUrl = http://localhost:8081
+@json = application/json
+
+# Run the API on port 8081 before starting this collection.
+# IDs are taken from create responses; DELETE requests below target only this run's fixtures.
+
+### Psicólogos - criar
+# @name criaPsicologo
+POST {{baseUrl}}/psicologos
+Content-Type: {{json}}
+
+{
+  "nome": "ApiTest{{$timestamp}}",
+  "cpf": "9{{$timestamp}}01",
+  "email": "api-psicologo-{{$guid}}@example.invalid",
+  "telefone": "1199{{$timestamp}}",
+  "senha": "ApiTest123!",
+  "crp": "API{{$timestamp}}",
+  "especialidade": "ApiTestTCC",
+  "ativo": true
+}
+
+### Psicólogos - listar
+GET {{baseUrl}}/psicologos
+
+### Psicólogos - listar ativos
+GET {{baseUrl}}/psicologos/ativos
+
+### Psicólogos - buscar por id
+GET {{baseUrl}}/psicologos/{{criaPsicologo.response.body.$.id}}
+
+### Psicólogos - buscar por CRP
+GET {{baseUrl}}/psicologos/por-crp?crp={{criaPsicologo.response.body.$.crp}}
+
+### Psicólogos - buscar por especialidade
+GET {{baseUrl}}/psicologos/por-especialidade?especialidade=ApiTestTCC
+
+### Psicólogos - atualizar
+PUT {{baseUrl}}/psicologos/{{criaPsicologo.response.body.$.id}}
+Content-Type: {{json}}
+
+{
+  "nome": "ApiTestAtualizado",
+  "cpf": "{{criaPsicologo.response.body.$.cpf}}",
+  "email": "{{criaPsicologo.response.body.$.email}}",
+  "telefone": "{{criaPsicologo.response.body.$.telefone}}",
+  "senha": "ApiTest123!",
+  "crp": "{{criaPsicologo.response.body.$.crp}}",
+  "especialidade": "ApiTestTCC",
+  "ativo": true
+}
+
+### Psicólogos - inativar
+PATCH {{baseUrl}}/psicologos/{{criaPsicologo.response.body.$.id}}/inativar
+
+### Funcionários - criar
+# @name criaFuncionario
+POST {{baseUrl}}/funcionarios
+Content-Type: {{json}}
+
+{
+  "nome": "ApiTestFuncionario",
+  "cpf": "9{{$timestamp}}02",
+  "email": "api-funcionario-{{$guid}}@example.invalid",
+  "telefone": "1199{{$timestamp}}",
+  "senha": "ApiTest123!",
+  "ativo": true
+}
+
+### Funcionários - criar fixture para alias de exclusão
+# @name criaFuncionarioAlias
+POST {{baseUrl}}/funcionarios
+Content-Type: {{json}}
+
+{
+  "nome": "ApiTestFuncionarioAlias",
+  "cpf": "9{{$timestamp}}12",
+  "email": "api-funcionario-alias-{{$guid}}@example.invalid",
+  "telefone": "1199{{$timestamp}}",
+  "senha": "ApiTest123!",
+  "ativo": true
+}
+
+### Funcionários - listar
+GET {{baseUrl}}/funcionarios
+
+### Funcionários - listar ativos
+GET {{baseUrl}}/funcionarios/ativos
+
+### Funcionários - buscar por id
+GET {{baseUrl}}/funcionarios/{{criaFuncionario.response.body.$.id}}
+
+### Funcionários - buscar por nome
+GET {{baseUrl}}/funcionarios/por-nome?nome=ApiTestFuncionario
+
+### Funcionários - buscar por e-mail
+GET {{baseUrl}}/funcionarios/por-email?email={{criaFuncionario.response.body.$.email}}
+
+### Funcionários - buscar por CPF
+GET {{baseUrl}}/funcionarios/por-cpf?cpf={{criaFuncionario.response.body.$.cpf}}
+
+### Funcionários - atualizar
+PUT {{baseUrl}}/funcionarios/{{criaFuncionario.response.body.$.id}}
+Content-Type: {{json}}
+
+{
+  "nome": "ApiTestFuncionarioAtualizado",
+  "cpf": "{{criaFuncionario.response.body.$.cpf}}",
+  "email": "{{criaFuncionario.response.body.$.email}}",
+  "telefone": "{{criaFuncionario.response.body.$.telefone}}",
+  "senha": "ApiTest123!",
+  "ativo": true
+}
+
+### Funcionários - inativar
+PATCH {{baseUrl}}/funcionarios/{{criaFuncionario.response.body.$.id}}/inativar
+
+### Recepcionistas - criar
+# @name criaRecepcionista
+POST {{baseUrl}}/recepcionistas
+Content-Type: {{json}}
+
+{
+  "nome": "ApiTestRecepcionista",
+  "cpf": "9{{$timestamp}}03",
+  "email": "api-recepcionista-{{$guid}}@example.invalid",
+  "telefone": "1199{{$timestamp}}",
+  "senha": "ApiTest123!",
+  "setor": "ApiTest",
+  "ativo": true
+}
+
+### Recepcionistas - listar
+GET {{baseUrl}}/recepcionistas
+
+### Recepcionistas - listar ativos
+GET {{baseUrl}}/recepcionistas/ativos
+
+### Recepcionistas - buscar por id
+GET {{baseUrl}}/recepcionistas/{{criaRecepcionista.response.body.$.id}}
+
+### Recepcionistas - buscar por setor
+GET {{baseUrl}}/recepcionistas/por-setor?setor=ApiTest
+
+### Recepcionistas - atualizar
+PUT {{baseUrl}}/recepcionistas/{{criaRecepcionista.response.body.$.id}}
+Content-Type: {{json}}
+
+{
+  "nome": "ApiTestRecepcionistaAtualizada",
+  "cpf": "{{criaRecepcionista.response.body.$.cpf}}",
+  "email": "{{criaRecepcionista.response.body.$.email}}",
+  "telefone": "{{criaRecepcionista.response.body.$.telefone}}",
+  "senha": "ApiTest123!",
+  "setor": "ApiTestAtualizado",
+  "ativo": true
+}
+
+### Recepcionistas - inativar
+PATCH {{baseUrl}}/recepcionistas/{{criaRecepcionista.response.body.$.id}}/inativar
+
+### Pacientes - criar
+# @name criaPaciente
+POST {{baseUrl}}/pacientes
+Content-Type: {{json}}
+
+{
+  "nome": "ApiTestPaciente",
+  "cpf": "9{{$timestamp}}04",
+  "dataNascimento": "1990-05-20",
+  "email": "api-paciente-{{$guid}}@example.invalid",
+  "telefone": "1199{{$timestamp}}",
+  "endereco": "Endereco de teste da API",
+  "observacoes": "ApiTestPaciente",
+  "ativo": true
+}
+
+### Pacientes - criar fixture para alias de exclusão
+# @name criaPacienteAlias
+POST {{baseUrl}}/pacientes
+Content-Type: {{json}}
+
+{
+  "nome": "ApiTestPacienteAlias",
+  "cpf": "9{{$timestamp}}14",
+  "dataNascimento": "1990-05-20",
+  "email": "api-paciente-alias-{{$guid}}@example.invalid",
+  "telefone": "1199{{$timestamp}}",
+  "endereco": "Endereco de teste da API",
+  "observacoes": "ApiTestPacienteAlias",
+  "ativo": true
+}
+
+### Pacientes - listar
+GET {{baseUrl}}/pacientes
+
+### Pacientes - listar ativos
+GET {{baseUrl}}/pacientes/ativos
+
+### Pacientes - buscar por nome
+GET {{baseUrl}}/pacientes/por-nome?nome=ApiTestPaciente
+
+### Pacientes - buscar por CPF
+GET {{baseUrl}}/pacientes/por-cpf?cpf={{criaPaciente.response.body.$.cpf}}
+
+### Pacientes - buscar por e-mail
+GET {{baseUrl}}/pacientes/por-email?email={{criaPaciente.response.body.$.email}}
+
+### Pacientes - buscar por id
+GET {{baseUrl}}/pacientes/{{criaPaciente.response.body.$.id}}
+
+### Pacientes - atualizar
+PUT {{baseUrl}}/pacientes/{{criaPaciente.response.body.$.id}}
+Content-Type: {{json}}
+
+{
+  "nome": "ApiTestPacienteAtualizado",
+  "cpf": "{{criaPaciente.response.body.$.cpf}}",
+  "dataNascimento": "1990-05-20",
+  "email": "{{criaPaciente.response.body.$.email}}",
+  "telefone": "{{criaPaciente.response.body.$.telefone}}",
+  "endereco": "Endereco atualizado de teste",
+  "observacoes": "ApiTestPaciente atualizado",
+  "ativo": true
+}
+
+### Pacientes - inativar
+PATCH {{baseUrl}}/pacientes/{{criaPaciente.response.body.$.id}}/inativar
+
+### Convênios - criar
+# @name criaConvenio
+POST {{baseUrl}}/convenios
+Content-Type: {{json}}
+
+{
+  "nome": "ApiTestConvenio{{$timestamp}}",
+  "cnpj": "{{$timestamp}}00000",
+  "telefone": "1199{{$timestamp}}",
+  "percentualCobertura": 70.0,
+  "ativo": true
+}
+
+### Convênios - criar fixture para alias de exclusão
+# @name criaConvenioAlias
+POST {{baseUrl}}/convenios
+Content-Type: {{json}}
+
+{
+  "nome": "ApiTestConvenioAlias{{$timestamp}}",
+  "cnpj": "{{$timestamp}}00001",
+  "telefone": "1199{{$timestamp}}",
+  "percentualCobertura": 70.0,
+  "ativo": true
+}
+
+### Convênios - listar
+GET {{baseUrl}}/convenios
+
+### Convênios - listar ativos
+GET {{baseUrl}}/convenios/ativos
+
+### Convênios - buscar por id
+GET {{baseUrl}}/convenios/{{criaConvenio.response.body.$.id}}
+
+### Convênios - buscar por nome
+GET {{baseUrl}}/convenios/por-nome?nome=ApiTestConvenio
+
+### Convênios - buscar por CNPJ
+GET {{baseUrl}}/convenios/por-cnpj?cnpj={{criaConvenio.response.body.$.cnpj}}
+
+### Convênios - buscar por telefone
+GET {{baseUrl}}/convenios/por-telefone?telefone={{criaConvenio.response.body.$.telefone}}
+
+### Convênios - atualizar
+PUT {{baseUrl}}/convenios/{{criaConvenio.response.body.$.id}}
+Content-Type: {{json}}
+
+{
+  "nome": "ApiTestConvenioAtualizado",
+  "cnpj": "{{criaConvenio.response.body.$.cnpj}}",
+  "telefone": "{{criaConvenio.response.body.$.telefone}}",
+  "percentualCobertura": 80.0,
+  "ativo": true
+}
+
+### Convênios - inativar
+PATCH {{baseUrl}}/convenios/{{criaConvenio.response.body.$.id}}/inativar
+
+### Salas de atendimento - criar
+# @name criaSala
+POST {{baseUrl}}/salas-atendimento
+Content-Type: {{json}}
+
+{
+  "nome": "ApiTestSala{{$timestamp}}",
+  "descricao": "ApiTestDescricaoSala",
+  "capacidade": 3,
+  "ativo": true
+}
+
+### Salas de atendimento - criar fixture para alias de exclusão
+# @name criaSalaAlias
+POST {{baseUrl}}/salas-atendimento
+Content-Type: {{json}}
+
+{
+  "nome": "ApiTestSalaAlias{{$timestamp}}",
+  "descricao": "ApiTestDescricaoSalaAlias",
+  "capacidade": 2,
+  "ativo": true
+}
+
+### Salas de atendimento - listar
+GET {{baseUrl}}/salas-atendimento
+
+### Salas de atendimento - listar ativas
+GET {{baseUrl}}/salas-atendimento/ativos
+
+### Salas de atendimento - buscar por id
+GET {{baseUrl}}/salas-atendimento/{{criaSala.response.body.$.id}}
+
+### Salas de atendimento - buscar por nome
+GET {{baseUrl}}/salas-atendimento/por-nome?nome=ApiTestSala
+
+### Salas de atendimento - atualizar
+PUT {{baseUrl}}/salas-atendimento/{{criaSala.response.body.$.id}}
+Content-Type: {{json}}
+
+{
+  "nome": "ApiTestSalaAtualizada",
+  "descricao": "ApiTestDescricaoSalaAtualizada",
+  "capacidade": 4,
+  "ativo": true
+}
+
+### Salas de atendimento - inativar
+PATCH {{baseUrl}}/salas-atendimento/{{criaSala.response.body.$.id}}/inativar
+
+### Tipos de atendimento - criar
+# @name criaTipo
+POST {{baseUrl}}/tipos-atendimento
+Content-Type: {{json}}
+
+{
+  "nome": "ApiTestTipo",
+  "descricao": "ApiTestDescricaoTipo",
+  "duracao": "50",
+  "ativo": true
+}
+
+### Tipos de atendimento - listar
+GET {{baseUrl}}/tipos-atendimento
+
+### Tipos de atendimento - listar ativos
+GET {{baseUrl}}/tipos-atendimento/ativos
+
+### Tipos de atendimento - buscar por id
+GET {{baseUrl}}/tipos-atendimento/{{criaTipo.response.body.$.id}}
+
+### Tipos de atendimento - buscar por nome
+GET {{baseUrl}}/tipos-atendimento/por-nome?nome=ApiTestTipo
+
+### Tipos de atendimento - atualizar
+PUT {{baseUrl}}/tipos-atendimento/{{criaTipo.response.body.$.id}}
+Content-Type: {{json}}
+
+{
+  "nome": "ApiTestTipo",
+  "descricao": "ApiTestDescricaoTipoAtualizada",
+  "duracao": "60",
+  "ativo": true
+}
+
+### Tipos de atendimento - inativar
+PATCH {{baseUrl}}/tipos-atendimento/{{criaTipo.response.body.$.id}}/inativar
+
+### Horários disponíveis - criar
+# @name criaHorario
+POST {{baseUrl}}/horarios-disponiveis
+Content-Type: {{json}}
+
+{
+  "psicologoId": {{criaPsicologo.response.body.$.id}},
+  "diaSemana": "SEGUNDA",
+  "horaInicio": "08:00:00",
+  "horaFim": "12:00:00",
+  "descricao": "ApiTestDescricaoHorario"
+}
+
+### Horários disponíveis - listar
+GET {{baseUrl}}/horarios-disponiveis
+
+### Horários disponíveis - buscar por id
+GET {{baseUrl}}/horarios-disponiveis/{{criaHorario.response.body.$.id}}
+
+### Horários disponíveis - buscar por descrição
+GET {{baseUrl}}/horarios-disponiveis/por-descricao?termo=ApiTestDescricaoHorario
+
+### Horários disponíveis - buscar por psicólogo
+GET {{baseUrl}}/horarios-disponiveis/por-psicologo/{{criaPsicologo.response.body.$.id}}
+
+### Horários disponíveis - buscar por psicólogo e dia
+GET {{baseUrl}}/horarios-disponiveis/por-psicologo/{{criaPsicologo.response.body.$.id}}/dia/SEGUNDA
+
+### Horários disponíveis - atualizar
+PUT {{baseUrl}}/horarios-disponiveis/{{criaHorario.response.body.$.id}}
+Content-Type: {{json}}
+
+{
+  "psicologoId": {{criaPsicologo.response.body.$.id}},
+  "diaSemana": "SEGUNDA",
+  "horaInicio": "09:00:00",
+  "horaFim": "13:00:00",
+  "descricao": "ApiTestDescricaoHorarioAtualizada"
+}
+
+### Bloqueios de agenda - criar
+# @name criaBloqueio
+POST {{baseUrl}}/bloqueios-agenda
+Content-Type: {{json}}
+
+{
+  "id": 0,
+  "psicologoId": {{criaPsicologo.response.body.$.id}},
+  "dataHoraInicio": "2026-12-24T08:00:00",
+  "dataHoraFim": "2026-12-24T18:00:00",
+  "motivo": "ApiTestFeriado"
+}
+
+### Bloqueios de agenda - listar
+GET {{baseUrl}}/bloqueios-agenda
+
+### Bloqueios de agenda - buscar por id
+GET {{baseUrl}}/bloqueios-agenda/{{criaBloqueio.response.body.$.id}}
+
+### Bloqueios de agenda - buscar por motivo
+GET {{baseUrl}}/bloqueios-agenda/por-motivo?termo=ApiTestFeriado
+
+### Bloqueios de agenda - buscar por psicólogo
+GET {{baseUrl}}/bloqueios-agenda/por-psicologo/{{criaPsicologo.response.body.$.id}}
+
+### Bloqueios de agenda - buscar por período
+GET {{baseUrl}}/bloqueios-agenda/por-periodo?inicio=2026-12-01T00:00:00&fim=2026-12-31T23:59:59
+
+### Bloqueios de agenda - atualizar
+PUT {{baseUrl}}/bloqueios-agenda/{{criaBloqueio.response.body.$.id}}
+Content-Type: {{json}}
+
+{
+  "id": {{criaBloqueio.response.body.$.id}},
+  "psicologoId": {{criaPsicologo.response.body.$.id}},
+  "dataHoraInicio": "2026-12-24T08:00:00",
+  "dataHoraFim": "2026-12-24T20:00:00",
+  "motivo": "ApiTestRecesso"
+}
+
+### Agendas - criar
+# @name criaAgenda
+POST {{baseUrl}}/agendas
+Content-Type: {{json}}
+
+{
+  "pacienteId": {{criaPaciente.response.body.$.id}},
+  "psicologoId": {{criaPsicologo.response.body.$.id}},
+  "salaId": {{criaSala.response.body.$.id}},
+  "tipoAtendimentoId": {{criaTipo.response.body.$.id}},
+  "convenioId": {{criaConvenio.response.body.$.id}},
+  "dataHoraInicio": "2026-11-10T09:00:00",
+  "dataHoraFim": "2026-11-10T09:50:00",
+  "status": "AGENDADO",
+  "observacoes": "ApiTestPrimeiraSessao"
+}
+
+### Agendas - listar
+GET {{baseUrl}}/agendas
+
+### Agendas - buscar por id
+GET {{baseUrl}}/agendas/{{criaAgenda.response.body.$.id}}
+
+### Agendas - buscar por observações
+GET {{baseUrl}}/agendas/por-observacoes?termo=ApiTestPrimeiraSessao
+
+### Agendas - dados de formulário novo
+GET {{baseUrl}}/agendas/form-data
+
+### Agendas - dados de formulário de edição
+GET {{baseUrl}}/agendas/form-data?id={{criaAgenda.response.body.$.id}}
+
+### Agendas - atualizar
+PUT {{baseUrl}}/agendas/{{criaAgenda.response.body.$.id}}
+Content-Type: {{json}}
+
+{
+  "id": {{criaAgenda.response.body.$.id}},
+  "pacienteId": {{criaPaciente.response.body.$.id}},
+  "psicologoId": {{criaPsicologo.response.body.$.id}},
+  "salaId": {{criaSala.response.body.$.id}},
+  "tipoAtendimentoId": {{criaTipo.response.body.$.id}},
+  "convenioId": {{criaConvenio.response.body.$.id}},
+  "dataHoraInicio": "2026-11-10T10:00:00",
+  "dataHoraFim": "2026-11-10T10:50:00",
+  "status": "CONFIRMADO",
+  "observacoes": "ApiTestRemarcada"
+}
+
+### Agendas - alterar status
+PATCH {{baseUrl}}/agendas/{{criaAgenda.response.body.$.id}}/status?status=REALIZADO
+
+### Agendas - criar fixture para pagamento com alias de exclusão
+# @name criaAgendaAlias
+POST {{baseUrl}}/agendas
+Content-Type: {{json}}
+
+{
+  "pacienteId": {{criaPaciente.response.body.$.id}},
+  "psicologoId": {{criaPsicologo.response.body.$.id}},
+  "salaId": {{criaSala.response.body.$.id}},
+  "tipoAtendimentoId": {{criaTipo.response.body.$.id}},
+  "convenioId": {{criaConvenio.response.body.$.id}},
+  "dataHoraInicio": "2026-11-10T12:00:00",
+  "dataHoraFim": "2026-11-10T12:50:00",
+  "status": "AGENDADO",
+  "observacoes": "ApiTestAgendaAlias"
+}
+
+### Prontuários - criar
+# @name criaProntuario
+POST {{baseUrl}}/prontuarios
+Content-Type: {{json}}
+
+{
+  "pacienteId": {{criaPaciente.response.body.$.id}},
+  "dataAbertura": "2026-11-10T09:00:00",
+  "queixaPrincipal": "ApiTestAnsiedade",
+  "status": "ATIVO"
+}
+
+### Prontuários - listar
+GET {{baseUrl}}/prontuarios
+
+### Prontuários - buscar por id
+GET {{baseUrl}}/prontuarios/{{criaProntuario.response.body.$.id}}
+
+### Prontuários - buscar por queixa principal
+GET {{baseUrl}}/prontuarios/por-queixa-principal?termo=ApiTestAnsiedade
+
+### Prontuários - buscar por paciente
+GET {{baseUrl}}/prontuarios/por-paciente/{{criaPaciente.response.body.$.id}}
+
+### Prontuários - buscar por paciente e status
+GET {{baseUrl}}/prontuarios/por-paciente/{{criaPaciente.response.body.$.id}}/status/ATIVO
+
+### Prontuários - atualizar
+PUT {{baseUrl}}/prontuarios/{{criaProntuario.response.body.$.id}}
+Content-Type: {{json}}
+
+{
+  "pacienteId": {{criaPaciente.response.body.$.id}},
+  "dataAbertura": "2026-11-10T09:00:00",
+  "queixaPrincipal": "ApiTestAnsiedadeInsônia",
+  "status": "ATIVO"
+}
+
+### Evoluções clínicas - criar
+# @name criaEvolucao
+POST {{baseUrl}}/evolucoes-clinicas
+Content-Type: {{json}}
+
+{
+  "prontuarioId": {{criaProntuario.response.body.$.id}},
+  "psicologoId": {{criaPsicologo.response.body.$.id}},
+  "agendaId": {{criaAgenda.response.body.$.id}},
+  "dataRegistro": "2026-11-10T10:00:00",
+  "descricao": "ApiTestPaciente relatou melhora"
+}
+
+### Evoluções clínicas - listar
+GET {{baseUrl}}/evolucoes-clinicas
+
+### Evoluções clínicas - buscar por id
+GET {{baseUrl}}/evolucoes-clinicas/{{criaEvolucao.response.body.$.id}}
+
+### Evoluções clínicas - buscar por descrição
+GET {{baseUrl}}/evolucoes-clinicas/por-descricao?termo=ApiTestPaciente
+
+### Evoluções clínicas - buscar por prontuário
+GET {{baseUrl}}/evolucoes-clinicas/por-prontuario/{{criaProntuario.response.body.$.id}}
+
+### Evoluções clínicas - buscar por psicólogo
+GET {{baseUrl}}/evolucoes-clinicas/por-psicologo/{{criaPsicologo.response.body.$.id}}
+
+### Evoluções clínicas - buscar por agenda
+GET {{baseUrl}}/evolucoes-clinicas/por-agenda/{{criaAgenda.response.body.$.id}}
+
+### Evoluções clínicas - atualizar
+PUT {{baseUrl}}/evolucoes-clinicas/{{criaEvolucao.response.body.$.id}}
+Content-Type: {{json}}
+
+{
+  "prontuarioId": {{criaProntuario.response.body.$.id}},
+  "psicologoId": {{criaPsicologo.response.body.$.id}},
+  "agendaId": {{criaAgenda.response.body.$.id}},
+  "dataRegistro": "2026-11-10T10:00:00",
+  "descricao": "ApiTestPaciente relatou melhora significativa"
+}
+
+### Pagamentos - criar
+# @name criaPagamento
+POST {{baseUrl}}/pagamentos
+Content-Type: {{json}}
+
+{
+  "agendaId": {{criaAgenda.response.body.$.id}},
+  "pacienteId": {{criaPaciente.response.body.$.id}},
+  "convenioId": {{criaConvenio.response.body.$.id}},
+  "valorTotal": 200.0,
+  "valorConvenio": 140.0,
+  "valorPaciente": 60.0,
+  "formaPagamento": "PIX",
+  "dataPagamento": "2026-11-10T11:00:00",
+  "status": "PENDENTE"
+}
+
+### Pagamentos - criar fixture para alias de exclusão
+# @name criaPagamentoAlias
+POST {{baseUrl}}/pagamentos
+Content-Type: {{json}}
+
+{
+  "agendaId": {{criaAgendaAlias.response.body.$.id}},
+  "pacienteId": {{criaPaciente.response.body.$.id}},
+  "convenioId": {{criaConvenio.response.body.$.id}},
+  "valorTotal": 200.0,
+  "valorConvenio": 140.0,
+  "valorPaciente": 60.0,
+  "formaPagamento": "PIX",
+  "dataPagamento": "2026-11-10T13:00:00",
+  "status": "PENDENTE"
+}
+
+### Pagamentos - listar
+GET {{baseUrl}}/pagamentos
+
+### Pagamentos - buscar por id
+GET {{baseUrl}}/pagamentos/{{criaPagamento.response.body.$.id}}
+
+### Pagamentos - buscar por agenda
+GET {{baseUrl}}/pagamentos/por-agenda/{{criaAgenda.response.body.$.id}}
+
+### Pagamentos - buscar por paciente
+GET {{baseUrl}}/pagamentos/por-paciente/{{criaPaciente.response.body.$.id}}
+
+### Pagamentos - buscar por convênio
+GET {{baseUrl}}/pagamentos/por-convenio/{{criaConvenio.response.body.$.id}}
+
+### Pagamentos - buscar por status
+GET {{baseUrl}}/pagamentos/por-status/PENDENTE
+
+### Pagamentos - buscar por forma de pagamento
+GET {{baseUrl}}/pagamentos/por-forma-pagamento?termo=PIX
+
+### Pagamentos - atualizar
+PUT {{baseUrl}}/pagamentos/{{criaPagamento.response.body.$.id}}
+Content-Type: {{json}}
+
+{
+  "agendaId": {{criaAgenda.response.body.$.id}},
+  "pacienteId": {{criaPaciente.response.body.$.id}},
+  "convenioId": {{criaConvenio.response.body.$.id}},
+  "valorTotal": 200.0,
+  "valorConvenio": 140.0,
+  "valorPaciente": 60.0,
+  "formaPagamento": "PIX",
+  "dataPagamento": "2026-11-10T11:00:00",
+  "status": "PAGO"
+}
+
+### Limpeza - pagamento
+DELETE {{baseUrl}}/pagamentos/{{criaPagamento.response.body.$.id}}
+
+### Limpeza - pagamento pelo alias DELETE
+DELETE {{baseUrl}}/pagamentos/destroy/{{criaPagamentoAlias.response.body.$.id}}
+
+### Limpeza - evolução clínica (inativar)
+DELETE {{baseUrl}}/evolucoes-clinicas/{{criaEvolucao.response.body.$.id}}
+
+### Limpeza - evolução clínica (excluir permanentemente)
+DELETE {{baseUrl}}/evolucoes-clinicas/destroy/{{criaEvolucao.response.body.$.id}}
+
+### Limpeza - prontuário (inativar)
+DELETE {{baseUrl}}/prontuarios/{{criaProntuario.response.body.$.id}}
+
+### Limpeza - prontuário (excluir permanentemente)
+DELETE {{baseUrl}}/prontuarios/destroy/{{criaProntuario.response.body.$.id}}
+
+### Limpeza - agenda (inativar)
+DELETE {{baseUrl}}/agendas/{{criaAgenda.response.body.$.id}}
+
+### Limpeza - agenda (excluir permanentemente)
+DELETE {{baseUrl}}/agendas/destroy/{{criaAgenda.response.body.$.id}}
+
+### Limpeza - agenda adicional
+DELETE {{baseUrl}}/agendas/destroy/{{criaAgendaAlias.response.body.$.id}}
+
+### Limpeza - bloqueio de agenda (inativar)
+DELETE {{baseUrl}}/bloqueios-agenda/{{criaBloqueio.response.body.$.id}}
+
+### Limpeza - bloqueio de agenda (excluir permanentemente)
+DELETE {{baseUrl}}/bloqueios-agenda/destroy/{{criaBloqueio.response.body.$.id}}
+
+### Limpeza - horário disponível (inativar)
+DELETE {{baseUrl}}/horarios-disponiveis/{{criaHorario.response.body.$.id}}
+
+### Limpeza - horário disponível (excluir permanentemente)
+DELETE {{baseUrl}}/horarios-disponiveis/destroy/{{criaHorario.response.body.$.id}}
+
+### Limpeza - tipo de atendimento
+DELETE {{baseUrl}}/tipos-atendimento/{{criaTipo.response.body.$.id}}
+
+### Limpeza - sala de atendimento
+DELETE {{baseUrl}}/salas-atendimento/{{criaSala.response.body.$.id}}
+
+### Limpeza - sala pelo alias DELETE
+DELETE {{baseUrl}}/salas-atendimento/destroy/{{criaSalaAlias.response.body.$.id}}
+
+### Limpeza - convênio
+DELETE {{baseUrl}}/convenios/{{criaConvenio.response.body.$.id}}
+
+### Limpeza - convênio pelo alias DELETE
+DELETE {{baseUrl}}/convenios/destroy/{{criaConvenioAlias.response.body.$.id}}
+
+### Limpeza - paciente
+DELETE {{baseUrl}}/pacientes/{{criaPaciente.response.body.$.id}}
+
+### Limpeza - paciente pelo alias DELETE
+DELETE {{baseUrl}}/pacientes/destroy/{{criaPacienteAlias.response.body.$.id}}
+
+### Limpeza - recepcionista
+DELETE {{baseUrl}}/recepcionistas/{{criaRecepcionista.response.body.$.id}}
+
+### Limpeza - funcionário
+DELETE {{baseUrl}}/funcionarios/{{criaFuncionario.response.body.$.id}}
+
+### Limpeza - funcionário pelo alias DELETE
+DELETE {{baseUrl}}/funcionarios/destroy/{{criaFuncionarioAlias.response.body.$.id}}
+
+### Limpeza - psicólogo
+DELETE {{baseUrl}}/psicologos/{{criaPsicologo.response.body.$.id}}

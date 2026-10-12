@@ -1,0 +1,175 @@
+{
+  "_leia-me": [
+    "Base URL: http://localhost:8080 (sem autenticação nesta branch).",
+    "A coleção executável api-tests.http usa IDs devolvidos pela API e pode ser executada em localhost:8081.",
+    "As buscas por observações, descrição, motivo, queixa principal e forma de pagamento também estão incluídas.",
+    "Execute na ordem: os grupos de cima criam as entidades usadas pelos de baixo.",
+    "Os ids (1 e 2) assumem um banco recém-criado; ajuste se os ids gerados forem outros.",
+    "Datas: LocalDateTime = yyyy-MM-ddTHH:mm:ss, LocalDate = yyyy-MM-dd, LocalTime = HH:mm:ss.",
+    "Enums: AgendaStatus = AGENDADO|CONFIRMADO|REALIZADO|CANCELADO|FALTOU; ProntuarioStatus = ATIVO|ARQUIVADO|ENCERRADO; PagamentoStatus = PENDENTE|PAGO|CANCELADO; diaSemana = DOMINGO|SEGUNDA|TERCA|QUARTA|QUINTA|SEXTA|SABADO.",
+    "Campos 'body' = JSON a enviar com Content-Type: application/json. Rotas sem 'body' não têm corpo."
+  ],
+  "baseUrl": "http://localhost:8080",
+  "grupos": {
+    "01_psicologos": [
+      { "nome": "Criar", "method": "POST", "url": "/psicologos", "body": { "nome": "Ana Souza", "cpf": "11122233344", "email": "ana@clinica.com", "telefone": "11999990001", "senha": "senha123", "crp": "06/123456", "especialidade": "Terapia Cognitivo-Comportamental", "ativo": true } },
+      { "nome": "Listar", "method": "GET", "url": "/psicologos" },
+      { "nome": "Listar ativos", "method": "GET", "url": "/psicologos/ativos" },
+      { "nome": "Buscar por id", "method": "GET", "url": "/psicologos/1" },
+      { "nome": "Buscar por CRP", "method": "GET", "url": "/psicologos/por-crp?crp=06/123456" },
+      { "nome": "Buscar por especialidade", "method": "GET", "url": "/psicologos/por-especialidade?especialidade=Terapia" },
+      { "nome": "Atualizar", "method": "PUT", "url": "/psicologos/1", "body": { "nome": "Ana Souza Lima", "cpf": "11122233344", "email": "ana@clinica.com", "telefone": "11999990001", "senha": "senha123", "crp": "06/123456", "especialidade": "Terapia Cognitivo-Comportamental", "ativo": true } },
+      { "nome": "Inativar", "method": "PATCH", "url": "/psicologos/1/inativar" }
+    ],
+    "02_funcionarios": [
+      { "nome": "Criar", "method": "POST", "url": "/funcionarios", "body": { "nome": "Carlos Pereira", "cpf": "22233344455", "email": "carlos@clinica.com", "telefone": "11999990002", "senha": "senha123", "ativo": true } },
+      { "nome": "Criar para testar DELETE alternativo", "method": "POST", "url": "/funcionarios", "body": { "nome": "Funcionário para teste de alias", "cpf": "22233344456", "email": "carlos.alias@clinica.com", "telefone": "11999990012", "senha": "senha123", "ativo": true } },
+      { "nome": "Listar", "method": "GET", "url": "/funcionarios" },
+      { "nome": "Listar ativos", "method": "GET", "url": "/funcionarios/ativos" },
+      { "nome": "Buscar por id", "method": "GET", "url": "/funcionarios/1" },
+      { "nome": "Buscar por nome", "method": "GET", "url": "/funcionarios/por-nome?nome=Carlos" },
+      { "nome": "Buscar por email", "method": "GET", "url": "/funcionarios/por-email?email=carlos@clinica.com" },
+      { "nome": "Buscar por CPF", "method": "GET", "url": "/funcionarios/por-cpf?cpf=22233344455" },
+      { "nome": "Atualizar", "method": "PUT", "url": "/funcionarios/1", "body": { "nome": "Carlos P. Silva", "cpf": "22233344455", "email": "carlos@clinica.com", "telefone": "11999990002", "senha": "senha123", "ativo": true } },
+      { "nome": "Inativar", "method": "PATCH", "url": "/funcionarios/1/inativar" }
+    ],
+    "03_recepcionistas": [
+      { "nome": "Criar", "method": "POST", "url": "/recepcionistas", "body": { "nome": "Mariana Alves", "cpf": "33344455566", "email": "mariana@clinica.com", "telefone": "11999990003", "senha": "senha123", "setor": "Recepção", "ativo": true } },
+      { "nome": "Listar", "method": "GET", "url": "/recepcionistas" },
+      { "nome": "Listar ativos", "method": "GET", "url": "/recepcionistas/ativos" },
+      { "nome": "Buscar por id", "method": "GET", "url": "/recepcionistas/1" },
+      { "nome": "Buscar por setor", "method": "GET", "url": "/recepcionistas/por-setor?setor=Recepção" },
+      { "nome": "Atualizar", "method": "PUT", "url": "/recepcionistas/1", "body": { "nome": "Mariana Alves", "cpf": "33344455566", "email": "mariana@clinica.com", "telefone": "11999990003", "senha": "senha123", "setor": "Atendimento", "ativo": true } },
+      { "nome": "Inativar", "method": "PATCH", "url": "/recepcionistas/1/inativar" }
+    ],
+    "04_pacientes": [
+      { "nome": "Criar", "method": "POST", "url": "/pacientes", "body": { "nome": "João Santos", "cpf": "44455566677", "dataNascimento": "1990-05-20", "email": "joao@email.com", "telefone": "11988887777", "endereco": "Rua A, 100 - São Paulo", "observacoes": "Primeira consulta", "ativo": true } },
+      { "nome": "Criar para testar DELETE alternativo", "method": "POST", "url": "/pacientes", "body": { "nome": "Paciente para teste de alias", "cpf": "44455566678", "dataNascimento": "1990-05-20", "email": "joao.alias@email.com", "telefone": "11988887778", "endereco": "Rua de teste", "observacoes": "Alias de exclusão", "ativo": true } },
+      { "nome": "Listar", "method": "GET", "url": "/pacientes" },
+      { "nome": "Listar ativos", "method": "GET", "url": "/pacientes/ativos" },
+      { "nome": "Buscar por nome", "method": "GET", "url": "/pacientes/por-nome?nome=João" },
+      { "nome": "Buscar por CPF", "method": "GET", "url": "/pacientes/por-cpf?cpf=44455566677" },
+      { "nome": "Buscar por email", "method": "GET", "url": "/pacientes/por-email?email=joao@email.com" },
+      { "nome": "Buscar por id", "method": "GET", "url": "/pacientes/1" },
+      { "nome": "Atualizar", "method": "PUT", "url": "/pacientes/1", "body": { "nome": "João Santos Jr.", "cpf": "44455566677", "dataNascimento": "1990-05-20", "email": "joao@email.com", "telefone": "11988887777", "endereco": "Rua B, 200 - São Paulo", "observacoes": "Atualizado", "ativo": true } },
+      { "nome": "Inativar", "method": "PATCH", "url": "/pacientes/1/inativar" }
+    ],
+    "05_convenios": [
+      { "nome": "Criar", "method": "POST", "url": "/convenios", "body": { "nome": "Saúde Plus", "cnpj": "12345678000199", "telefone": "1133334444", "percentualCobertura": 70.0, "ativo": true } },
+      { "nome": "Criar para testar DELETE alternativo", "method": "POST", "url": "/convenios", "body": { "nome": "Convênio para teste de alias", "cnpj": "12345678000200", "telefone": "1133334455", "percentualCobertura": 70.0, "ativo": true } },
+      { "nome": "Listar", "method": "GET", "url": "/convenios" },
+      { "nome": "Listar ativos", "method": "GET", "url": "/convenios/ativos" },
+      { "nome": "Buscar por id", "method": "GET", "url": "/convenios/1" },
+      { "nome": "Buscar por nome", "method": "GET", "url": "/convenios/por-nome?nome=Saúde" },
+      { "nome": "Buscar por CNPJ", "method": "GET", "url": "/convenios/por-cnpj?cnpj=12345678000199" },
+      { "nome": "Buscar por telefone", "method": "GET", "url": "/convenios/por-telefone?telefone=1133334444" },
+      { "nome": "Atualizar", "method": "PUT", "url": "/convenios/1", "body": { "nome": "Saúde Plus", "cnpj": "12345678000199", "telefone": "1133334444", "percentualCobertura": 80.0, "ativo": true } },
+      { "nome": "Inativar", "method": "PATCH", "url": "/convenios/1/inativar" }
+    ],
+    "06_salas_atendimento": [
+      { "nome": "Criar", "method": "POST", "url": "/salas-atendimento", "body": { "nome": "Sala 1", "descricao": "Sala individual", "capacidade": 3, "ativo": true } },
+      { "nome": "Criar para testar DELETE alternativo", "method": "POST", "url": "/salas-atendimento", "body": { "nome": "Sala para teste de alias", "descricao": "Sala de teste", "capacidade": 2, "ativo": true } },
+      { "nome": "Listar", "method": "GET", "url": "/salas-atendimento" },
+      { "nome": "Listar ativas", "method": "GET", "url": "/salas-atendimento/ativos" },
+      { "nome": "Buscar por id", "method": "GET", "url": "/salas-atendimento/1" },
+      { "nome": "Buscar por nome", "method": "GET", "url": "/salas-atendimento/por-nome?nome=Sala" },
+      { "nome": "Atualizar", "method": "PUT", "url": "/salas-atendimento/1", "body": { "nome": "Sala 1", "descricao": "Sala individual reformada", "capacidade": 4, "ativo": true } },
+      { "nome": "Inativar", "method": "PATCH", "url": "/salas-atendimento/1/inativar" }
+    ],
+    "07_tipos_atendimento": [
+      { "nome": "Criar", "method": "POST", "url": "/tipos-atendimento", "body": { "nome": "Psicoterapia Individual", "descricao": "Sessão individual", "duracao": "50", "ativo": true } },
+      { "nome": "Listar", "method": "GET", "url": "/tipos-atendimento" },
+      { "nome": "Listar ativos", "method": "GET", "url": "/tipos-atendimento/ativos" },
+      { "nome": "Buscar por id", "method": "GET", "url": "/tipos-atendimento/1" },
+      { "nome": "Buscar por nome", "method": "GET", "url": "/tipos-atendimento/por-nome?nome=Psico" },
+      { "nome": "Atualizar", "method": "PUT", "url": "/tipos-atendimento/1", "body": { "nome": "Psicoterapia Individual", "descricao": "Sessão individual de 60 min", "duracao": "60", "ativo": true } },
+      { "nome": "Inativar", "method": "PATCH", "url": "/tipos-atendimento/1/inativar" }
+    ],
+    "08_horarios_disponiveis": [
+      { "nome": "Criar", "method": "POST", "url": "/horarios-disponiveis", "body": { "psicologoId": 1, "diaSemana": "SEGUNDA", "horaInicio": "08:00:00", "horaFim": "12:00:00" } },
+      { "nome": "Listar", "method": "GET", "url": "/horarios-disponiveis" },
+      { "nome": "Buscar por id", "method": "GET", "url": "/horarios-disponiveis/1" },
+      { "nome": "Por descrição", "method": "GET", "url": "/horarios-disponiveis/por-descricao?termo=Manhã" },
+      { "nome": "Por psicólogo", "method": "GET", "url": "/horarios-disponiveis/por-psicologo/1" },
+      { "nome": "Por psicólogo e dia", "method": "GET", "url": "/horarios-disponiveis/por-psicologo/1/dia/SEGUNDA" },
+      { "nome": "Atualizar", "method": "PUT", "url": "/horarios-disponiveis/1", "body": { "psicologoId": 1, "diaSemana": "SEGUNDA", "horaInicio": "09:00:00", "horaFim": "13:00:00" } }
+    ],
+    "09_bloqueios_agenda": [
+      { "nome": "Criar", "method": "POST", "url": "/bloqueios-agenda", "body": { "id": 0, "psicologoId": 1, "dataHoraInicio": "2026-12-24T08:00:00", "dataHoraFim": "2026-12-24T18:00:00", "motivo": "Feriado" } },
+      { "nome": "Listar", "method": "GET", "url": "/bloqueios-agenda" },
+      { "nome": "Buscar por id", "method": "GET", "url": "/bloqueios-agenda/1" },
+      { "nome": "Por motivo", "method": "GET", "url": "/bloqueios-agenda/por-motivo?termo=Feriado" },
+      { "nome": "Por psicólogo", "method": "GET", "url": "/bloqueios-agenda/por-psicologo/1" },
+      { "nome": "Por período", "method": "GET", "url": "/bloqueios-agenda/por-periodo?inicio=2026-12-01T00:00:00&fim=2026-12-31T23:59:59" },
+      { "nome": "Atualizar", "method": "PUT", "url": "/bloqueios-agenda/1", "body": { "id": 1, "psicologoId": 1, "dataHoraInicio": "2026-12-24T08:00:00", "dataHoraFim": "2026-12-24T20:00:00", "motivo": "Recesso" } }
+    ],
+    "10_agendas": [
+      { "nome": "Criar", "method": "POST", "url": "/agendas", "body": { "pacienteId": 1, "psicologoId": 1, "salaId": 1, "tipoAtendimentoId": 1, "convenioId": 1, "dataHoraInicio": "2026-11-10T09:00:00", "dataHoraFim": "2026-11-10T09:50:00", "status": "AGENDADO", "observacoes": "Primeira sessão" } },
+      { "nome": "Listar", "method": "GET", "url": "/agendas" },
+      { "nome": "Buscar por id", "method": "GET", "url": "/agendas/1" },
+      { "nome": "Por observações", "method": "GET", "url": "/agendas/por-observacoes?termo=Primeira" },
+      { "nome": "Form data (novo)", "method": "GET", "url": "/agendas/form-data" },
+      { "nome": "Form data (edição)", "method": "GET", "url": "/agendas/form-data?id=1" },
+      { "nome": "Atualizar", "method": "PUT", "url": "/agendas/1", "body": { "id": 1, "pacienteId": 1, "psicologoId": 1, "salaId": 1, "tipoAtendimentoId": 1, "convenioId": 1, "dataHoraInicio": "2026-11-10T10:00:00", "dataHoraFim": "2026-11-10T10:50:00", "status": "CONFIRMADO", "observacoes": "Remarcada" } },
+      { "nome": "Alterar status", "method": "PATCH", "url": "/agendas/1/status?status=REALIZADO" },
+      { "nome": "Criar agenda adicional para pagamento", "method": "POST", "url": "/agendas", "body": { "pacienteId": 1, "psicologoId": 1, "salaId": 1, "tipoAtendimentoId": 1, "convenioId": 1, "dataHoraInicio": "2026-11-10T12:00:00", "dataHoraFim": "2026-11-10T12:50:00", "status": "AGENDADO", "observacoes": "Teste do alias de exclusão" } }
+    ],
+    "11_prontuarios": [
+      { "nome": "Criar", "method": "POST", "url": "/prontuarios", "body": { "pacienteId": 1, "dataAbertura": "2026-11-10T09:00:00", "queixaPrincipal": "Ansiedade", "status": "ATIVO" } },
+      { "nome": "Listar", "method": "GET", "url": "/prontuarios" },
+      { "nome": "Buscar por id", "method": "GET", "url": "/prontuarios/1" },
+      { "nome": "Por queixa principal", "method": "GET", "url": "/prontuarios/por-queixa-principal?termo=Ansiedade" },
+      { "nome": "Por paciente", "method": "GET", "url": "/prontuarios/por-paciente/1" },
+      { "nome": "Por paciente e status", "method": "GET", "url": "/prontuarios/por-paciente/1/status/ATIVO" },
+      { "nome": "Atualizar", "method": "PUT", "url": "/prontuarios/1", "body": { "pacienteId": 1, "dataAbertura": "2026-11-10T09:00:00", "queixaPrincipal": "Ansiedade e insônia", "status": "ATIVO" } }
+    ],
+    "12_evolucoes_clinicas": [
+      { "nome": "Criar", "method": "POST", "url": "/evolucoes-clinicas", "body": { "prontuarioId": 1, "psicologoId": 1, "agendaId": 1, "dataRegistro": "2026-11-10T10:00:00", "descricao": "Paciente relatou melhora." } },
+      { "nome": "Listar", "method": "GET", "url": "/evolucoes-clinicas" },
+      { "nome": "Buscar por id", "method": "GET", "url": "/evolucoes-clinicas/1" },
+      { "nome": "Por descrição", "method": "GET", "url": "/evolucoes-clinicas/por-descricao?termo=melhora" },
+      { "nome": "Por prontuário", "method": "GET", "url": "/evolucoes-clinicas/por-prontuario/1" },
+      { "nome": "Por psicólogo", "method": "GET", "url": "/evolucoes-clinicas/por-psicologo/1" },
+      { "nome": "Por agenda", "method": "GET", "url": "/evolucoes-clinicas/por-agenda/1" },
+      { "nome": "Atualizar", "method": "PUT", "url": "/evolucoes-clinicas/1", "body": { "prontuarioId": 1, "psicologoId": 1, "agendaId": 1, "dataRegistro": "2026-11-10T10:00:00", "descricao": "Paciente relatou melhora significativa." } }
+    ],
+    "13_pagamentos": [
+      { "nome": "Criar", "method": "POST", "url": "/pagamentos", "body": { "agendaId": 1, "pacienteId": 1, "convenioId": 1, "valorTotal": 200.0, "valorConvenio": 140.0, "valorPaciente": 60.0, "formaPagamento": "PIX", "dataPagamento": "2026-11-10T11:00:00", "status": "PENDENTE" } },
+      { "nome": "Listar", "method": "GET", "url": "/pagamentos" },
+      { "nome": "Buscar por id", "method": "GET", "url": "/pagamentos/1" },
+      { "nome": "Por agenda", "method": "GET", "url": "/pagamentos/por-agenda/1" },
+      { "nome": "Por paciente", "method": "GET", "url": "/pagamentos/por-paciente/1" },
+      { "nome": "Por convênio", "method": "GET", "url": "/pagamentos/por-convenio/1" },
+      { "nome": "Por status", "method": "GET", "url": "/pagamentos/por-status/PENDENTE" },
+      { "nome": "Por forma de pagamento", "method": "GET", "url": "/pagamentos/por-forma-pagamento?termo=PIX" },
+      { "nome": "Atualizar", "method": "PUT", "url": "/pagamentos/1", "body": { "agendaId": 1, "pacienteId": 1, "convenioId": 1, "valorTotal": 200.0, "valorConvenio": 140.0, "valorPaciente": 60.0, "formaPagamento": "PIX", "dataPagamento": "2026-11-10T11:00:00", "status": "PAGO" } },
+      { "nome": "Criar para testar DELETE alternativo", "method": "POST", "url": "/pagamentos", "body": { "agendaId": 2, "pacienteId": 1, "convenioId": 1, "valorTotal": 200.0, "valorConvenio": 140.0, "valorPaciente": 60.0, "formaPagamento": "PIX", "dataPagamento": "2026-11-10T13:00:00", "status": "PENDENTE" } }
+    ],
+    "99_deletes_executar_por_ultimo_na_ordem_inversa": [
+      { "method": "DELETE", "url": "/pagamentos/1" },
+      { "method": "DELETE", "url": "/pagamentos/destroy/2" },
+      { "method": "DELETE", "url": "/evolucoes-clinicas/1" },
+      { "method": "DELETE", "url": "/evolucoes-clinicas/destroy/1" },
+      { "method": "DELETE", "url": "/prontuarios/1" },
+      { "method": "DELETE", "url": "/prontuarios/destroy/1" },
+      { "method": "DELETE", "url": "/agendas/1" },
+      { "method": "DELETE", "url": "/agendas/destroy/1" },
+      { "method": "DELETE", "url": "/agendas/destroy/2" },
+      { "method": "DELETE", "url": "/bloqueios-agenda/1" },
+      { "method": "DELETE", "url": "/bloqueios-agenda/destroy/1" },
+      { "method": "DELETE", "url": "/horarios-disponiveis/1" },
+      { "method": "DELETE", "url": "/horarios-disponiveis/destroy/1" },
+      { "method": "DELETE", "url": "/tipos-atendimento/1" },
+      { "method": "DELETE", "url": "/salas-atendimento/1" },
+      { "method": "DELETE", "url": "/salas-atendimento/destroy/2" },
+      { "method": "DELETE", "url": "/convenios/1" },
+      { "method": "DELETE", "url": "/convenios/destroy/2" },
+      { "method": "DELETE", "url": "/pacientes/1" },
+      { "method": "DELETE", "url": "/pacientes/destroy/2" },
+      { "method": "DELETE", "url": "/recepcionistas/1" },
+      { "method": "DELETE", "url": "/funcionarios/1" },
+      { "method": "DELETE", "url": "/funcionarios/destroy/2" },
+      { "method": "DELETE", "url": "/psicologos/1" }
+    ]
+  }
+}
