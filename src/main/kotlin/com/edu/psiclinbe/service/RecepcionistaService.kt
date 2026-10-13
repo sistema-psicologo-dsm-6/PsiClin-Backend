@@ -4,13 +4,16 @@ import com.edu.psiclinbe.dto.request.RecepcionistaDtoRequest
 import com.edu.psiclinbe.dto.response.RecepcionistaDtoResponse
 import com.edu.psiclinbe.mapper.RecepcionistaMapper
 import com.edu.psiclinbe.model.Recepcionista
+import com.edu.psiclinbe.model.enums.Role
 import com.edu.psiclinbe.repository.RecepcionistaRepository
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 
 @Service
 class RecepcionistaService(
     private val recepcionistaRepository: RecepcionistaRepository,
     private val recepcionistaMapper: RecepcionistaMapper,
+    private val passwordEncoder: PasswordEncoder,
 ) {
     fun listarTodos(): List<RecepcionistaDtoResponse> =
         recepcionistaRepository.findAll().map { recepcionistaMapper.toResponse(it) }
@@ -18,8 +21,17 @@ class RecepcionistaService(
     fun buscarRecepcionista(id: Long): RecepcionistaDtoResponse =
         recepcionistaMapper.toResponse(buscarEntidade(id))
 
-    fun cadastrarRecepcionista(dto: RecepcionistaDtoRequest): RecepcionistaDtoResponse {
-        val salvo = recepcionistaRepository.save(recepcionistaMapper.toModel(dto.copy(id = null)))
+    fun cadastrarRecepcionista(
+        dto: RecepcionistaDtoRequest
+    ): RecepcionistaDtoResponse {
+
+        val recepcionista = recepcionistaMapper.toModel(dto)
+
+        recepcionista.senha = passwordEncoder.encode(dto.senha)!!
+        recepcionista.role = Role.RECEPCIONISTA
+
+        val salvo = recepcionistaRepository.save(recepcionista)
+
         return recepcionistaMapper.toResponse(salvo)
     }
 

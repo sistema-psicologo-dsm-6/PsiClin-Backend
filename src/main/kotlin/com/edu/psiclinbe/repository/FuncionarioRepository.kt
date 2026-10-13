@@ -11,6 +11,7 @@ interface FuncionarioRepository: JpaRepository<Funcionario, Long> {
 
     fun findByNomeContainingIgnoreCase(nome: String): List<Funcionario>
     fun findByEmail(email: String): Funcionario?
+    fun existsByEmail(email: String): Boolean
     fun findByCpf(cpf: String): Funcionario?
     fun findByEmailAndCpf(email: String, cpf: String): Funcionario?
     fun findByAtivoTrue(): List<Funcionario>

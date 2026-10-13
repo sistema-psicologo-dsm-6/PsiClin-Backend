@@ -3,6 +3,7 @@ package com.edu.psiclinbe.mapper
 import com.edu.psiclinbe.dto.request.PsicologoDtoRequest
 import com.edu.psiclinbe.dto.response.PsicologoDtoResponse
 import com.edu.psiclinbe.model.Psicologo
+import com.edu.psiclinbe.model.enums.Role
 import org.springframework.stereotype.Component
 
 @Component
@@ -19,6 +20,7 @@ class PsicologoMapper {
             ativo = dto.ativo
             crp = dto.crp
             especialidade = dto.especialidade
+            role = Role.PSICOLOGO
         }
     }
 

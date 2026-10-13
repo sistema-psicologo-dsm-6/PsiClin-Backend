@@ -15,6 +15,7 @@ class FuncionarioMapper {
         telefone = dto.telefone,
         senha = dto.senha,
         ativo = dto.ativo,
+        role = dto.role,
     )
 
     fun toResponse(funcionario: Funcionario): FuncionarioDtoResponse =
@@ -26,5 +27,6 @@ class FuncionarioMapper {
             telefone = funcionario.telefone,
             senha = null,
             ativo = funcionario.ativo,
+            role = funcionario.role,
         )
 }

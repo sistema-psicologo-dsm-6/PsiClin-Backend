@@ -13,6 +13,6 @@ class Recepcionista(
     @Column(length = 100)
     @field:NotBlank(message = "O setor nao pode estar vazio")
     @field:Size(max = 100)
-    var setor: String = ""
+    var setor: String = "",
 
 ) : Funcionario()

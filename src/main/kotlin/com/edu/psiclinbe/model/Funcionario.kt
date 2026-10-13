@@ -1,5 +1,6 @@
 package com.edu.psiclinbe.model
 
+import com.edu.psiclinbe.model.enums.Role
 import jakarta.persistence.*
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
@@ -23,7 +24,11 @@ open class Funcionario(
     @field:NotBlank(message = "O CPF nao pode estar vazio")
     open var cpf: String = "",
 
-    @Column(length = 254)
+    @Column(
+        length = 254,
+        unique = true,
+        nullable = false
+    )
     @field:NotBlank(message = "O e-mail nao pode estar vazio")
     @field:Email(message = "O e-mail deve ser valido")
     open var email: String = "",
@@ -38,5 +43,9 @@ open class Funcionario(
 
     open var ativo: Boolean = true,
 
-    open var dataCadastro: LocalDateTime = LocalDateTime.now()
+    open var dataCadastro: LocalDateTime = LocalDateTime.now(),
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    open var role: Role? = null
 )

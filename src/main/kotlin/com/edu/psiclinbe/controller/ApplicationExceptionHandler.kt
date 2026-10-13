@@ -2,6 +2,8 @@ package com.edu.psiclinbe.controller
 
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.AccessDeniedException
+import org.springframework.security.core.AuthenticationException
 import org.springframework.validation.FieldError
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
@@ -32,6 +34,20 @@ class ApplicationExceptionHandler {
             )
         )
     }
+
+    @ExceptionHandler(AuthenticationException::class)
+    fun handleAuthentication(
+        ex: AuthenticationException
+    ): ResponseEntity<Map<String, String>> =
+        ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+            .body(mapOf("erro" to "Credenciais inválidas"))
+
+    @ExceptionHandler(AccessDeniedException::class)
+    fun handleAccessDenied(
+        ex: AccessDeniedException
+    ): ResponseEntity<Map<String, String>> =
+        ResponseEntity.status(HttpStatus.FORBIDDEN)
+            .body(mapOf("erro" to "Acesso negado para este perfil"))
 
     @ExceptionHandler(IllegalArgumentException::class)
     fun handleBadRequest(

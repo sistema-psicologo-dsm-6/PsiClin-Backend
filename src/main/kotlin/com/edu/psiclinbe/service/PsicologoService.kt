@@ -3,15 +3,18 @@ package com.edu.psiclinbe.service
 import com.edu.psiclinbe.dto.request.PsicologoDtoRequest
 import com.edu.psiclinbe.dto.response.PsicologoDtoResponse
 import com.edu.psiclinbe.mapper.PsicologoMapper
+import com.edu.psiclinbe.model.enums.Role
 import com.edu.psiclinbe.repository.FuncionarioRepository
 import com.edu.psiclinbe.repository.PsicologoRepository
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 
 @Service
 class PsicologoService(
     private val psicologoRepository: PsicologoRepository,
     private val funcionarioRepository: FuncionarioRepository,
-    private val psicologoMapper: PsicologoMapper
+    private val psicologoMapper: PsicologoMapper,
+    private val passwordEncoder: PasswordEncoder,
 ) {
 
     fun listarTodos(): List<PsicologoDtoResponse> =
@@ -56,6 +59,11 @@ class PsicologoService(
         )
 
         val psicologo = psicologoMapper.toModel(dto)
+
+        psicologo.senha =
+            passwordEncoder.encode(dto.senha)!!
+
+        psicologo.role = Role.PSICOLOGO
 
         return psicologoMapper.toResponse(
             psicologoRepository.save(psicologo)

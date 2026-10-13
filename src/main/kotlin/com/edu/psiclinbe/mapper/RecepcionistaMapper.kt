@@ -3,6 +3,7 @@ package com.edu.psiclinbe.mapper
 import com.edu.psiclinbe.dto.request.RecepcionistaDtoRequest
 import com.edu.psiclinbe.dto.response.RecepcionistaDtoResponse
 import com.edu.psiclinbe.model.Recepcionista
+import com.edu.psiclinbe.model.enums.Role
 import org.springframework.stereotype.Component
 
 @Component
@@ -16,6 +17,7 @@ class RecepcionistaMapper {
             telefone = dto.telefone
             senha = dto.senha
             ativo = dto.ativo
+            role = Role.RECEPCIONISTA
         }
 
     fun toResponse(recepcionista: Recepcionista): RecepcionistaDtoResponse =

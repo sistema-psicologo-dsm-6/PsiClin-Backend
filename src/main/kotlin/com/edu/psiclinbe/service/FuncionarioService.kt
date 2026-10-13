@@ -2,40 +2,48 @@ package com.edu.psiclinbe.service
 
 import com.edu.psiclinbe.dto.request.FuncionarioDtoRequest
 import com.edu.psiclinbe.dto.response.FuncionarioDtoResponse
+import com.edu.psiclinbe.mapper.FuncionarioMapper
 import com.edu.psiclinbe.model.Funcionario
+import com.edu.psiclinbe.model.enums.Role
 import com.edu.psiclinbe.repository.FuncionarioRepository
+import org.springframework.http.HttpStatus
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
+import org.springframework.web.server.ResponseStatusException
 
 @Service
 class FuncionarioService(
-    private val funcionarioRepository: FuncionarioRepository
+    private val funcionarioRepository: FuncionarioRepository,
+    private val funcionarioMapper: FuncionarioMapper,
+    private val passwordEncoder: PasswordEncoder
 ) {
 
     fun listarTodos(): List<FuncionarioDtoResponse> =
-        funcionarioRepository.findAll().map { it.toDto() }
+        funcionarioRepository.findAll().map(funcionarioMapper::toResponse)
 
     fun listarAtivos(): List<FuncionarioDtoResponse> =
-        funcionarioRepository.findByAtivoTrue().map { it.toDto() }
+        funcionarioRepository.findByAtivoTrue().map(funcionarioMapper::toResponse)
 
     fun buscarPorId(id: Long): FuncionarioDtoResponse {
         val funcionario = funcionarioRepository.findById(id)
             .orElseThrow { NoSuchElementException("Funcionário não encontrado com id: $id") }
-        return funcionario.toDto()
+        return funcionarioMapper.toResponse(funcionario)
     }
 
     fun buscarPorNome(nome: String): List<FuncionarioDtoResponse> =
-        funcionarioRepository.buscarPorNomeParcial(nome).map { it.toDto() }
+        funcionarioRepository.buscarPorNomeParcial(nome).map(funcionarioMapper::toResponse)
 
     fun buscarPorEmail(email: String): FuncionarioDtoResponse {
         val funcionario = funcionarioRepository.findByEmail(email)
             ?: throw NoSuchElementException("Funcionário não encontrado com e-mail: $email")
-        return funcionario.toDto()
+        return funcionarioMapper.toResponse(funcionario)
     }
 
     fun buscarPorCpf(cpf: String): FuncionarioDtoResponse {
         val funcionario = funcionarioRepository.findByCpf(cpf)
             ?: throw NoSuchElementException("Funcionário não encontrado com CPF: $cpf")
-        return funcionario.toDto()
+        return funcionarioMapper.toResponse(funcionario)
     }
 
     fun salvar(dto: FuncionarioDtoRequest): FuncionarioDtoResponse {
@@ -48,11 +56,24 @@ class FuncionarioService(
             cpf = dto.cpf,
             email = dto.email,
             telefone = dto.telefone,
-            senha = dto.senha,
-            ativo = dto.ativo
+            senha = passwordEncoder.encode(dto.senha)!!,
+            ativo = dto.ativo,
+            role = dto.role
         )
 
-        return funcionarioRepository.save(funcionario).toDto()
+        return funcionarioMapper.toResponse(funcionarioRepository.save(funcionario))
+    }
+
+    @Transactional
+    fun criarAdminInicial(dto: FuncionarioDtoRequest): FuncionarioDtoResponse {
+        if (funcionarioRepository.count() > 0) {
+            throw ResponseStatusException(
+                HttpStatus.CONFLICT,
+                "O cadastro público está disponível somente para criar o primeiro usuário"
+            )
+        }
+
+        return salvar(dto.copy(role = Role.ADMIN))
     }
 
     fun atualizar(id: Long, dto: FuncionarioDtoRequest): FuncionarioDtoResponse {
@@ -66,10 +87,11 @@ class FuncionarioService(
         funcionario.ativo = dto.ativo
 
         if (dto.senha.isNotBlank()) {
-            funcionario.senha = dto.senha
+            funcionario.senha =
+                passwordEncoder.encode(dto.senha)!!
         }
 
-        return funcionarioRepository.save(funcionario).toDto()
+        return funcionarioMapper.toResponse(funcionarioRepository.save(funcionario))
     }
 
     fun inativar(id: Long): FuncionarioDtoResponse {
@@ -77,7 +99,7 @@ class FuncionarioService(
             .orElseThrow { NoSuchElementException("Funcionário não encontrado com id: $id") }
 
         funcionario.ativo = false
-        return funcionarioRepository.save(funcionario).toDto()
+        return funcionarioMapper.toResponse(funcionarioRepository.save(funcionario))
     }
 
     fun deletar(id: Long) {
@@ -86,14 +108,4 @@ class FuncionarioService(
         }
         funcionarioRepository.deleteById(id)
     }
-
-    private fun Funcionario.toDto(): FuncionarioDtoResponse = FuncionarioDtoResponse(
-        id = this.id,
-        nome = this.nome,
-        cpf = this.cpf,
-        email = this.email,
-        telefone = this.telefone,
-        senha = null,
-        ativo = this.ativo
-    )
 }

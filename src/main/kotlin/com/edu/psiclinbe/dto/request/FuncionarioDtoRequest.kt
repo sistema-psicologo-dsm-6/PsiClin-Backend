@@ -1,5 +1,6 @@
 package com.edu.psiclinbe.dto.request
 
+import com.edu.psiclinbe.model.enums.Role
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
 
@@ -17,4 +18,5 @@ data class FuncionarioDtoRequest(
     @field:NotBlank(message = "A senha nao pode estar vazia")
     val senha: String = "",
     val ativo: Boolean = true,
+    val role: Role = Role.ADMIN,
 )
