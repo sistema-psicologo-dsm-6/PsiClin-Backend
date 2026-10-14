@@ -32,7 +32,7 @@ open class HorarioDisponivel(
     var psicologo: Psicologo,
 
     @Enumerated(EnumType.STRING)
-    @field:NotBlank(message = "O dia da semana nao pode estar vazio")
+    @field:NotNull(message = "O dia da semana é obrigatório")
     var diaSemana: DiaSemana,
 
     @field:NotNull(message = "A hora de inicio e obrigatoria")

@@ -1,98 +1,12 @@
-@baseUrl = http://localhost:8081
+@baseUrl = http://localhost:8080
 @json = application/json
-@adminEmail = admin@psiclin.local
-@adminSenha = Admin123!
 
 # Run the API on port 8081 before starting this collection.
-# Pre-requisito: existir um funcionario ADMIN (veja o README, "Criando o primeiro ADMIN").
-# Todas as rotas (exceto /auth/signin) exigem "Authorization: Bearer {{token}}".
-
-### Auth - signin (ADMIN)
-# @name login
-POST {{baseUrl}}/auth/signin
-Content-Type: {{json}}
-
-{
-  "email": "{{adminEmail}}",
-  "senha": "{{adminSenha}}"
-}
-
-###
-@token = {{login.response.body.$.token}}
-
-### Auth - signup (cria funcionario; exige ADMIN)
-POST {{baseUrl}}/auth/signup
-Content-Type: {{json}}
-Authorization: Bearer {{token}}
-
-{
-  "nome": "ApiTestSignup",
-  "cpf": "9{{$timestamp}}09",
-  "email": "api-signup-{{$guid}}@example.invalid",
-  "telefone": "1199{{$timestamp}}",
-  "senha": "ApiTest123!",
-  "role": "RECEPCIONISTA",
-  "ativo": true
-}
-
-### Auth - signin com senha errada (esperado 401)
-POST {{baseUrl}}/auth/signin
-Content-Type: {{json}}
-
-{
-  "email": "{{adminEmail}}",
-  "senha": "senha-errada"
-}
-
-### Seguranca - sem token (esperado 401)
-GET {{baseUrl}}/pacientes
-
-### Seguranca - token invalido (esperado 401)
-GET {{baseUrl}}/pacientes
-Authorization: Bearer token.invalido.aqui
-
-### Seguranca - funcionario RECEPCIONISTA
-# @name criaRecepFunc
-POST {{baseUrl}}/funcionarios
-Content-Type: {{json}}
-Authorization: Bearer {{token}}
-
-{
-  "nome": "ApiTestRecepFunc",
-  "cpf": "9{{$timestamp}}08",
-  "email": "api-recep-func-{{$guid}}@example.invalid",
-  "telefone": "1199{{$timestamp}}",
-  "senha": "ApiTest123!",
-  "role": "RECEPCIONISTA",
-  "ativo": true
-}
-
-### Seguranca - signin como RECEPCIONISTA
-# @name loginRecep
-POST {{baseUrl}}/auth/signin
-Content-Type: {{json}}
-
-{
-  "email": "{{criaRecepFunc.response.body.$.email}}",
-  "senha": "ApiTest123!"
-}
-
-### Seguranca - RECEPCIONISTA lista pacientes (esperado 200)
-GET {{baseUrl}}/pacientes
-Authorization: Bearer {{loginRecep.response.body.$.token}}
-
-### Seguranca - RECEPCIONISTA acessa prontuarios (esperado 403)
-GET {{baseUrl}}/prontuarios
-Authorization: Bearer {{loginRecep.response.body.$.token}}
-
-### Seguranca - RECEPCIONISTA acessa funcionarios (esperado 403)
-GET {{baseUrl}}/funcionarios
-Authorization: Bearer {{loginRecep.response.body.$.token}}
+# IDs are taken from create responses; DELETE requests below target only this run's fixtures.
 
 ### Psicólogos - criar
 # @name criaPsicologo
 POST {{baseUrl}}/psicologos
-Authorization: Bearer {{token}}
 Content-Type: {{json}}
 
 {
@@ -108,27 +22,21 @@ Content-Type: {{json}}
 
 ### Psicólogos - listar
 GET {{baseUrl}}/psicologos
-Authorization: Bearer {{token}}
 
 ### Psicólogos - listar ativos
 GET {{baseUrl}}/psicologos/ativos
-Authorization: Bearer {{token}}
 
 ### Psicólogos - buscar por id
 GET {{baseUrl}}/psicologos/{{criaPsicologo.response.body.$.id}}
-Authorization: Bearer {{token}}
 
 ### Psicólogos - buscar por CRP
 GET {{baseUrl}}/psicologos/por-crp?crp={{criaPsicologo.response.body.$.crp}}
-Authorization: Bearer {{token}}
 
 ### Psicólogos - buscar por especialidade
 GET {{baseUrl}}/psicologos/por-especialidade?especialidade=ApiTestTCC
-Authorization: Bearer {{token}}
 
 ### Psicólogos - atualizar
 PUT {{baseUrl}}/psicologos/{{criaPsicologo.response.body.$.id}}
-Authorization: Bearer {{token}}
 Content-Type: {{json}}
 
 {
@@ -144,12 +52,10 @@ Content-Type: {{json}}
 
 ### Psicólogos - inativar
 PATCH {{baseUrl}}/psicologos/{{criaPsicologo.response.body.$.id}}/inativar
-Authorization: Bearer {{token}}
 
 ### Funcionários - criar
 # @name criaFuncionario
 POST {{baseUrl}}/funcionarios
-Authorization: Bearer {{token}}
 Content-Type: {{json}}
 
 {
@@ -164,7 +70,6 @@ Content-Type: {{json}}
 ### Funcionários - criar fixture para alias de exclusão
 # @name criaFuncionarioAlias
 POST {{baseUrl}}/funcionarios
-Authorization: Bearer {{token}}
 Content-Type: {{json}}
 
 {
@@ -178,31 +83,24 @@ Content-Type: {{json}}
 
 ### Funcionários - listar
 GET {{baseUrl}}/funcionarios
-Authorization: Bearer {{token}}
 
 ### Funcionários - listar ativos
 GET {{baseUrl}}/funcionarios/ativos
-Authorization: Bearer {{token}}
 
 ### Funcionários - buscar por id
 GET {{baseUrl}}/funcionarios/{{criaFuncionario.response.body.$.id}}
-Authorization: Bearer {{token}}
 
 ### Funcionários - buscar por nome
 GET {{baseUrl}}/funcionarios/por-nome?nome=ApiTestFuncionario
-Authorization: Bearer {{token}}
 
 ### Funcionários - buscar por e-mail
 GET {{baseUrl}}/funcionarios/por-email?email={{criaFuncionario.response.body.$.email}}
-Authorization: Bearer {{token}}
 
 ### Funcionários - buscar por CPF
 GET {{baseUrl}}/funcionarios/por-cpf?cpf={{criaFuncionario.response.body.$.cpf}}
-Authorization: Bearer {{token}}
 
 ### Funcionários - atualizar
 PUT {{baseUrl}}/funcionarios/{{criaFuncionario.response.body.$.id}}
-Authorization: Bearer {{token}}
 Content-Type: {{json}}
 
 {
@@ -216,12 +114,10 @@ Content-Type: {{json}}
 
 ### Funcionários - inativar
 PATCH {{baseUrl}}/funcionarios/{{criaFuncionario.response.body.$.id}}/inativar
-Authorization: Bearer {{token}}
 
 ### Recepcionistas - criar
 # @name criaRecepcionista
 POST {{baseUrl}}/recepcionistas
-Authorization: Bearer {{token}}
 Content-Type: {{json}}
 
 {
@@ -236,23 +132,18 @@ Content-Type: {{json}}
 
 ### Recepcionistas - listar
 GET {{baseUrl}}/recepcionistas
-Authorization: Bearer {{token}}
 
 ### Recepcionistas - listar ativos
 GET {{baseUrl}}/recepcionistas/ativos
-Authorization: Bearer {{token}}
 
 ### Recepcionistas - buscar por id
 GET {{baseUrl}}/recepcionistas/{{criaRecepcionista.response.body.$.id}}
-Authorization: Bearer {{token}}
 
 ### Recepcionistas - buscar por setor
 GET {{baseUrl}}/recepcionistas/por-setor?setor=ApiTest
-Authorization: Bearer {{token}}
 
 ### Recepcionistas - atualizar
 PUT {{baseUrl}}/recepcionistas/{{criaRecepcionista.response.body.$.id}}
-Authorization: Bearer {{token}}
 Content-Type: {{json}}
 
 {
@@ -267,12 +158,10 @@ Content-Type: {{json}}
 
 ### Recepcionistas - inativar
 PATCH {{baseUrl}}/recepcionistas/{{criaRecepcionista.response.body.$.id}}/inativar
-Authorization: Bearer {{token}}
 
 ### Pacientes - criar
 # @name criaPaciente
 POST {{baseUrl}}/pacientes
-Authorization: Bearer {{token}}
 Content-Type: {{json}}
 
 {
@@ -289,7 +178,6 @@ Content-Type: {{json}}
 ### Pacientes - criar fixture para alias de exclusão
 # @name criaPacienteAlias
 POST {{baseUrl}}/pacientes
-Authorization: Bearer {{token}}
 Content-Type: {{json}}
 
 {
@@ -305,31 +193,24 @@ Content-Type: {{json}}
 
 ### Pacientes - listar
 GET {{baseUrl}}/pacientes
-Authorization: Bearer {{token}}
 
 ### Pacientes - listar ativos
 GET {{baseUrl}}/pacientes/ativos
-Authorization: Bearer {{token}}
 
 ### Pacientes - buscar por nome
 GET {{baseUrl}}/pacientes/por-nome?nome=ApiTestPaciente
-Authorization: Bearer {{token}}
 
 ### Pacientes - buscar por CPF
 GET {{baseUrl}}/pacientes/por-cpf?cpf={{criaPaciente.response.body.$.cpf}}
-Authorization: Bearer {{token}}
 
 ### Pacientes - buscar por e-mail
 GET {{baseUrl}}/pacientes/por-email?email={{criaPaciente.response.body.$.email}}
-Authorization: Bearer {{token}}
 
 ### Pacientes - buscar por id
 GET {{baseUrl}}/pacientes/{{criaPaciente.response.body.$.id}}
-Authorization: Bearer {{token}}
 
 ### Pacientes - atualizar
 PUT {{baseUrl}}/pacientes/{{criaPaciente.response.body.$.id}}
-Authorization: Bearer {{token}}
 Content-Type: {{json}}
 
 {
@@ -345,12 +226,10 @@ Content-Type: {{json}}
 
 ### Pacientes - inativar
 PATCH {{baseUrl}}/pacientes/{{criaPaciente.response.body.$.id}}/inativar
-Authorization: Bearer {{token}}
 
 ### Convênios - criar
 # @name criaConvenio
 POST {{baseUrl}}/convenios
-Authorization: Bearer {{token}}
 Content-Type: {{json}}
 
 {
@@ -364,7 +243,6 @@ Content-Type: {{json}}
 ### Convênios - criar fixture para alias de exclusão
 # @name criaConvenioAlias
 POST {{baseUrl}}/convenios
-Authorization: Bearer {{token}}
 Content-Type: {{json}}
 
 {
@@ -377,31 +255,24 @@ Content-Type: {{json}}
 
 ### Convênios - listar
 GET {{baseUrl}}/convenios
-Authorization: Bearer {{token}}
 
 ### Convênios - listar ativos
 GET {{baseUrl}}/convenios/ativos
-Authorization: Bearer {{token}}
 
 ### Convênios - buscar por id
 GET {{baseUrl}}/convenios/{{criaConvenio.response.body.$.id}}
-Authorization: Bearer {{token}}
 
 ### Convênios - buscar por nome
 GET {{baseUrl}}/convenios/por-nome?nome=ApiTestConvenio
-Authorization: Bearer {{token}}
 
 ### Convênios - buscar por CNPJ
 GET {{baseUrl}}/convenios/por-cnpj?cnpj={{criaConvenio.response.body.$.cnpj}}
-Authorization: Bearer {{token}}
 
 ### Convênios - buscar por telefone
 GET {{baseUrl}}/convenios/por-telefone?telefone={{criaConvenio.response.body.$.telefone}}
-Authorization: Bearer {{token}}
 
 ### Convênios - atualizar
 PUT {{baseUrl}}/convenios/{{criaConvenio.response.body.$.id}}
-Authorization: Bearer {{token}}
 Content-Type: {{json}}
 
 {
@@ -414,12 +285,10 @@ Content-Type: {{json}}
 
 ### Convênios - inativar
 PATCH {{baseUrl}}/convenios/{{criaConvenio.response.body.$.id}}/inativar
-Authorization: Bearer {{token}}
 
 ### Salas de atendimento - criar
 # @name criaSala
 POST {{baseUrl}}/salas-atendimento
-Authorization: Bearer {{token}}
 Content-Type: {{json}}
 
 {
@@ -432,7 +301,6 @@ Content-Type: {{json}}
 ### Salas de atendimento - criar fixture para alias de exclusão
 # @name criaSalaAlias
 POST {{baseUrl}}/salas-atendimento
-Authorization: Bearer {{token}}
 Content-Type: {{json}}
 
 {
@@ -444,23 +312,18 @@ Content-Type: {{json}}
 
 ### Salas de atendimento - listar
 GET {{baseUrl}}/salas-atendimento
-Authorization: Bearer {{token}}
 
 ### Salas de atendimento - listar ativas
 GET {{baseUrl}}/salas-atendimento/ativos
-Authorization: Bearer {{token}}
 
 ### Salas de atendimento - buscar por id
 GET {{baseUrl}}/salas-atendimento/{{criaSala.response.body.$.id}}
-Authorization: Bearer {{token}}
 
 ### Salas de atendimento - buscar por nome
 GET {{baseUrl}}/salas-atendimento/por-nome?nome=ApiTestSala
-Authorization: Bearer {{token}}
 
 ### Salas de atendimento - atualizar
 PUT {{baseUrl}}/salas-atendimento/{{criaSala.response.body.$.id}}
-Authorization: Bearer {{token}}
 Content-Type: {{json}}
 
 {
@@ -472,12 +335,10 @@ Content-Type: {{json}}
 
 ### Salas de atendimento - inativar
 PATCH {{baseUrl}}/salas-atendimento/{{criaSala.response.body.$.id}}/inativar
-Authorization: Bearer {{token}}
 
 ### Tipos de atendimento - criar
 # @name criaTipo
 POST {{baseUrl}}/tipos-atendimento
-Authorization: Bearer {{token}}
 Content-Type: {{json}}
 
 {
@@ -489,23 +350,18 @@ Content-Type: {{json}}
 
 ### Tipos de atendimento - listar
 GET {{baseUrl}}/tipos-atendimento
-Authorization: Bearer {{token}}
 
 ### Tipos de atendimento - listar ativos
 GET {{baseUrl}}/tipos-atendimento/ativos
-Authorization: Bearer {{token}}
 
 ### Tipos de atendimento - buscar por id
 GET {{baseUrl}}/tipos-atendimento/{{criaTipo.response.body.$.id}}
-Authorization: Bearer {{token}}
 
 ### Tipos de atendimento - buscar por nome
 GET {{baseUrl}}/tipos-atendimento/por-nome?nome=ApiTestTipo
-Authorization: Bearer {{token}}
 
 ### Tipos de atendimento - atualizar
 PUT {{baseUrl}}/tipos-atendimento/{{criaTipo.response.body.$.id}}
-Authorization: Bearer {{token}}
 Content-Type: {{json}}
 
 {
@@ -517,12 +373,10 @@ Content-Type: {{json}}
 
 ### Tipos de atendimento - inativar
 PATCH {{baseUrl}}/tipos-atendimento/{{criaTipo.response.body.$.id}}/inativar
-Authorization: Bearer {{token}}
 
 ### Horários disponíveis - criar
 # @name criaHorario
 POST {{baseUrl}}/horarios-disponiveis
-Authorization: Bearer {{token}}
 Content-Type: {{json}}
 
 {
@@ -535,27 +389,21 @@ Content-Type: {{json}}
 
 ### Horários disponíveis - listar
 GET {{baseUrl}}/horarios-disponiveis
-Authorization: Bearer {{token}}
 
 ### Horários disponíveis - buscar por id
 GET {{baseUrl}}/horarios-disponiveis/{{criaHorario.response.body.$.id}}
-Authorization: Bearer {{token}}
 
 ### Horários disponíveis - buscar por descrição
 GET {{baseUrl}}/horarios-disponiveis/por-descricao?termo=ApiTestDescricaoHorario
-Authorization: Bearer {{token}}
 
 ### Horários disponíveis - buscar por psicólogo
 GET {{baseUrl}}/horarios-disponiveis/por-psicologo/{{criaPsicologo.response.body.$.id}}
-Authorization: Bearer {{token}}
 
 ### Horários disponíveis - buscar por psicólogo e dia
 GET {{baseUrl}}/horarios-disponiveis/por-psicologo/{{criaPsicologo.response.body.$.id}}/dia/SEGUNDA
-Authorization: Bearer {{token}}
 
 ### Horários disponíveis - atualizar
 PUT {{baseUrl}}/horarios-disponiveis/{{criaHorario.response.body.$.id}}
-Authorization: Bearer {{token}}
 Content-Type: {{json}}
 
 {
@@ -569,7 +417,6 @@ Content-Type: {{json}}
 ### Bloqueios de agenda - criar
 # @name criaBloqueio
 POST {{baseUrl}}/bloqueios-agenda
-Authorization: Bearer {{token}}
 Content-Type: {{json}}
 
 {
@@ -582,27 +429,21 @@ Content-Type: {{json}}
 
 ### Bloqueios de agenda - listar
 GET {{baseUrl}}/bloqueios-agenda
-Authorization: Bearer {{token}}
 
 ### Bloqueios de agenda - buscar por id
 GET {{baseUrl}}/bloqueios-agenda/{{criaBloqueio.response.body.$.id}}
-Authorization: Bearer {{token}}
 
 ### Bloqueios de agenda - buscar por motivo
 GET {{baseUrl}}/bloqueios-agenda/por-motivo?termo=ApiTestFeriado
-Authorization: Bearer {{token}}
 
 ### Bloqueios de agenda - buscar por psicólogo
 GET {{baseUrl}}/bloqueios-agenda/por-psicologo/{{criaPsicologo.response.body.$.id}}
-Authorization: Bearer {{token}}
 
 ### Bloqueios de agenda - buscar por período
 GET {{baseUrl}}/bloqueios-agenda/por-periodo?inicio=2026-12-01T00:00:00&fim=2026-12-31T23:59:59
-Authorization: Bearer {{token}}
 
 ### Bloqueios de agenda - atualizar
 PUT {{baseUrl}}/bloqueios-agenda/{{criaBloqueio.response.body.$.id}}
-Authorization: Bearer {{token}}
 Content-Type: {{json}}
 
 {
@@ -616,7 +457,6 @@ Content-Type: {{json}}
 ### Agendas - criar
 # @name criaAgenda
 POST {{baseUrl}}/agendas
-Authorization: Bearer {{token}}
 Content-Type: {{json}}
 
 {
@@ -633,27 +473,21 @@ Content-Type: {{json}}
 
 ### Agendas - listar
 GET {{baseUrl}}/agendas
-Authorization: Bearer {{token}}
 
 ### Agendas - buscar por id
 GET {{baseUrl}}/agendas/{{criaAgenda.response.body.$.id}}
-Authorization: Bearer {{token}}
 
 ### Agendas - buscar por observações
 GET {{baseUrl}}/agendas/por-observacoes?termo=ApiTestPrimeiraSessao
-Authorization: Bearer {{token}}
 
 ### Agendas - dados de formulário novo
 GET {{baseUrl}}/agendas/form-data
-Authorization: Bearer {{token}}
 
 ### Agendas - dados de formulário de edição
 GET {{baseUrl}}/agendas/form-data?id={{criaAgenda.response.body.$.id}}
-Authorization: Bearer {{token}}
 
 ### Agendas - atualizar
 PUT {{baseUrl}}/agendas/{{criaAgenda.response.body.$.id}}
-Authorization: Bearer {{token}}
 Content-Type: {{json}}
 
 {
@@ -671,12 +505,10 @@ Content-Type: {{json}}
 
 ### Agendas - alterar status
 PATCH {{baseUrl}}/agendas/{{criaAgenda.response.body.$.id}}/status?status=REALIZADO
-Authorization: Bearer {{token}}
 
 ### Agendas - criar fixture para pagamento com alias de exclusão
 # @name criaAgendaAlias
 POST {{baseUrl}}/agendas
-Authorization: Bearer {{token}}
 Content-Type: {{json}}
 
 {
@@ -694,7 +526,6 @@ Content-Type: {{json}}
 ### Prontuários - criar
 # @name criaProntuario
 POST {{baseUrl}}/prontuarios
-Authorization: Bearer {{token}}
 Content-Type: {{json}}
 
 {
@@ -706,27 +537,21 @@ Content-Type: {{json}}
 
 ### Prontuários - listar
 GET {{baseUrl}}/prontuarios
-Authorization: Bearer {{token}}
 
 ### Prontuários - buscar por id
 GET {{baseUrl}}/prontuarios/{{criaProntuario.response.body.$.id}}
-Authorization: Bearer {{token}}
 
 ### Prontuários - buscar por queixa principal
 GET {{baseUrl}}/prontuarios/por-queixa-principal?termo=ApiTestAnsiedade
-Authorization: Bearer {{token}}
 
 ### Prontuários - buscar por paciente
 GET {{baseUrl}}/prontuarios/por-paciente/{{criaPaciente.response.body.$.id}}
-Authorization: Bearer {{token}}
 
 ### Prontuários - buscar por paciente e status
 GET {{baseUrl}}/prontuarios/por-paciente/{{criaPaciente.response.body.$.id}}/status/ATIVO
-Authorization: Bearer {{token}}
 
 ### Prontuários - atualizar
 PUT {{baseUrl}}/prontuarios/{{criaProntuario.response.body.$.id}}
-Authorization: Bearer {{token}}
 Content-Type: {{json}}
 
 {
@@ -739,7 +564,6 @@ Content-Type: {{json}}
 ### Evoluções clínicas - criar
 # @name criaEvolucao
 POST {{baseUrl}}/evolucoes-clinicas
-Authorization: Bearer {{token}}
 Content-Type: {{json}}
 
 {
@@ -752,31 +576,24 @@ Content-Type: {{json}}
 
 ### Evoluções clínicas - listar
 GET {{baseUrl}}/evolucoes-clinicas
-Authorization: Bearer {{token}}
 
 ### Evoluções clínicas - buscar por id
 GET {{baseUrl}}/evolucoes-clinicas/{{criaEvolucao.response.body.$.id}}
-Authorization: Bearer {{token}}
 
 ### Evoluções clínicas - buscar por descrição
 GET {{baseUrl}}/evolucoes-clinicas/por-descricao?termo=ApiTestPaciente
-Authorization: Bearer {{token}}
 
 ### Evoluções clínicas - buscar por prontuário
 GET {{baseUrl}}/evolucoes-clinicas/por-prontuario/{{criaProntuario.response.body.$.id}}
-Authorization: Bearer {{token}}
 
 ### Evoluções clínicas - buscar por psicólogo
 GET {{baseUrl}}/evolucoes-clinicas/por-psicologo/{{criaPsicologo.response.body.$.id}}
-Authorization: Bearer {{token}}
 
 ### Evoluções clínicas - buscar por agenda
 GET {{baseUrl}}/evolucoes-clinicas/por-agenda/{{criaAgenda.response.body.$.id}}
-Authorization: Bearer {{token}}
 
 ### Evoluções clínicas - atualizar
 PUT {{baseUrl}}/evolucoes-clinicas/{{criaEvolucao.response.body.$.id}}
-Authorization: Bearer {{token}}
 Content-Type: {{json}}
 
 {
@@ -790,7 +607,6 @@ Content-Type: {{json}}
 ### Pagamentos - criar
 # @name criaPagamento
 POST {{baseUrl}}/pagamentos
-Authorization: Bearer {{token}}
 Content-Type: {{json}}
 
 {
@@ -808,7 +624,6 @@ Content-Type: {{json}}
 ### Pagamentos - criar fixture para alias de exclusão
 # @name criaPagamentoAlias
 POST {{baseUrl}}/pagamentos
-Authorization: Bearer {{token}}
 Content-Type: {{json}}
 
 {
@@ -825,35 +640,27 @@ Content-Type: {{json}}
 
 ### Pagamentos - listar
 GET {{baseUrl}}/pagamentos
-Authorization: Bearer {{token}}
 
 ### Pagamentos - buscar por id
 GET {{baseUrl}}/pagamentos/{{criaPagamento.response.body.$.id}}
-Authorization: Bearer {{token}}
 
 ### Pagamentos - buscar por agenda
 GET {{baseUrl}}/pagamentos/por-agenda/{{criaAgenda.response.body.$.id}}
-Authorization: Bearer {{token}}
 
 ### Pagamentos - buscar por paciente
 GET {{baseUrl}}/pagamentos/por-paciente/{{criaPaciente.response.body.$.id}}
-Authorization: Bearer {{token}}
 
 ### Pagamentos - buscar por convênio
 GET {{baseUrl}}/pagamentos/por-convenio/{{criaConvenio.response.body.$.id}}
-Authorization: Bearer {{token}}
 
 ### Pagamentos - buscar por status
 GET {{baseUrl}}/pagamentos/por-status/PENDENTE
-Authorization: Bearer {{token}}
 
 ### Pagamentos - buscar por forma de pagamento
 GET {{baseUrl}}/pagamentos/por-forma-pagamento?termo=PIX
-Authorization: Bearer {{token}}
 
 ### Pagamentos - atualizar
 PUT {{baseUrl}}/pagamentos/{{criaPagamento.response.body.$.id}}
-Authorization: Bearer {{token}}
 Content-Type: {{json}}
 
 {
@@ -870,96 +677,72 @@ Content-Type: {{json}}
 
 ### Limpeza - pagamento
 DELETE {{baseUrl}}/pagamentos/{{criaPagamento.response.body.$.id}}
-Authorization: Bearer {{token}}
 
 ### Limpeza - pagamento pelo alias DELETE
 DELETE {{baseUrl}}/pagamentos/destroy/{{criaPagamentoAlias.response.body.$.id}}
-Authorization: Bearer {{token}}
 
 ### Limpeza - evolução clínica (inativar)
 DELETE {{baseUrl}}/evolucoes-clinicas/{{criaEvolucao.response.body.$.id}}
-Authorization: Bearer {{token}}
 
 ### Limpeza - evolução clínica (excluir permanentemente)
 DELETE {{baseUrl}}/evolucoes-clinicas/destroy/{{criaEvolucao.response.body.$.id}}
-Authorization: Bearer {{token}}
 
 ### Limpeza - prontuário (inativar)
 DELETE {{baseUrl}}/prontuarios/{{criaProntuario.response.body.$.id}}
-Authorization: Bearer {{token}}
 
 ### Limpeza - prontuário (excluir permanentemente)
 DELETE {{baseUrl}}/prontuarios/destroy/{{criaProntuario.response.body.$.id}}
-Authorization: Bearer {{token}}
 
 ### Limpeza - agenda (inativar)
 DELETE {{baseUrl}}/agendas/{{criaAgenda.response.body.$.id}}
-Authorization: Bearer {{token}}
 
 ### Limpeza - agenda (excluir permanentemente)
 DELETE {{baseUrl}}/agendas/destroy/{{criaAgenda.response.body.$.id}}
-Authorization: Bearer {{token}}
 
 ### Limpeza - agenda adicional
 DELETE {{baseUrl}}/agendas/destroy/{{criaAgendaAlias.response.body.$.id}}
-Authorization: Bearer {{token}}
 
 ### Limpeza - bloqueio de agenda (inativar)
 DELETE {{baseUrl}}/bloqueios-agenda/{{criaBloqueio.response.body.$.id}}
-Authorization: Bearer {{token}}
 
 ### Limpeza - bloqueio de agenda (excluir permanentemente)
 DELETE {{baseUrl}}/bloqueios-agenda/destroy/{{criaBloqueio.response.body.$.id}}
-Authorization: Bearer {{token}}
 
 ### Limpeza - horário disponível (inativar)
 DELETE {{baseUrl}}/horarios-disponiveis/{{criaHorario.response.body.$.id}}
-Authorization: Bearer {{token}}
 
 ### Limpeza - horário disponível (excluir permanentemente)
 DELETE {{baseUrl}}/horarios-disponiveis/destroy/{{criaHorario.response.body.$.id}}
-Authorization: Bearer {{token}}
 
 ### Limpeza - tipo de atendimento
 DELETE {{baseUrl}}/tipos-atendimento/{{criaTipo.response.body.$.id}}
-Authorization: Bearer {{token}}
 
 ### Limpeza - sala de atendimento
 DELETE {{baseUrl}}/salas-atendimento/{{criaSala.response.body.$.id}}
-Authorization: Bearer {{token}}
 
 ### Limpeza - sala pelo alias DELETE
 DELETE {{baseUrl}}/salas-atendimento/destroy/{{criaSalaAlias.response.body.$.id}}
-Authorization: Bearer {{token}}
 
 ### Limpeza - convênio
 DELETE {{baseUrl}}/convenios/{{criaConvenio.response.body.$.id}}
-Authorization: Bearer {{token}}
 
 ### Limpeza - convênio pelo alias DELETE
 DELETE {{baseUrl}}/convenios/destroy/{{criaConvenioAlias.response.body.$.id}}
-Authorization: Bearer {{token}}
 
 ### Limpeza - paciente
 DELETE {{baseUrl}}/pacientes/{{criaPaciente.response.body.$.id}}
-Authorization: Bearer {{token}}
 
 ### Limpeza - paciente pelo alias DELETE
 DELETE {{baseUrl}}/pacientes/destroy/{{criaPacienteAlias.response.body.$.id}}
-Authorization: Bearer {{token}}
 
 ### Limpeza - recepcionista
 DELETE {{baseUrl}}/recepcionistas/{{criaRecepcionista.response.body.$.id}}
-Authorization: Bearer {{token}}
 
 ### Limpeza - funcionário
 DELETE {{baseUrl}}/funcionarios/{{criaFuncionario.response.body.$.id}}
-Authorization: Bearer {{token}}
 
 ### Limpeza - funcionário pelo alias DELETE
 DELETE {{baseUrl}}/funcionarios/destroy/{{criaFuncionarioAlias.response.body.$.id}}
-Authorization: Bearer {{token}}
 
 ### Limpeza - psicólogo
 DELETE {{baseUrl}}/psicologos/{{criaPsicologo.response.body.$.id}}
-Authorization: Bearer {{token}}
