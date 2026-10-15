@@ -16,10 +16,9 @@ Os integrantes estão identificados pelo usuário do GitHub; substitua pelo nome
 | agostinho58| Agostinho Benigno Monteiro Gutierrez | Agenda, BloqueioAgenda |
 | Dalvinha75 |  Lindalva Carlos da Silva | Prontuario, SalaAtendimento |
 | Eduardajs3 | Eduarda Josileide da Silva | Paciente, HorarioDisponivel, Pagamento |
-| Hush9K |Afonso Rocha Sprocatti | Funcionario (autenticação), Convenio, EvolucaoClinica |
-| karyanpierrot | Westes Mesquita da Silva Oliveira | Psicologo, Recepcionista, TipoAtendimento, enums de domínio e tratamento global de exceções |
-| westes.mso | Westes Mesquita da Silva Oliveira | Contribuições gerais (configuração e documentação) |
-(karyanpierrot e westes.mso são perfis do mesmo usuário, essa mudança ocorre por diferença de máquinas usadas pro desenvolvimento)
+| Hush9K |Afonso Rocha Sprocatti | Funcionario, Convenio, EvolucaoClinica |
+| westes.mso | Westes Mesquita da Silva Oliveira | Psicologo, Recepcionista, TipoAtendimento, contribuições gerais (autenticação, configuração e documentação) |
+
 ## O que a aplicação faz
 
 O Psi Clin é um sistema de gestão de clínicas de psicologia. Ele centraliza o cadastro de pacientes, psicólogos, funcionários e recepcionistas, a agenda de atendimentos (horários disponíveis, bloqueios, salas e tipos de atendimento), convênios, prontuários com evoluções clínicas e o controle de pagamentos.
