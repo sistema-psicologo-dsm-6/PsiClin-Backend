@@ -14,9 +14,9 @@ Os integrantes estão identificados pelo usuário do GitHub; substitua pelo nome
 | Integrante (GitHub) | Nomes dos usuários | Entidades |
 | --- | --- | --- |
 | agostinho58| Agostinho Benigno Monteiro Gutierrez | Agenda, BloqueioAgenda |
-| Dalvinha75 | Afonso Rocha Sprocatti | Prontuario, SalaAtendimento |
+| Dalvinha75 |  Lindalva Carlos da Silva | Prontuario, SalaAtendimento |
 | Eduardajs3 | Eduarda Josileide da Silva | Paciente, HorarioDisponivel, Pagamento |
-| Hush9K | Lindalva Carlos da Silva | Funcionario (autenticação), Convenio, EvolucaoClinica |
+| Hush9K |Afonso Rocha Sprocatti | Funcionario (autenticação), Convenio, EvolucaoClinica |
 | karyanpierrot | Westes Mesquita da Silva Oliveira | Psicologo, Recepcionista, TipoAtendimento, enums de domínio e tratamento global de exceções |
 | westes.mso | Westes Mesquita da Silva Oliveira | Contribuições gerais (configuração e documentação) |
 (karyanpierrot e westes.mso são perfis do mesmo usuário, essa mudança ocorre por diferença de máquinas usadas pro desenvolvimento)
