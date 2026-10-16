@@ -5,7 +5,7 @@
 - **Projeto:** Psi Clin (backend: `PsiClin-Backend`)
 - **Grupo:** Agostinho Benigno Monteiro Gutierrez, Afonso Rocha Sprocatti, Eduarda Josileide da Silva, Lindalva Carlos da Silva, Westes Mesquita da Silva Oliveira
 - **Repositório do backend:** https://github.com/sistema-psicologo-dsm-6/PsiClin-Backend
-- **Repositório do frontend:** https://github.com/sistema-psicologo-dsm-6/Psi_Clin_Front
+- **Repositório do frontend:** [https://github.com/sistema-psicologo-dsm-6/PsiClinFrontend](https://github.com/sistema-psicologo-dsm-6/PsiClin_Frontend.git)
 
 ## Integrantes e entidades sob responsabilidade
 
