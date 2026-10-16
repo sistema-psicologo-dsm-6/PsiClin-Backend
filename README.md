@@ -9,8 +9,6 @@
 
 ## Integrantes e entidades sob responsabilidade
 
-Os integrantes estão identificados pelo usuário do GitHub; substitua pelo nome completo se desejar. A divisão segue o histórico de commits do repositório.
-
 | Integrante (GitHub) | Nomes dos usuários | Entidades |
 | --- | --- | --- |
 | agostinho58| Agostinho Benigno Monteiro Gutierrez | Agenda, BloqueioAgenda |
@@ -46,9 +44,6 @@ Problemas que resolve e melhorias que traz:
 | Segurança (JWT, roles) | `security/` |
 | Configuração e recursos | `src/main/resources/` |
 
-### Frontend
-
-O frontend consome esta API REST e fica em repositório próprio (link acima).
 
 ## Instalação, execução e acesso
 
