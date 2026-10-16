@@ -172,8 +172,12 @@ A aplicação não inicia sem `JWT_SECRET`. Gere uma chave aleatória e cole no 
 PowerShell (Windows):
 
 ```powershell
-$b = New-Object byte[] 48; [Security.Cryptography.RandomNumberGenerator]::Fill($b); [Convert]::ToBase64String($b)
-```
+$bytes = New-Object byte[] 48
+   $rng = [Security.Cryptography.RandomNumberGenerator]::Create()
+   $rng.GetBytes($bytes)
+   $rng.Dispose()
+   [Convert]::ToBase64String($bytes)
+  ```
 
 Linux/macOS/Git Bash:
 
