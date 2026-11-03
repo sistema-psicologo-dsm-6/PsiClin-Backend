@@ -4,6 +4,7 @@ plugins {
     kotlin("jvm") version "2.3.21"
     kotlin("plugin.spring") version "2.3.21"
     kotlin("plugin.jpa") version "2.3.21"
+    id("jacoco")
 }
 
 group = "com.edu"
@@ -53,4 +54,14 @@ allOpen {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+    finalizedBy(tasks.jacocoTestReport)
+}
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test)
+    reports {
+        xml.required.set(true)
+        html.required.set(true)
+        csv.required.set(false)
+    }
 }
