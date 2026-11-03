@@ -138,6 +138,91 @@ class AgendaServiceTest {
     }
 
     @Test
+    fun `rejects invalid duration before querying repositories`() {
+        assertFailsWith<IllegalArgumentException> {
+            service.listarHorariosDisponiveis(2, LocalDate.of(2026, 11, 3), 0)
+        }
+        Mockito.verifyNoInteractions(psicologoRepository)
+    }
+
+    @Test
+    fun `rejects availability query for unknown psychologist`() {
+        Mockito.`when`(psicologoRepository.findById(2))
+            .thenReturn(Optional.empty())
+
+        assertFailsWith<NoSuchElementException> {
+            service.listarHorariosDisponiveis(2, LocalDate.of(2026, 11, 3), 60)
+        }
+    }
+
+    @Test
+    fun `returns no available times when psychologist has no weekly schedule`() {
+        Mockito.`when`(psicologoRepository.findById(2))
+            .thenReturn(Optional.of(psicologo))
+        Mockito.`when`(
+            horarioRepository.findByPsicologoIdAndDiaSemana(2, DiaSemana.TERCA)
+        ).thenReturn(emptyList())
+        Mockito.`when`(agendaRepository.findByPsicologoId(2)).thenReturn(emptyList())
+        Mockito.`when`(bloqueioRepository.findByPsicologoIdAndAtivoTrue(2))
+            .thenReturn(emptyList())
+
+        assertEquals(
+            emptyList(),
+            service.listarHorariosDisponiveis(2, LocalDate.of(2026, 11, 3), 60)
+        )
+    }
+
+    @Test
+    fun `lists all agendas mapped to response`() {
+        val agenda = agenda(
+            LocalDateTime.of(2026, 11, 3, 10, 0),
+            LocalDateTime.of(2026, 11, 3, 11, 0),
+            AgendaStatus.AGENDADO
+        )
+        val response = resposta(requisicao())
+        Mockito.`when`(agendaRepository.findAll()).thenReturn(listOf(agenda))
+        Mockito.`when`(agendaMapper.toResponse(agenda)).thenReturn(response)
+
+        assertEquals(listOf(response), service.listarTodos())
+    }
+
+    @Test
+    fun `finds agenda by id and maps response`() {
+        val agenda = agenda(
+            LocalDateTime.of(2026, 11, 3, 10, 0),
+            LocalDateTime.of(2026, 11, 3, 11, 0),
+            AgendaStatus.AGENDADO
+        )
+        val response = resposta(requisicao())
+        Mockito.`when`(agendaRepository.findById(100L)).thenReturn(Optional.of(agenda))
+        Mockito.`when`(agendaMapper.toResponse(agenda)).thenReturn(response)
+
+        assertSame(response, service.buscarPorId(100L))
+    }
+
+    @Test
+    fun `rejects lookup for missing agenda`() {
+        Mockito.`when`(agendaRepository.findById(404L)).thenReturn(Optional.empty())
+
+        assertFailsWith<NoSuchElementException> { service.buscarPorId(404L) }
+    }
+
+    @Test
+    fun `searches agendas by observations and maps responses`() {
+        val agenda = agenda(
+            LocalDateTime.of(2026, 11, 3, 10, 0),
+            LocalDateTime.of(2026, 11, 3, 11, 0),
+            AgendaStatus.AGENDADO
+        )
+        val response = resposta(requisicao())
+        Mockito.`when`(agendaRepository.buscarPorObservacoes("retorno"))
+            .thenReturn(listOf(agenda))
+        Mockito.`when`(agendaMapper.toResponse(agenda)).thenReturn(response)
+
+        assertEquals(listOf(response), service.buscarPorObservacoes("retorno"))
+    }
+
+    @Test
     fun `saves agenda when selected slot is available`() {
         val dto = requisicao()
         prepararRelacionamentos(dto)
@@ -223,6 +308,157 @@ class AgendaServiceTest {
 
         assertFailsWith<NoSuchElementException> { service.salvar(dto) }
         Mockito.verify(agendaRepository, Mockito.never()).save(Mockito.any())
+    }
+
+    @Test
+    fun `rejects request when psychologist does not exist`() {
+        val dto = requisicao()
+        prepararRelacionamentos(dto)
+        Mockito.`when`(psicologoRepository.findById(dto.psicologoId))
+            .thenReturn(Optional.empty())
+
+        assertFailsWith<NoSuchElementException> { service.salvar(dto) }
+        Mockito.verify(agendaRepository, Mockito.never()).save(Mockito.any())
+    }
+
+    @Test
+    fun `rejects request when appointment type does not exist`() {
+        val dto = requisicao()
+        prepararRelacionamentos(dto)
+        Mockito.`when`(tipoAtendimentoRepository.findById(dto.tipoAtendimentoId))
+            .thenReturn(Optional.empty())
+
+        assertFailsWith<NoSuchElementException> { service.salvar(dto) }
+        Mockito.verify(agendaRepository, Mockito.never()).save(Mockito.any())
+    }
+
+    @Test
+    fun `rejects request when room does not exist`() {
+        val dto = requisicao()
+        prepararRelacionamentos(dto)
+        Mockito.`when`(salaRepository.findById(dto.salaId)).thenReturn(Optional.empty())
+
+        assertFailsWith<NoSuchElementException> { service.salvar(dto) }
+        Mockito.verify(agendaRepository, Mockito.never()).save(Mockito.any())
+    }
+
+    @Test
+    fun `rejects request when insurance plan does not exist`() {
+        val dto = requisicao()
+        prepararRelacionamentos(dto)
+        Mockito.`when`(convenioRepository.findById(dto.convenioId))
+            .thenReturn(Optional.empty())
+
+        assertFailsWith<NoSuchElementException> { service.salvar(dto) }
+        Mockito.verify(agendaRepository, Mockito.never()).save(Mockito.any())
+    }
+
+    @Test
+    fun `rejects appointment that ends on another day`() {
+        val dto = requisicao(
+            inicio = LocalDateTime.of(2026, 11, 3, 23, 30),
+            fim = LocalDateTime.of(2026, 11, 4, 0, 30)
+        )
+        prepararRelacionamentos(dto)
+
+        assertFailsWith<IllegalArgumentException> { service.salvar(dto) }
+        Mockito.verify(agendaRepository, Mockito.never()).save(Mockito.any())
+    }
+
+    @Test
+    fun `updates an existing agenda and returns mapped response`() {
+        val id = 100L
+        val dto = requisicao(fim = LocalDateTime.of(2026, 11, 3, 11, 30))
+        val existing = agenda(
+            LocalDateTime.of(2026, 11, 3, 9, 0),
+            LocalDateTime.of(2026, 11, 3, 10, 0),
+            AgendaStatus.AGENDADO
+        )
+        val response = resposta(dto)
+        Mockito.`when`(agendaRepository.findById(id)).thenReturn(Optional.of(existing))
+        prepararRelacionamentos(
+            dto,
+            agendasPsicologo = listOf(existing),
+            agendasSala = listOf(existing)
+        )
+        Mockito.`when`(agendaRepository.save(existing)).thenReturn(existing)
+        Mockito.`when`(agendaMapper.toResponse(existing)).thenReturn(response)
+
+        assertSame(response, service.atualizar(id, dto))
+        assertEquals(dto.dataHoraInicio, existing.dataHoraInicio)
+        assertEquals(dto.dataHoraFim, existing.dataHoraFim)
+        assertEquals(dto.status, existing.status)
+    }
+
+    @Test
+    fun `rejects update for missing agenda`() {
+        Mockito.`when`(agendaRepository.findById(404L)).thenReturn(Optional.empty())
+
+        assertFailsWith<NoSuchElementException> { service.atualizar(404L, requisicao()) }
+    }
+
+    @Test
+    fun `changes agenda status`() {
+        val agenda = agenda(
+            LocalDateTime.of(2026, 11, 3, 10, 0),
+            LocalDateTime.of(2026, 11, 3, 11, 0),
+            AgendaStatus.AGENDADO
+        )
+        val response = resposta(requisicao()).copy(status = AgendaStatus.CONFIRMADO)
+        Mockito.`when`(agendaRepository.findById(100L)).thenReturn(Optional.of(agenda))
+        Mockito.`when`(agendaRepository.save(agenda)).thenReturn(agenda)
+        Mockito.`when`(agendaMapper.toResponse(agenda)).thenReturn(response)
+
+        assertSame(response, service.atualizarStatus(100L, AgendaStatus.CONFIRMADO))
+        assertEquals(AgendaStatus.CONFIRMADO, agenda.status)
+    }
+
+    @Test
+    fun `rejects status change for missing agenda`() {
+        Mockito.`when`(agendaRepository.findById(404L)).thenReturn(Optional.empty())
+
+        assertFailsWith<NoSuchElementException> {
+            service.atualizarStatus(404L, AgendaStatus.CONFIRMADO)
+        }
+    }
+
+    @Test
+    fun `soft deletes an agenda`() {
+        val agenda = agenda(
+            LocalDateTime.of(2026, 11, 3, 10, 0),
+            LocalDateTime.of(2026, 11, 3, 11, 0),
+            AgendaStatus.AGENDADO
+        )
+        Mockito.`when`(agendaRepository.findById(100L)).thenReturn(Optional.of(agenda))
+        Mockito.`when`(agendaRepository.save(agenda)).thenReturn(agenda)
+
+        service.deletar(100L)
+
+        assertEquals(false, agenda.ativo)
+        Mockito.verify(agendaRepository).save(agenda)
+    }
+
+    @Test
+    fun `rejects soft delete for missing agenda`() {
+        Mockito.`when`(agendaRepository.findById(404L)).thenReturn(Optional.empty())
+
+        assertFailsWith<NoSuchElementException> { service.deletar(404L) }
+    }
+
+    @Test
+    fun `permanently deletes existing agenda`() {
+        Mockito.`when`(agendaRepository.excluirPermanentementePorId(100L)).thenReturn(1)
+
+        service.excluirPermanentemente(100L)
+
+        Mockito.verify(agendaRepository).excluirPermanentementePorId(100L)
+    }
+
+    @Test
+    fun `rejects permanent deletion when agenda does not exist`() {
+        Mockito.`when`(agendaRepository.excluirPermanentementePorId(404L)).thenReturn(0)
+
+        assertFailsWith<NoSuchElementException> { service.excluirPermanentemente(404L) }
     }
 
     private fun prepararRelacionamentos(
