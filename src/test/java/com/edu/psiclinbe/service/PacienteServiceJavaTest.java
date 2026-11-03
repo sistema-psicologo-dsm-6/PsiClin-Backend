@@ -1,21 +1,21 @@
 package com.edu.psiclinbe.service;
 
-import com.edu.psiclinbe.dto.request.PacienteDtoRequest;
-import com.edu.psiclinbe.dto.response.PacienteDtoResponse;
-import com.edu.psiclinbe.mapper.PacienteMapper;
-import com.edu.psiclinbe.model.Paciente;
-import com.edu.psiclinbe.repository.PacienteRepository;
-import org.junit.jupiter.api.Test;
-
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.Test;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+import com.edu.psiclinbe.dto.request.PacienteDtoRequest;
+import com.edu.psiclinbe.dto.response.PacienteDtoResponse;
+import com.edu.psiclinbe.mapper.PacienteMapper;
+import com.edu.psiclinbe.model.Paciente;
+import com.edu.psiclinbe.repository.PacienteRepository;
 
 class PacienteServiceJavaTest {
     private final PacienteRepository repository = mock(PacienteRepository.class);

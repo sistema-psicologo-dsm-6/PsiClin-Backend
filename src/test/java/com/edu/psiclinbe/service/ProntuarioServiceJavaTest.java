@@ -1,5 +1,17 @@
 package com.edu.psiclinbe.service;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.Test;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.edu.psiclinbe.dto.request.ProntuarioDtoRequest;
 import com.edu.psiclinbe.dto.response.ProntuarioDtoResponse;
 import com.edu.psiclinbe.mapper.ProntuarioMapper;
@@ -8,18 +20,6 @@ import com.edu.psiclinbe.model.Prontuario;
 import com.edu.psiclinbe.model.enums.ProntuarioStatus;
 import com.edu.psiclinbe.repository.PacienteRepository;
 import com.edu.psiclinbe.repository.ProntuarioRepository;
-import org.junit.jupiter.api.Test;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.verify;
 
 class ProntuarioServiceJavaTest {
     private final ProntuarioRepository repository = mock(ProntuarioRepository.class);

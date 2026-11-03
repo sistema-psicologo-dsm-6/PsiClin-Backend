@@ -1,5 +1,17 @@
 package com.edu.psiclinbe.service;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.Test;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.edu.psiclinbe.dto.request.PagamentoDtoRequest;
 import com.edu.psiclinbe.dto.response.PagamentoDtoResponse;
 import com.edu.psiclinbe.mapper.PagamentoMapper;
@@ -12,18 +24,6 @@ import com.edu.psiclinbe.repository.AgendaRepository;
 import com.edu.psiclinbe.repository.ConvenioRepository;
 import com.edu.psiclinbe.repository.PacienteRepository;
 import com.edu.psiclinbe.repository.PagamentoRepository;
-import org.junit.jupiter.api.Test;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.verify;
 
 class PagamentoServiceJavaTest {
     private final PagamentoRepository repository = mock(PagamentoRepository.class);

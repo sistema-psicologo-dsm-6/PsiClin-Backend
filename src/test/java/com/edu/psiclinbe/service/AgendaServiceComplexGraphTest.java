@@ -67,12 +67,15 @@ class AgendaServiceComplexGraphTest {
     void rejectsInvalidDurationAndUnknownPsychologist() {
         LocalDate date = LocalDate.of(2026, 11, 3);
 
-        assertThrows(IllegalArgumentException.class, () ->
+        IllegalArgumentException invalidDuration = assertThrows(IllegalArgumentException.class, () ->
                 fixture.listarHorariosDisponiveis(
                         date, 0, true, List.of(), List.of(), List.of()));
-        assertThrows(NoSuchElementException.class, () ->
+        assertEquals("Duração inválida", invalidDuration.getMessage());
+
+        NoSuchElementException missingPsychologist = assertThrows(NoSuchElementException.class, () ->
                 fixture.listarHorariosDisponiveis(
                         date, 60, false, List.of(), List.of(), List.of()));
+        assertEquals("Psicólogo não encontrado", missingPsychologist.getMessage());
     }
 }
 

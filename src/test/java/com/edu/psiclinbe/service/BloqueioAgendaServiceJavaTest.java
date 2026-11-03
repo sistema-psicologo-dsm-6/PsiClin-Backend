@@ -1,5 +1,17 @@
 package com.edu.psiclinbe.service;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.Test;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.edu.psiclinbe.dto.request.BloqueioAgendaDtoRequest;
 import com.edu.psiclinbe.dto.response.BloqueioAgendaDtoResponse;
 import com.edu.psiclinbe.mapper.BloqueioAgendaMapper;
@@ -8,18 +20,6 @@ import com.edu.psiclinbe.model.Psicologo;
 import com.edu.psiclinbe.repository.BloqueioAgendaRepository;
 import com.edu.psiclinbe.repository.PsicologoRepository;
 import com.edu.psiclinbe.validation.ValidarDataInicioFim;
-import org.junit.jupiter.api.Test;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.verify;
 
 class BloqueioAgendaServiceJavaTest {
     private final BloqueioAgendaRepository repository = mock(BloqueioAgendaRepository.class);

@@ -1,22 +1,22 @@
 package com.edu.psiclinbe.service;
 
-import com.edu.psiclinbe.dto.request.ConvenioDtoRequest;
-import com.edu.psiclinbe.dto.response.ConvenioDtoResponse;
-import com.edu.psiclinbe.mapper.ConvenioMapper;
-import com.edu.psiclinbe.model.Convenio;
-import com.edu.psiclinbe.repository.ConvenioRepository;
-import org.junit.jupiter.api.Test;
-
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.Test;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import com.edu.psiclinbe.dto.request.ConvenioDtoRequest;
+import com.edu.psiclinbe.dto.response.ConvenioDtoResponse;
+import com.edu.psiclinbe.mapper.ConvenioMapper;
+import com.edu.psiclinbe.model.Convenio;
+import com.edu.psiclinbe.repository.ConvenioRepository;
 
 class ConvenioServiceJavaTest {
     private final ConvenioRepository repository = mock(ConvenioRepository.class);

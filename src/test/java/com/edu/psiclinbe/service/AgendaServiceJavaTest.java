@@ -1,5 +1,16 @@
 package com.edu.psiclinbe.service;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.Test;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import com.edu.psiclinbe.mapper.AgendaMapper;
 import com.edu.psiclinbe.model.HorarioDisponivel;
 import com.edu.psiclinbe.model.Psicologo;
@@ -13,17 +24,6 @@ import com.edu.psiclinbe.repository.PsicologoRepository;
 import com.edu.psiclinbe.repository.SalaAtendimentoRepository;
 import com.edu.psiclinbe.repository.TipoAtendimentoRepository;
 import com.edu.psiclinbe.validation.ValidarDataInicioFim;
-import org.junit.jupiter.api.Test;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class AgendaServiceJavaTest {
     private final AgendaRepository agendaRepository = mock(AgendaRepository.class);

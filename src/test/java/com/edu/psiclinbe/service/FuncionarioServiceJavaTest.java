@@ -1,24 +1,24 @@
 package com.edu.psiclinbe.service;
 
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.Test;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.server.ResponseStatusException;
+
 import com.edu.psiclinbe.dto.request.FuncionarioDtoRequest;
 import com.edu.psiclinbe.dto.response.FuncionarioDtoResponse;
 import com.edu.psiclinbe.mapper.FuncionarioMapper;
 import com.edu.psiclinbe.model.Funcionario;
 import com.edu.psiclinbe.model.enums.Role;
 import com.edu.psiclinbe.repository.FuncionarioRepository;
-import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.server.ResponseStatusException;
-
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class FuncionarioServiceJavaTest {
     private final FuncionarioRepository repository = mock(FuncionarioRepository.class);

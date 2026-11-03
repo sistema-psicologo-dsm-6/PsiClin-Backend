@@ -1,20 +1,21 @@
 package com.edu.psiclinbe.model;
 
-import com.edu.psiclinbe.model.enums.AgendaStatus;
-import com.edu.psiclinbe.model.enums.DiaSemana;
-import com.edu.psiclinbe.model.enums.PagamentoStatus;
-import com.edu.psiclinbe.model.enums.ProntuarioStatus;
-import com.edu.psiclinbe.model.enums.Role;
-import jakarta.validation.Validation;
-import jakarta.validation.Validator;
-import org.junit.jupiter.api.Test;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
 import static org.mockito.Mockito.mock;
+
+import com.edu.psiclinbe.model.enums.AgendaStatus;
+import com.edu.psiclinbe.model.enums.DiaSemana;
+import com.edu.psiclinbe.model.enums.PagamentoStatus;
+import com.edu.psiclinbe.model.enums.ProntuarioStatus;
+import com.edu.psiclinbe.model.enums.Role;
+
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
 
 class DomainEntityValidationJavaTest {
     private final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();

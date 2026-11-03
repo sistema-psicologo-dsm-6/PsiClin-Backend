@@ -1,21 +1,21 @@
 package com.edu.psiclinbe.service;
 
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.Test;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.edu.psiclinbe.dto.request.SalaAtendimentoDtoRequest;
 import com.edu.psiclinbe.dto.response.SalaAtendimentoDtoResponse;
 import com.edu.psiclinbe.mapper.SalaAtendimentoMapper;
 import com.edu.psiclinbe.model.SalaAtendimento;
 import com.edu.psiclinbe.repository.SalaAtendimentoRepository;
-import org.junit.jupiter.api.Test;
-
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 class SalaAtendimentoServiceJavaTest {
     private final SalaAtendimentoRepository repository = mock(SalaAtendimentoRepository.class);

@@ -1,5 +1,14 @@
 package com.edu.psiclinbe.validation;
 
+import java.time.LocalDateTime;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.Test;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import com.edu.psiclinbe.dto.request.AgendaDtoRequest;
 import com.edu.psiclinbe.model.Convenio;
 import com.edu.psiclinbe.model.Paciente;
@@ -12,15 +21,6 @@ import com.edu.psiclinbe.repository.PacienteRepository;
 import com.edu.psiclinbe.repository.PsicologoRepository;
 import com.edu.psiclinbe.repository.SalaAtendimentoRepository;
 import com.edu.psiclinbe.repository.TipoAtendimentoRepository;
-import org.junit.jupiter.api.Test;
-
-import java.time.LocalDateTime;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class AgendaBuscarRelacionamentosValidateJavaTest {
     private final PacienteRepository patientRepository = mock(PacienteRepository.class);

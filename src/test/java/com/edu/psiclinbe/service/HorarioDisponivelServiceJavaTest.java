@@ -1,5 +1,17 @@
 package com.edu.psiclinbe.service;
 
+import java.time.LocalTime;
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.Test;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.edu.psiclinbe.dto.request.HorarioDisponivelDtoRequest;
 import com.edu.psiclinbe.dto.response.HorarioDisponivelDtoResponse;
 import com.edu.psiclinbe.mapper.HorarioDisponivelMapper;
@@ -9,18 +21,6 @@ import com.edu.psiclinbe.model.enums.DiaSemana;
 import com.edu.psiclinbe.repository.HorarioDisponivelRepository;
 import com.edu.psiclinbe.repository.PsicologoRepository;
 import com.edu.psiclinbe.validation.ValidarDataInicioFim;
-import org.junit.jupiter.api.Test;
-
-import java.time.LocalTime;
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 class HorarioDisponivelServiceJavaTest {
     private final HorarioDisponivelRepository repository = mock(HorarioDisponivelRepository.class);
