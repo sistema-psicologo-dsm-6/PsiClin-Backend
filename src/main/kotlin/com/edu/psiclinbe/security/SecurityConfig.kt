@@ -71,56 +71,56 @@ class SecurityConfig(
 
                 it.requestMatchers("/auth/signin", "/auth/signup").permitAll()
 
-                // // Somente ADMIN gerencia usuários
-                // it.requestMatchers("/funcionarios/**").hasRole(admin)
+                 // Somente ADMIN gerencia usuários
+                 it.requestMatchers("/funcionarios/**").hasRole(admin)
 
-                // // Equipe: leitura para todos, escrita só ADMIN
-                // it.requestMatchers(HttpMethod.GET, "/psicologos/**")
-                //     .hasAnyRole(admin, recep, psi)
-                // it.requestMatchers("/psicologos/**").hasRole(admin)
-                // it.requestMatchers(HttpMethod.GET, "/recepcionistas/**")
-                //     .hasAnyRole(admin, recep)
-                // it.requestMatchers("/recepcionistas/**").hasRole(admin)
+                 // Equipe: leitura para todos, escrita só ADMIN
+                 it.requestMatchers(HttpMethod.GET, "/psicologos/**")
+                     .hasAnyRole(admin, recep, psi)
+                 it.requestMatchers("/psicologos/**").hasRole(admin)
+                 it.requestMatchers(HttpMethod.GET, "/recepcionistas/**")
+                     .hasAnyRole(admin, recep)
+                 it.requestMatchers("/recepcionistas/**").hasRole(admin)
 
-                // // Área clínica: ADMIN e PSICOLOGO
-                // it.requestMatchers("/prontuarios/**", "/evolucoes-clinicas/**")
-                //     .hasAnyRole(admin, psi)
+                 // Área clínica: ADMIN e PSICOLOGO
+                 it.requestMatchers("/prontuarios/**", "/evolucoes-clinicas/**")
+                     .hasAnyRole(admin, psi)
 
-                // // Disponibilidade: PSICOLOGO edita, RECEPCIONISTA consulta
-                // it.requestMatchers(
-                //     HttpMethod.GET,
-                //     "/horarios-disponiveis/**",
-                //     "/bloqueios-agenda/**"
-                // ).hasAnyRole(admin, recep, psi)
-                // it.requestMatchers(
-                //     "/horarios-disponiveis/**",
-                //     "/bloqueios-agenda/**"
-                // ).hasAnyRole(admin, psi)
+                 // Disponibilidade: PSICOLOGO edita, RECEPCIONISTA consulta
+                 it.requestMatchers(
+                     HttpMethod.GET,
+                     "/horarios-disponiveis/**",
+                     "/bloqueios-agenda/**"
+                 ).hasAnyRole(admin, recep, psi)
+                 it.requestMatchers(
+                     "/horarios-disponiveis/**",
+                     "/bloqueios-agenda/**"
+                 ).hasAnyRole(admin, psi)
 
-                // // Financeiro: ADMIN e RECEPCIONISTA
-                // it.requestMatchers("/pagamentos/**")
-                //     .hasAnyRole(admin, recep)
+                 // Financeiro: ADMIN e RECEPCIONISTA
+                 it.requestMatchers("/pagamentos/**")
+                     .hasAnyRole(admin, recep)
 
-                // // Operação: PSICOLOGO consulta, RECEPCIONISTA gerencia
-                // it.requestMatchers(
-                //     HttpMethod.GET,
-                //     "/agendas/**",
-                //     "/pacientes/**",
-                //     "/convenios/**",
-                //     "/salas-atendimento/**",
-                //     "/tipos-atendimento/**"
-                // ).hasAnyRole(admin, recep, psi)
-                // it.requestMatchers(
-                //     "/agendas/**",
-                //     "/pacientes/**",
-                //     "/convenios/**",
-                //     "/salas-atendimento/**",
-                //     "/tipos-atendimento/**"
-                // ).hasAnyRole(admin, recep)
+                 // Operação: PSICOLOGO consulta, RECEPCIONISTA gerencia
+                 it.requestMatchers(
+                     HttpMethod.GET,
+                     "/agendas/**",
+                     "/pacientes/**",
+                     "/convenios/**",
+                     "/salas-atendimento/**",
+                     "/tipos-atendimento/**"
+                 ).hasAnyRole(admin, recep, psi)
+                 it.requestMatchers(
+                     "/agendas/**",
+                     "/pacientes/**",
+                     "/convenios/**",
+                     "/salas-atendimento/**",
+                     "/tipos-atendimento/**"
+                 ).hasAnyRole(admin, recep)
 
-                // it.anyRequest().denyAll()
+                 it.anyRequest().denyAll()
 
-                it.anyRequest().permitAll()
+//                it.anyRequest().permitAll()
             }
 
             .exceptionHandling {
