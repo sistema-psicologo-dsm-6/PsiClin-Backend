@@ -1,0 +1,11 @@
+.git
+.gradle
+.idea
+.kotlin
+.vscode
+bin
+build
+.env
+.env.*
+!.env.docker.example
+*.log

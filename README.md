@@ -87,6 +87,22 @@ Em **Connect** no painel do Supabase, obtenha os dados de conexão. Se sua rede 
 
 Escolha uma das opções abaixo para preparar MariaDB/MySQL local. O exemplo Docker usa `localhost:3307`; a URL JDBC correspondente precisa estar ativa em `application.yaml`.
 
+### Backend com Docker Compose
+
+O Compose inicia a API em um container e usa o banco configurado no `.env` (por exemplo, o Supabase). O arquivo `.env.example` contém apenas valores de exemplo. Se ainda não houver um `.env`, crie-o e informe suas configurações locais:
+
+```powershell
+if (-not (Test-Path .env)) { Copy-Item .env.example .env }
+```
+
+Em seguida, inicie os serviços na raiz do projeto:
+
+```powershell
+docker compose up --build
+```
+
+A API ficará disponível em `http://localhost:8080` (ou na porta definida por `SERVER_PORT`). Para parar o container, execute `docker compose down`. O banco permanece externo ao Compose, então os dados não são apagados ao parar o serviço.
+
 ### Docker
 
 Com o Docker Desktop instalado e em execução, crie e inicie um container MariaDB. O comando publica a porta `3306` do container como `3307` no computador, cria o banco `psiclinbe` e mantém os dados em um volume:
