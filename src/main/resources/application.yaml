@@ -4,7 +4,8 @@ spring:
   application:
     name: psiclinbe
   datasource:
-    url: jdbc:mariadb://${DB_HOST:localhost}:${DB_PORT:3307}/${DB_NAME:psiclinbe}
+    # url: jdbc:mariadb://${DB_HOST:localhost}:${DB_PORT:3307}/${DB_NAME:psiclinbe}
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:psiclinbe}?sslmode=${DB_SSLMODE:require}
     username: ${DB_USERNAME:root}
     password: ${DB_PASSWORD:root}
 

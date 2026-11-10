@@ -49,8 +49,8 @@ Problemas que resolve e melhorias que traz:
 
 Resumo (detalhes nas seções seguintes):
 
-1. Instale o JDK 25 e suba o MariaDB (seção "Iniciando o MariaDB").
-2. Copie `.env.example` para `.env` e preencha, inclusive `JWT_SECRET` (seção "Configurando o ambiente").
+1. Instale o JDK 25 e escolha o banco: PostgreSQL no Supabase ou MariaDB local (seção "Banco de dados").
+2. Copie `.env.example` para `.env`, selecione a conexão correspondente e preencha as credenciais e `JWT_SECRET` (seção "Configurando o ambiente").
 3. Execute `.\gradlew.bat bootRun` (Linux/macOS: `./gradlew bootRun`).
 4. Crie o primeiro usuário por `POST /auth/signup` e depois autentique-se em `POST /auth/signin`; a API fica em `http://localhost:8080` (ou na porta configurada).
 5. Para o frontend, siga o README do repositório dele e aponte-o para a URL da API.
@@ -65,19 +65,27 @@ O projeto está em desenvolvimento com Kotlin e Spring Boot. A base de domínio,
 - Spring Web MVC
 - Spring Security e JWT
 - Jakarta Bean Validation
-- MariaDB
+- PostgreSQL (Supabase) ou MariaDB
 - Gradle Wrapper
 - Java 25
 
 ## Pré-requisitos
 
 - JDK 25 configurado no ambiente
-- MariaDB em execução e acessível pela aplicação
-- Banco de dados `psiclinbe` criado (ou outro nome definido em `DB_NAME` no arquivo `.env`)
+- Uma instância PostgreSQL no Supabase ou MariaDB acessível pela aplicação
+- Credenciais e endereço do banco escolhido configurados no arquivo `.env`
 
-## Iniciando o MariaDB
+## Banco de dados
 
-Escolha uma das opções abaixo. A aplicação está configurada por padrão para conectar em `localhost:3307`.
+A aplicação pode usar PostgreSQL no Supabase ou MariaDB local. Os dois drivers JDBC estão disponíveis. Para alternar, selecione a URL JDBC correspondente em `src/main/resources/application.yaml` e ajuste as variáveis do `.env` para o mesmo banco. Mantenha somente uma URL JDBC ativa.
+
+### Supabase (PostgreSQL)
+
+Em **Connect** no painel do Supabase, obtenha os dados de conexão. Se sua rede não tiver IPv6, use o **Session pooler**; o endpoint direto pode não estar acessível. Copie host, porta, usuário e banco exatamente como apresentados e mantenha SSL habilitado (`DB_SSLMODE=require`). O usuário do pooler costuma incluir o identificador do projeto.
+
+### Iniciando o MariaDB local
+
+Escolha uma das opções abaixo para preparar MariaDB/MySQL local. O exemplo Docker usa `localhost:3307`; a URL JDBC correspondente precisa estar ativa em `application.yaml`.
 
 ### Docker
 
@@ -100,7 +108,7 @@ docker start psiclinbe-mariadb
 docker stop psiclinbe-mariadb
 ```
 
-O `.env.example` já corresponde a essa configuração. Se o container com esse nome já existir, use `docker start psiclinbe-mariadb` em vez de executar `docker run` novamente.
+Ao usar esse container, configure as variáveis MariaDB/MySQL mostradas na seção "Alternando entre Supabase e MariaDB". Se o container com esse nome já existir, use `docker start psiclinbe-mariadb` em vez de executar `docker run` novamente.
 
 ### Serviço instalado no Windows
 
@@ -146,17 +154,20 @@ No Linux ou macOS:
 cp .env.example .env
 ```
 
-Edite `.env` e informe as credenciais do seu MariaDB. O arquivo `.env` é local e não deve ser commitado. O arquivo `.env.example` contém apenas a estrutura necessária para configurar o ambiente.
+Edite `.env` e informe as credenciais do banco escolhido. O arquivo `.env` é local e não deve ser commitado. O `.env.example` é apenas um modelo com placeholders; substitua-os pelos seus valores e nunca coloque credenciais reais nele.
+
+Para Supabase, use os dados do **Session pooler** quando precisar de acesso IPv4. Para MariaDB local, use `localhost`, a porta configurada no servidor e o banco `psiclinbe`.
 
 As variáveis disponíveis são:
 
 | Variável | Descrição | Valor padrão |
 | --- | --- | --- |
-| `DB_HOST` | Host do MariaDB | `localhost` |
-| `DB_PORT` | Porta do MariaDB | `3307` |
-| `DB_NAME` | Nome do banco de dados | `psiclinbe` |
-| `DB_USERNAME` | Usuário do banco | `root` |
-| `DB_PASSWORD` | Senha do banco | `root` (o `.env.example` usa `change-me`) |
+| `DB_HOST` | Host do banco escolhido | `localhost` (MariaDB) |
+| `DB_PORT` | Porta do banco escolhido | `3307` (MariaDB) ou a informada pelo Supabase |
+| `DB_SSLMODE` | Modo SSL do PostgreSQL | `require` (Supabase) |
+| `DB_NAME` | Nome do banco | `psiclinbe` (MariaDB) ou `postgres` (Supabase) |
+| `DB_USERNAME` | Usuário do banco | `root` (MariaDB) ou o usuário informado pelo Supabase |
+| `DB_PASSWORD` | Senha do banco | Defina no `.env`; não use uma senha real no `.env.example` |
 | `SERVER_PORT` | Porta HTTP da aplicação | `8080` |
 | `JWT_SECRET` | Chave secreta usada para assinar os tokens JWT (mínimo de 32 caracteres) | **Obrigatória, sem valor padrão** |
 
@@ -195,7 +206,10 @@ spring:
   config:
     import: optional:file:.env[.properties]
   datasource:
-    url: jdbc:mariadb://${DB_HOST:localhost}:${DB_PORT:3307}/${DB_NAME:psiclinbe}
+    # Deixe ativa apenas a URL do banco escolhido.
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:postgres}?sslmode=${DB_SSLMODE:require}
+    # MariaDB local: comente a URL PostgreSQL acima e descomente a linha abaixo.
+    # url: jdbc:mariadb://${DB_HOST:localhost}:${DB_PORT:3307}/${DB_NAME:psiclinbe}
     username: ${DB_USERNAME:root}
     password: ${DB_PASSWORD:root}
 
@@ -204,6 +218,24 @@ jwt:
 ```
 
 As variáveis definidas diretamente no ambiente do sistema têm precedência sobre as variáveis carregadas pelo `.env`. Se o arquivo não existir, os valores padrão definidos no `application.yaml` serão utilizados, exceto `JWT_SECRET`, que é obrigatória.
+
+#### Alternando entre Supabase e MariaDB
+
+1. Em `application.yaml`, deixe ativa somente a URL `jdbc:postgresql:` ou `jdbc:mariadb:` correspondente ao banco desejado.
+2. No `.env`, ajuste `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USERNAME` e `DB_PASSWORD` para esse mesmo banco. Para Supabase, configure também `DB_SSLMODE=require` e prefira os dados do Session pooler quando não houver IPv6.
+3. Os dois drivers já estão declarados em `build.gradle.kts`; não é necessário trocar dependências ao alternar.
+
+Exemplo de valores para MariaDB local:
+
+```env
+DB_HOST=localhost
+DB_PORT=3307
+DB_NAME=psiclinbe
+DB_USERNAME=root
+DB_PASSWORD=<senha-local>
+```
+
+Para Supabase, substitua esses valores pelos dados de conexão fornecidos pelo painel. Nunca compartilhe ou versione a senha do banco.
 
 ## Executando o projeto
 
@@ -219,7 +251,7 @@ No Linux ou macOS:
 ./gradlew bootRun
 ```
 
-A aplicação Spring Boot será iniciada na porta padrão `8080`. Antes de iniciá-la, confirme que o MariaDB está ativo e que o `.env` contém as credenciais correspondentes ao banco.
+A aplicação Spring Boot será iniciada na porta padrão `8080`. Antes de iniciá-la, confirme que o banco selecionado está acessível e que o `.env` contém as credenciais correspondentes à URL ativa no `application.yaml`.
 
 ## Comandos úteis
 
@@ -241,7 +273,7 @@ Executar os testes:
 .\gradlew.bat test
 ```
 
-O teste de contexto (`contextLoads`) precisa conseguir conectar ao MariaDB configurado no `application.yaml`.
+O teste de contexto (`contextLoads`) precisa conseguir conectar ao banco selecionado no `application.yaml` e configurado no `.env`.
 
 ## Estrutura do projeto
 
