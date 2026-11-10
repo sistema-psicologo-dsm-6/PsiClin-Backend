@@ -120,7 +120,7 @@ class SecurityConfig(
 
                 // it.anyRequest().denyAll()
 
-                it.anyRequest().allowAll()
+                it.anyRequest().permitAll()
             }
 
             .exceptionHandling {
