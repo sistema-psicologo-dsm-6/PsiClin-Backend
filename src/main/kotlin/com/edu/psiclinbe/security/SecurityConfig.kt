@@ -70,6 +70,7 @@ class SecurityConfig(
                 val psi = "PSICOLOGO"
 
                 it.requestMatchers("/auth/signin", "/auth/signup").permitAll()
+                it.requestMatchers("/auth/signout").authenticated()
 
                  // Somente ADMIN gerencia usuários
                  it.requestMatchers("/funcionarios/**").hasRole(admin)

@@ -1,7 +1,7 @@
-@baseUrl = http://localhost:8081
+@baseUrl = https://psiclin-backend.onrender.com
 @json = application/json
 @adminEmail = admin@psiclin.local
-@adminSenha = Admin123!
+@adminSenha = 123456
 
 # Run the API on port 8081 before starting this collection.
 # Pre-requisito: existir um funcionario ADMIN (veja o README, "Criando o primeiro ADMIN").

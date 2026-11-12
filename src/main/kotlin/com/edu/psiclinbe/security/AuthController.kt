@@ -57,4 +57,8 @@ class AuthController(
             AuthResponse(token)
         )
     }
+
+    @PostMapping("/signout")
+    fun signout(): ResponseEntity<Void> =
+        ResponseEntity.noContent().build()
 }
