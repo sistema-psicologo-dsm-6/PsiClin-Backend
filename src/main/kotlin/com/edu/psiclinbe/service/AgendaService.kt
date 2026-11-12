@@ -4,24 +4,32 @@ import com.edu.psiclinbe.dto.request.AgendaDtoRequest
 import com.edu.psiclinbe.dto.response.AgendaDtoResponse
 import com.edu.psiclinbe.mapper.AgendaMapper
 import com.edu.psiclinbe.model.Convenio
+import com.edu.psiclinbe.model.enums.DiaSemana
 import com.edu.psiclinbe.model.Paciente
 import com.edu.psiclinbe.model.Psicologo
 import com.edu.psiclinbe.model.SalaAtendimento
 import com.edu.psiclinbe.model.TipoAtendimento
 import com.edu.psiclinbe.model.enums.AgendaStatus
 import com.edu.psiclinbe.repository.AgendaRepository
+import com.edu.psiclinbe.repository.BloqueioAgendaRepository
 import com.edu.psiclinbe.repository.ConvenioRepository
+import com.edu.psiclinbe.repository.HorarioDisponivelRepository
 import com.edu.psiclinbe.repository.PacienteRepository
 import com.edu.psiclinbe.repository.PsicologoRepository
 import com.edu.psiclinbe.repository.SalaAtendimentoRepository
 import com.edu.psiclinbe.repository.TipoAtendimentoRepository
 import com.edu.psiclinbe.validation.ValidarDataInicioFim
 import org.springframework.stereotype.Service
+import java.time.DayOfWeek
+import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.LocalTime
 
 @Service
 class AgendaService(
     private val agendaRepository: AgendaRepository,
+    private val horarioDisponivelRepository: HorarioDisponivelRepository,
+    private val bloqueioAgendaRepository: BloqueioAgendaRepository,
     private val pacienteRepository: PacienteRepository,
     private val psicologoRepository: PsicologoRepository,
     private val salaRepository: SalaAtendimentoRepository,
@@ -30,6 +38,11 @@ class AgendaService(
     private val agendaMapper: AgendaMapper,
     private val validarDataInicioFim: ValidarDataInicioFim
 ) {
+
+    private val statusQueReservamHorario = setOf(
+        AgendaStatus.AGENDADO,
+        AgendaStatus.CONFIRMADO
+    )
 
     private data class AgendaRelacionamentos(
         val paciente: Paciente,
@@ -57,14 +70,69 @@ class AgendaService(
         agendaRepository.buscarPorObservacoes(termo)
             .map(agendaMapper::toResponse)
 
+    fun listarHorariosDisponiveis(
+        psicologoId: Long,
+        data: LocalDate,
+        duracaoMinutos: Long
+    ): List<LocalTime> {
+        require(duracaoMinutos > 0) {
+            "A duração do atendimento deve ser maior que zero"
+        }
+
+        psicologoRepository.findById(psicologoId)
+            .orElseThrow {
+                NoSuchElementException("Psicólogo não encontrado com id: $psicologoId")
+            }
+
+        val inicioDia = data.atStartOfDay()
+        val fimDia = data.plusDays(1).atStartOfDay()
+        val horarios = horarioDisponivelRepository
+            .findByPsicologoIdAndDiaSemana(psicologoId, diaSemana(data.dayOfWeek))
+        val agendas = agendaRepository.findByPsicologoId(psicologoId)
+            .filter { it.status in statusQueReservamHorario }
+        val bloqueios = bloqueioAgendaRepository
+            .findByPsicologoIdAndAtivoTrue(psicologoId)
+            .filter { sobrepoe(inicioDia, fimDia, it.dataHoraInicio, it.dataHoraFim) }
+        val disponiveis = mutableSetOf<LocalTime>()
+
+        horarios.forEach { horario ->
+            var inicioSlot = data.atTime(horario.horaInicio)
+            val fimHorario = data.atTime(horario.horaFim)
+
+            while (!inicioSlot.plusMinutes(duracaoMinutos).isAfter(fimHorario)) {
+                val fimSlot = inicioSlot.plusMinutes(duracaoMinutos)
+                val conflitoAgenda = agendas.any {
+                    sobrepoe(inicioSlot, fimSlot, it.dataHoraInicio, it.dataHoraFim)
+                }
+                val conflitoBloqueio = bloqueios.any {
+                    sobrepoe(inicioSlot, fimSlot, it.dataHoraInicio, it.dataHoraFim)
+                }
+
+                if (!conflitoAgenda && !conflitoBloqueio) {
+                    disponiveis.add(inicioSlot.toLocalTime())
+                }
+
+                inicioSlot = fimSlot
+            }
+        }
+
+        return disponiveis.sorted()
+    }
+
     fun salvar(dto: AgendaDtoRequest): AgendaDtoResponse {
 
-        validarDataInicioFim.validarHorario(
-            dto.dataHoraInicio.toLocalTime(),
-            dto.dataHoraFim.toLocalTime()
+        validarDataInicioFim.validarDataHora(
+            dto.dataHoraInicio,
+            dto.dataHoraFim
         )
 
         val rel = buscarRelacionamentos(dto)
+
+        verificarDisponibilidadePsicologo(
+            psicologoId = rel.psicologo.id!!,
+            inicio = dto.dataHoraInicio,
+            fim = dto.dataHoraFim
+        )
 
         verificarConflitoDeHorario(
             psicologoId = rel.psicologo.id!!,
@@ -100,12 +168,18 @@ class AgendaService(
                 )
             }
 
-        validarDataInicioFim.validarHorario(
-            dto.dataHoraInicio.toLocalTime(),
-            dto.dataHoraFim.toLocalTime()
+        validarDataInicioFim.validarDataHora(
+            dto.dataHoraInicio,
+            dto.dataHoraFim
         )
 
         val rel = buscarRelacionamentos(dto)
+
+        verificarDisponibilidadePsicologo(
+            psicologoId = rel.psicologo.id!!,
+            inicio = dto.dataHoraInicio,
+            fim = dto.dataHoraFim
+        )
 
         verificarConflitoDeHorario(
             psicologoId = rel.psicologo.id!!,
@@ -231,8 +305,8 @@ class AgendaService(
             agendaRepository.findByPsicologoId(psicologoId)
                 .filter { it.id != agendaIdIgnorar }
                 .any {
-                    it.dataHoraInicio.isBefore(fim) &&
-                            inicio.isBefore(it.dataHoraFim)
+                    it.status in statusQueReservamHorario &&
+                    sobrepoe(inicio, fim, it.dataHoraInicio, it.dataHoraFim)
                 }
 
         if (conflitoPsicologo) {
@@ -247,8 +321,8 @@ class AgendaService(
                 agendaRepository.findBySalaId(salaId)
                     .filter { it.id != agendaIdIgnorar }
                     .any {
-                        it.dataHoraInicio.isBefore(fim) &&
-                                inicio.isBefore(it.dataHoraFim)
+                        it.status in statusQueReservamHorario &&
+                        sobrepoe(inicio, fim, it.dataHoraInicio, it.dataHoraFim)
                     }
 
             if (conflitoSala) {
@@ -258,4 +332,60 @@ class AgendaService(
             }
         }
     }
+
+    private fun verificarDisponibilidadePsicologo(
+        psicologoId: Long,
+        inicio: LocalDateTime,
+        fim: LocalDateTime
+    ) {
+        if (inicio.toLocalDate() != fim.toLocalDate()) {
+            throw IllegalArgumentException(
+                "O agendamento deve começar e terminar no mesmo dia"
+            )
+        }
+
+        val diaSemana = diaSemana(inicio.dayOfWeek)
+        val dentroDaGrade = horarioDisponivelRepository
+            .findByPsicologoIdAndDiaSemana(psicologoId, diaSemana)
+            .any { horario ->
+                !inicio.toLocalTime().isBefore(horario.horaInicio) &&
+                    !fim.toLocalTime().isAfter(horario.horaFim)
+            }
+
+        if (!dentroDaGrade) {
+            throw IllegalArgumentException(
+                "O psicólogo não possui disponibilidade para este dia e horário"
+            )
+        }
+
+        val conflitoComBloqueio = bloqueioAgendaRepository
+            .findByPsicologoIdAndAtivoTrue(psicologoId)
+            .any { bloqueio ->
+                    sobrepoe(inicio, fim, bloqueio.dataHoraInicio, bloqueio.dataHoraFim)
+            }
+
+        if (conflitoComBloqueio) {
+            throw IllegalArgumentException(
+                "O horário do psicólogo está bloqueado"
+            )
+        }
+    }
+
+    private fun diaSemana(dia: DayOfWeek): DiaSemana =
+        when (dia) {
+            DayOfWeek.MONDAY -> DiaSemana.SEGUNDA
+            DayOfWeek.TUESDAY -> DiaSemana.TERCA
+            DayOfWeek.WEDNESDAY -> DiaSemana.QUARTA
+            DayOfWeek.THURSDAY -> DiaSemana.QUINTA
+            DayOfWeek.FRIDAY -> DiaSemana.SEXTA
+            DayOfWeek.SATURDAY -> DiaSemana.SABADO
+            DayOfWeek.SUNDAY -> DiaSemana.DOMINGO
+        }
+
+    private fun sobrepoe(
+        inicio: LocalDateTime,
+        fim: LocalDateTime,
+        outroInicio: LocalDateTime,
+        outroFim: LocalDateTime
+    ): Boolean = outroInicio.isBefore(fim) && inicio.isBefore(outroFim)
 }

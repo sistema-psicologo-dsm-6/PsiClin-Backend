@@ -15,6 +15,8 @@ import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import java.time.LocalDate
+import java.time.LocalTime
 
 @RestController
 @RequestMapping("/agendas")
@@ -47,6 +49,20 @@ class AgendaController(
         @RequestParam termo: String
     ): ResponseEntity<List<AgendaDtoResponse>> =
         ResponseEntity.ok(agendaService.buscarPorObservacoes(termo))
+
+    @GetMapping("/disponibilidade")
+    fun availableTimes(
+        @RequestParam psicologoId: Long,
+        @RequestParam data: LocalDate,
+        @RequestParam duracaoMinutos: Long
+    ): ResponseEntity<List<LocalTime>> =
+        ResponseEntity.ok(
+            agendaService.listarHorariosDisponiveis(
+                psicologoId,
+                data,
+                duracaoMinutos
+            )
+        )
 
     @PostMapping
     fun store(
