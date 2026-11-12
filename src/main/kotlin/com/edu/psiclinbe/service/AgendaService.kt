@@ -218,6 +218,23 @@ class AgendaService(
                 )
             }
 
+        if (status in statusQueReservamHorario &&
+            agenda.status !in statusQueReservamHorario
+        ) {
+            verificarDisponibilidadePsicologo(
+                psicologoId = agenda.psicologo.id!!,
+                inicio = agenda.dataHoraInicio,
+                fim = agenda.dataHoraFim
+            )
+            verificarConflitoDeHorario(
+                psicologoId = agenda.psicologo.id!!,
+                salaId = agenda.sala.id,
+                inicio = agenda.dataHoraInicio,
+                fim = agenda.dataHoraFim,
+                agendaIdIgnorar = id
+            )
+        }
+
         agenda.status = status
 
         return agendaMapper.toResponse(

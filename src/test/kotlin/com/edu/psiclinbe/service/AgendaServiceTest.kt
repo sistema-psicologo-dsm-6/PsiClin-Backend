@@ -414,6 +414,41 @@ class AgendaServiceTest {
     }
 
     @Test
+    fun `rejects reactivating cancelled agenda when psychologist has overlapping appointment`() {
+        val inicio = LocalDateTime.of(2026, 11, 3, 10, 0)
+        val fim = LocalDateTime.of(2026, 11, 3, 11, 0)
+        val cancelada = agenda(inicio, fim, AgendaStatus.CANCELADO)
+        val existente = agenda(inicio, fim, AgendaStatus.AGENDADO).apply { id = 101L }
+
+        Mockito.`when`(psicologo.id).thenReturn(2L)
+        Mockito.`when`(agendaRepository.findById(100L)).thenReturn(Optional.of(cancelada))
+        Mockito.`when`(
+            horarioRepository.findByPsicologoIdAndDiaSemana(2L, DiaSemana.TERCA)
+        ).thenReturn(
+            listOf(
+                HorarioDisponivel(
+                    psicologo = psicologo,
+                    diaSemana = DiaSemana.TERCA,
+                    horaInicio = LocalTime.of(9, 0),
+                    horaFim = LocalTime.of(12, 0)
+                )
+            )
+        )
+        Mockito.`when`(bloqueioRepository.findByPsicologoIdAndAtivoTrue(2L))
+            .thenReturn(emptyList())
+        Mockito.`when`(agendaRepository.findByPsicologoId(2L))
+            .thenReturn(listOf(cancelada, existente))
+        Mockito.`when`(agendaRepository.save(cancelada)).thenReturn(cancelada)
+        Mockito.`when`(agendaMapper.toResponse(cancelada))
+            .thenReturn(resposta(requisicao(inicio, fim)))
+
+        assertFailsWith<IllegalArgumentException> {
+            service.atualizarStatus(100L, AgendaStatus.CONFIRMADO)
+        }
+        Mockito.verify(agendaRepository, Mockito.never()).save(cancelada)
+    }
+
+    @Test
     fun `rejects status change for missing agenda`() {
         Mockito.`when`(agendaRepository.findById(404L)).thenReturn(Optional.empty())
 
