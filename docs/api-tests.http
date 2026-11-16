@@ -4,7 +4,7 @@
 @adminSenha = TroqueEstaSenha123!
 
 # A porta padrão da API é 8080; ajuste @baseUrl se SERVER_PORT/PORT tiver outro valor.
-# Em banco vazio, crie o primeiro ADMIN com POST /auth/signup (veja o README).
+# Provisione o ADMIN inicial por um processo seguro fora da API (veja o README).
 # Ajuste @adminEmail e @adminSenha para as credenciais desse ADMIN antes de executar login.
 # Após o bootstrap, as rotas protegidas exigem "Authorization: Bearer {{token}}".
 
@@ -20,19 +20,6 @@ Content-Type: {{json}}
 
 ###
 @token = {{login.response.body.$.token}}
-
-### Auth - signup após bootstrap (esperado 409; só cria o primeiro ADMIN)
-POST {{baseUrl}}/auth/signup
-Content-Type: {{json}}
-
-{
-  "nome": "ApiTestAdminInicial",
-  "cpf": "99988877766",
-  "email": "api-admin-inicial@example.invalid",
-  "telefone": "11999990000",
-  "senha": "ApiTest123!",
-  "ativo": true
-}
 
 ### Auth - signin com senha errada (esperado 401)
 POST {{baseUrl}}/auth/signin
@@ -210,6 +197,7 @@ Content-Type: {{json}}
   "email": "{{criaFuncionario.response.body.$.email}}",
   "telefone": "{{criaFuncionario.response.body.$.telefone}}",
   "senha": "ApiTest123!",
+  "role": "PSICOLOGO",
   "ativo": true
 }
 

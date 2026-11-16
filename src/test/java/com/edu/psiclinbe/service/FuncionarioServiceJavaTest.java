@@ -3,15 +3,11 @@ package com.edu.psiclinbe.service;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.server.ResponseStatusException;
 
 import com.edu.psiclinbe.dto.request.FuncionarioDtoRequest;
 import com.edu.psiclinbe.dto.response.FuncionarioDtoResponse;
@@ -41,25 +37,10 @@ class FuncionarioServiceJavaTest {
         FuncionarioDtoRequest request = request(Role.RECEPCIONISTA);
         when(repository.findByEmailAndCpf(request.getEmail(), request.getCpf()))
                 .thenReturn(funcionario);
-        assertThrows(IllegalArgumentException.class, () -> service.salvar(request));
-    }
-
-    @Test
-    void createsInitialAdminOnlyWhenRepositoryIsEmpty() {
-        FuncionarioDtoRequest request = request(Role.PSICOLOGO);
-        when(repository.count()).thenReturn(0L);
-        when(repository.findByEmailAndCpf(request.getEmail(), request.getCpf())).thenReturn(null);
-        when(encoder.encode(request.getSenha())).thenReturn("encoded-password");
-        when(repository.save(any(Funcionario.class))).thenAnswer(invocation -> invocation.getArgument(0));
-        when(mapper.toResponse(any(Funcionario.class))).thenReturn(response);
-
-        assertSame(response, service.criarAdminInicial(request));
-
-        when(repository.count()).thenReturn(1L);
-        ResponseStatusException error = assertThrows(
-                ResponseStatusException.class,
-                () -> service.criarAdminInicial(request));
-        assertEquals(HttpStatus.CONFLICT, error.getStatusCode());
+        IllegalArgumentException error = assertThrows(
+            IllegalArgumentException.class,
+            () -> service.salvar(request));
+        assertEquals("Já existe um funcionário com este e-mail e CPF", error.getMessage());
     }
 
     private FuncionarioDtoRequest request(Role role) {

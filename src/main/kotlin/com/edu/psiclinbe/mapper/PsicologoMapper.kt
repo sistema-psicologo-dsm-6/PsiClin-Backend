@@ -37,7 +37,8 @@ class PsicologoMapper {
             ativo = psicologo.ativo,
             dataCadastro = psicologo.dataCadastro,
             crp = psicologo.crp,
-            especialidade = psicologo.especialidade
+            especialidade = psicologo.especialidade,
+            role = psicologo.role,
         )
     }
 }

@@ -1,5 +1,6 @@
 package com.edu.psiclinbe.dto.response
 
+import com.edu.psiclinbe.model.enums.Role
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
 
@@ -12,4 +13,5 @@ data class RecepcionistaDtoResponse(
     val senha: String = "",
     val setor: String = "",
     val ativo: Boolean = true,
+    val role: Role? = null,
 )

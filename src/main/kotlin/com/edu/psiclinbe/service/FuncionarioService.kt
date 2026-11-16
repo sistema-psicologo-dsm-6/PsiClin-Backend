@@ -4,13 +4,10 @@ import com.edu.psiclinbe.dto.request.FuncionarioDtoRequest
 import com.edu.psiclinbe.dto.response.FuncionarioDtoResponse
 import com.edu.psiclinbe.mapper.FuncionarioMapper
 import com.edu.psiclinbe.model.Funcionario
-import com.edu.psiclinbe.model.enums.Role
 import com.edu.psiclinbe.repository.FuncionarioRepository
-import org.springframework.http.HttpStatus
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import org.springframework.web.server.ResponseStatusException
 
 @Service
 class FuncionarioService(
@@ -64,18 +61,6 @@ class FuncionarioService(
         return funcionarioMapper.toResponse(funcionarioRepository.save(funcionario))
     }
 
-    @Transactional
-    fun criarAdminInicial(dto: FuncionarioDtoRequest): FuncionarioDtoResponse {
-        if (funcionarioRepository.count() > 0) {
-            throw ResponseStatusException(
-                HttpStatus.CONFLICT,
-                "O cadastro público está disponível somente para criar o primeiro usuário"
-            )
-        }
-
-        return salvar(dto.copy(role = Role.ADMIN))
-    }
-
     fun atualizar(id: Long, dto: FuncionarioDtoRequest): FuncionarioDtoResponse {
         val funcionario = funcionarioRepository.findById(id)
             .orElseThrow { NoSuchElementException("Funcionário não encontrado com id: $id") }
@@ -85,6 +70,7 @@ class FuncionarioService(
         funcionario.email = dto.email
         funcionario.telefone = dto.telefone
         funcionario.ativo = dto.ativo
+        funcionario.role = dto.role
 
         if (dto.senha.isNotBlank()) {
             funcionario.senha =

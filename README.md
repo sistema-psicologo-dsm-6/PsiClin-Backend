@@ -52,7 +52,7 @@ Resumo (detalhes nas seções seguintes):
 1. Instale o JDK 25 e escolha o banco: PostgreSQL no Supabase ou MariaDB local (seção "Banco de dados").
 2. Copie `.env.example` para `.env`, selecione a conexão correspondente e preencha as credenciais e `JWT_SECRET` (seção "Configurando o ambiente").
 3. Execute `.\gradlew.bat bootRun` (Linux/macOS: `./gradlew bootRun`).
-4. Crie o primeiro usuário por `POST /auth/signup` e depois autentique-se em `POST /auth/signin`; a API fica em `http://localhost:8080` (ou na porta configurada).
+4. Provisione a conta ADMIN inicial por um processo administrativo seguro; depois autentique-se em `POST /auth/signin`. A API fica em `http://localhost:8080` (ou na porta configurada).
 5. Para o frontend, siga o README do repositório dele e aponte-o para a URL da API.
 
 O projeto está em desenvolvimento com Kotlin e Spring Boot. A base de domínio, os DTOs com validação, os repositories JPA e os controllers REST estão organizados por recurso.
@@ -373,8 +373,9 @@ A resposta é `{ "token": "..." }`. Envie o token em todas as demais requisiçõ
 | Rota | Perfis com acesso |
 | --- | --- |
 | `/auth/signin` | Público |
-| `/auth/signup` | Público somente enquanto não houver funcionários cadastrados; cria o primeiro usuário como ADMIN |
-| `/funcionarios/**` | ADMIN |
+| `POST /funcionarios` | ADMIN; cria funcionários/usuários. Se `role` for omitida, assume `RECEPCIONISTA` |
+| `PUT /funcionarios/{id}` | ADMIN; atualiza dados, role e senha (senha vazia mantém a atual) |
+| Demais `/funcionarios/**` | ADMIN |
 | `/psicologos/**` | GET: ADMIN, RECEPCIONISTA, PSICOLOGO; escrita: ADMIN |
 | `/recepcionistas/**` | GET: ADMIN, RECEPCIONISTA; escrita: ADMIN |
 | `/prontuarios/**`, `/evolucoes-clinicas/**` | ADMIN, PSICOLOGO |
@@ -384,22 +385,9 @@ A resposta é `{ "token": "..." }`. Envie o token em todas as demais requisiçõ
 
 Qualquer outra rota é negada.
 
-### Criando o primeiro ADMIN
+### Gestão de usuários
 
-Com o banco vazio de funcionários, crie a conta inicial chamando o endpoint público abaixo. O servidor atribui a role `ADMIN`, independentemente do valor de `role` enviado no JSON. Depois desse cadastro, novas chamadas públicas a `/auth/signup` são negadas; a criação e gestão dos próximos funcionários exigem autenticação como ADMIN pela rota `/funcionarios/**`.
-
-```http
-POST http://localhost:8080/auth/signup
-Content-Type: application/json
-
-{
-  "nome": "Administrador",
-  "cpf": "00000000000",
-  "email": "admin@psiclin.local",
-  "telefone": "11999999999",
-  "senha": "TroqueEstaSenha123!"
-}
-```
+Não existe cadastro público. A conta ADMIN inicial deve ser provisionada fora das rotas HTTP por um processo operacional controlado. Depois, somente ADMIN pode criar usuários com `POST /funcionarios` e editar seus dados, role e senha com `PUT /funcionarios/{id}`.
 
 ### Testando a API
 

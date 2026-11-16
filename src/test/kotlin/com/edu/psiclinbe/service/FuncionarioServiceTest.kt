@@ -9,9 +9,7 @@ import com.edu.psiclinbe.repository.FuncionarioRepository
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentCaptor
 import org.mockito.Mockito
-import org.springframework.http.HttpStatus
 import org.springframework.security.crypto.password.PasswordEncoder
-import org.springframework.web.server.ResponseStatusException
 import java.util.Optional
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -82,6 +80,7 @@ class FuncionarioServiceTest {
         val captor = ArgumentCaptor.forClass(Funcionario::class.java)
         Mockito.verify(repository).save(captor.capture())
         assertEquals("hash", captor.value.senha)
+        assertEquals(Role.RECEPCIONISTA, captor.value.role)
     }
 
     @Test
@@ -95,36 +94,6 @@ class FuncionarioServiceTest {
     }
 
     @Test
-    fun `creates initial administrator only for empty repository`() {
-        Mockito.`when`(repository.count()).thenReturn(0)
-        Mockito.`when`(repository.findByEmailAndCpf(request.email, request.cpf))
-            .thenReturn(null)
-        Mockito.`when`(encoder.encode(request.senha)).thenReturn("hash")
-        Mockito.`when`(repository.save(Mockito.any(Funcionario::class.java) ?: funcionario))
-            .thenAnswer { it.getArgument(0) }
-        Mockito.`when`(mapper.toResponse(Mockito.any(Funcionario::class.java) ?: funcionario))
-            .thenReturn(response)
-
-        assertSame(response, service.criarAdminInicial(request.copy(role = Role.PSICOLOGO)))
-        val captor = ArgumentCaptor.forClass(Funcionario::class.java)
-        Mockito.verify(repository).save(captor.capture())
-        assertEquals(Role.ADMIN, captor.value.role)
-    }
-
-    @Test
-    fun `rejects initial administrator when repository is not empty`() {
-        Mockito.`when`(repository.count()).thenReturn(1)
-
-        val error = assertFailsWith<ResponseStatusException> {
-            service.criarAdminInicial(request)
-        }
-
-        assertEquals(HttpStatus.CONFLICT, error.statusCode)
-        Mockito.verify(repository, Mockito.never())
-            .save(Mockito.any(Funcionario::class.java) ?: funcionario)
-    }
-
-    @Test
     fun `updates employee and only rehashes nonblank password`() {
         Mockito.`when`(repository.findById(1L)).thenReturn(Optional.of(funcionario))
         Mockito.`when`(repository.save(funcionario)).thenReturn(funcionario)
@@ -133,6 +102,7 @@ class FuncionarioServiceTest {
 
         assertSame(response, service.atualizar(1L, request.copy(senha = "")))
         Mockito.verify(encoder, Mockito.never()).encode("")
+        Mockito.verify(funcionario).role = request.role
         assertSame(response, service.atualizar(1L, request.copy(senha = "nova-senha")))
         Mockito.verify(encoder).encode("nova-senha")
     }

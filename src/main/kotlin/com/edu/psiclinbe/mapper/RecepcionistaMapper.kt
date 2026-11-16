@@ -30,5 +30,6 @@ class RecepcionistaMapper {
             senha = "",
             setor = recepcionista.setor,
             ativo = recepcionista.ativo,
+            role = recepcionista.role,
         )
 }

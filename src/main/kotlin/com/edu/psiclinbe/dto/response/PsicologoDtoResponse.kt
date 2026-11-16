@@ -1,5 +1,6 @@
 package com.edu.psiclinbe.dto.response
 
+import com.edu.psiclinbe.model.enums.Role
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
 import java.time.LocalDateTime
@@ -14,4 +15,5 @@ data class PsicologoDtoResponse(
     val especialidade: String = "",
     val dataCadastro: LocalDateTime? = LocalDateTime.now(),
     val ativo: Boolean = true,
+    val role: Role? = null,
 )
