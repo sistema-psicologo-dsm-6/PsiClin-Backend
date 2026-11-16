@@ -1,11 +1,12 @@
-@baseUrl = https://psiclin-backend.onrender.com
+@baseUrl = http://localhost:8080
 @json = application/json
 @adminEmail = admin@psiclin.local
-@adminSenha = 123456
+@adminSenha = TroqueEstaSenha123!
 
-# Run the API on port 8081 before starting this collection.
-# Pre-requisito: existir um funcionario ADMIN (veja o README, "Criando o primeiro ADMIN").
-# Todas as rotas (exceto /auth/signin) exigem "Authorization: Bearer {{token}}".
+# A porta padrão da API é 8080; ajuste @baseUrl se SERVER_PORT/PORT tiver outro valor.
+# Em banco vazio, crie o primeiro ADMIN com POST /auth/signup (veja o README).
+# Ajuste @adminEmail e @adminSenha para as credenciais desse ADMIN antes de executar login.
+# Após o bootstrap, as rotas protegidas exigem "Authorization: Bearer {{token}}".
 
 ### Auth - signin (ADMIN)
 # @name login
@@ -20,18 +21,16 @@ Content-Type: {{json}}
 ###
 @token = {{login.response.body.$.token}}
 
-### Auth - signup (cria funcionario; exige ADMIN)
+### Auth - signup após bootstrap (esperado 409; só cria o primeiro ADMIN)
 POST {{baseUrl}}/auth/signup
 Content-Type: {{json}}
-Authorization: Bearer {{token}}
 
 {
-  "nome": "ApiTestSignup",
-  "cpf": "9{{$timestamp}}09",
-  "email": "api-signup-{{$guid}}@example.invalid",
-  "telefone": "1199{{$timestamp}}",
+  "nome": "ApiTestAdminInicial",
+  "cpf": "99988877766",
+  "email": "api-admin-inicial@example.invalid",
+  "telefone": "11999990000",
   "senha": "ApiTest123!",
-  "role": "RECEPCIONISTA",
   "ativo": true
 }
 
@@ -643,6 +642,10 @@ Authorization: Bearer {{token}}
 GET {{baseUrl}}/agendas/por-observacoes?termo=ApiTestPrimeiraSessao
 Authorization: Bearer {{token}}
 
+### Agendas - consultar horários disponíveis
+GET {{baseUrl}}/agendas/disponibilidade?psicologoId={{criaPsicologo.response.body.$.id}}&data=2026-11-16&duracaoMinutos=50
+Authorization: Bearer {{token}}
+
 ### Agendas - dados de formulário novo
 GET {{baseUrl}}/agendas/form-data
 Authorization: Bearer {{token}}
@@ -962,4 +965,8 @@ Authorization: Bearer {{token}}
 
 ### Limpeza - psicólogo
 DELETE {{baseUrl}}/psicologos/{{criaPsicologo.response.body.$.id}}
+Authorization: Bearer {{token}}
+
+### Auth - signout (204; descarte o token no cliente)
+POST {{baseUrl}}/auth/signout
 Authorization: Bearer {{token}}

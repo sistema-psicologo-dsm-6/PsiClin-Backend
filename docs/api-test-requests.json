@@ -1,12 +1,14 @@
 {
   "_leia-me": [
-    "Base URL: http://localhost:8080. Autenticação JWT: faça POST /auth/signin {\"email\",\"senha\"} com um ADMIN e envie 'Authorization: Bearer <token>' em todas as rotas, exceto /auth/signin.",
-    "Roles: /funcionarios e /auth/signup = ADMIN; /prontuarios e /evolucoes-clinicas = ADMIN|PSICOLOGO; /pagamentos = ADMIN|RECEPCIONISTA; demais cadastros: GET para todos os perfis e escrita conforme README. Sem token = 401; perfil sem permissão = 403.",
+    "Base URL: http://localhost:8080 (padrão; PORT/SERVER_PORT podem alterar). /auth/signup só cria o primeiro funcionário em banco sem funcionários, força a role ADMIN e retorna 409 depois do bootstrap.",
+    "Autenticação: /auth/signin é público; use o token como Authorization: Bearer <token> nas rotas protegidas. /auth/signout exige autenticação e responde 204; como o token é stateless, descarte-o no cliente.",
+    "Perfis: /funcionarios/** = ADMIN; /psicologos/** GET = ADMIN|RECEPCIONISTA|PSICOLOGO, escrita = ADMIN; /recepcionistas/** GET = ADMIN|RECEPCIONISTA, escrita = ADMIN; /prontuarios/** e /evolucoes-clinicas/** = ADMIN|PSICOLOGO.",
+    "Perfis: /horarios-disponiveis/** e /bloqueios-agenda/** GET = ADMIN|RECEPCIONISTA|PSICOLOGO, escrita = ADMIN|PSICOLOGO; /pagamentos/** = ADMIN|RECEPCIONISTA; /agendas/**, /pacientes/**, /convenios/**, /salas-atendimento/** e /tipos-atendimento/** GET = todos os perfis, escrita = ADMIN|RECEPCIONISTA. Outras rotas são negadas; sem autenticação = 401 e sem permissão = 403.",
     "Variável obrigatória: JWT_SECRET no .env (gere com 'openssl rand -base64 48'; veja o README).",
-    "A coleção executável api-tests.http usa IDs devolvidos pela API e pode ser executada em localhost:8081.",
+    "A coleção executável api-tests.http usa IDs devolvidos pela API e aponta para localhost:8080 por padrão.",
     "As buscas por observações, descrição, motivo, queixa principal e forma de pagamento também estão incluídas.",
     "Execute na ordem: os grupos de cima criam as entidades usadas pelos de baixo.",
-    "Os ids (1 e 2) assumem um banco recém-criado; ajuste se os ids gerados forem outros.",
+    "Os IDs numéricos deste catálogo são exemplos; substitua-os pelos IDs retornados pelas criações no seu banco. A coleção api-tests.http já encadeia IDs dinamicamente.",
     "Datas: LocalDateTime = yyyy-MM-ddTHH:mm:ss, LocalDate = yyyy-MM-dd, LocalTime = HH:mm:ss.",
     "Enums: AgendaStatus = AGENDADO|CONFIRMADO|REALIZADO|CANCELADO|FALTOU; ProntuarioStatus = ATIVO|ARQUIVADO|ENCERRADO; PagamentoStatus = PENDENTE|PAGO|CANCELADO; diaSemana = DOMINGO|SEGUNDA|TERCA|QUARTA|QUINTA|SEXTA|SABADO.",
     "Campos 'body' = JSON a enviar com Content-Type: application/json. Rotas sem 'body' não têm corpo."
@@ -15,12 +17,24 @@
   "grupos": {
     "00_auth": [
       {
+        "nome": "Criar primeiro ADMIN (201; somente se ainda não houver funcionários)",
+        "method": "POST",
+        "url": "/auth/signup",
+        "body": {
+          "nome": "Administrador",
+          "cpf": "00000000000",
+          "email": "admin@psiclin.local",
+          "telefone": "11999999999",
+          "senha": "TroqueEstaSenha123!"
+        }
+      },
+      {
         "nome": "Login ADMIN (200 + token)",
         "method": "POST",
         "url": "/auth/signin",
         "body": {
           "email": "admin@psiclin.local",
-          "senha": "Admin123!"
+          "senha": "TroqueEstaSenha123!"
         }
       },
       {
@@ -628,6 +642,11 @@
         "url": "/agendas/por-observacoes?termo=Primeira"
       },
       {
+        "nome": "Consultar horários disponíveis",
+        "method": "GET",
+        "url": "/agendas/disponibilidade?psicologoId=1&data=2026-11-16&duracaoMinutos=50"
+      },
+      {
         "nome": "Form data (novo)",
         "method": "GET",
         "url": "/agendas/form-data"
@@ -962,6 +981,10 @@
       {
         "method": "DELETE",
         "url": "/psicologos/1"
+      },
+      {
+        "method": "POST",
+        "url": "/auth/signout"
       }
     ]
   }
