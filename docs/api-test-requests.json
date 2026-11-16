@@ -88,10 +88,17 @@
           "cpf": "11122233344",
           "email": "ana@clinica.com",
           "telefone": "11999990001",
-          "senha": "senha123",
           "crp": "06/123456",
           "especialidade": "Terapia Cognitivo-Comportamental",
           "ativo": true
+        }
+      },
+      {
+        "nome": "Alterar senha",
+        "method": "PATCH",
+        "url": "/psicologos/1/senha",
+        "body": {
+          "novaSenha": "UmaNovaSenha123!"
         }
       },
       {
@@ -166,8 +173,15 @@
           "cpf": "22233344455",
           "email": "carlos@clinica.com",
           "telefone": "11999990002",
-          "senha": "senha123",
           "ativo": true
+        }
+      },
+      {
+        "nome": "Alterar senha",
+        "method": "PATCH",
+        "url": "/funcionarios/1/senha",
+        "body": {
+          "novaSenha": "UmaNovaSenha123!"
         }
       },
       {
@@ -220,9 +234,16 @@
           "cpf": "33344455566",
           "email": "mariana@clinica.com",
           "telefone": "11999990003",
-          "senha": "senha123",
           "setor": "Atendimento",
           "ativo": true
+        }
+      },
+      {
+        "nome": "Alterar senha",
+        "method": "PATCH",
+        "url": "/recepcionistas/1/senha",
+        "body": {
+          "novaSenha": "UmaNovaSenha123!"
         }
       },
       {

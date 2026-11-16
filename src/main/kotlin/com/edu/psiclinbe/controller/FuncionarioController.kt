@@ -1,6 +1,8 @@
 package com.edu.psiclinbe.controller
 
 import com.edu.psiclinbe.dto.request.FuncionarioDtoRequest
+import com.edu.psiclinbe.dto.request.FuncionarioDtoUpdateRequest
+import com.edu.psiclinbe.dto.request.AlterarSenhaDtoRequest
 import com.edu.psiclinbe.dto.response.FuncionarioDtoResponse
 import com.edu.psiclinbe.service.FuncionarioService
 import jakarta.validation.Valid
@@ -55,9 +57,16 @@ class FuncionarioController(
     @PutMapping("/{id}")
     fun update(
         @PathVariable id: Long,
-        @Valid @RequestBody dto: FuncionarioDtoRequest,
+        @Valid @RequestBody dto: FuncionarioDtoUpdateRequest,
     ): ResponseEntity<FuncionarioDtoResponse> =
         ResponseEntity.ok(funcionarioService.atualizar(id, dto))
+
+    @PatchMapping("/{id}/senha")
+    fun updatePassword(
+        @PathVariable id: Long,
+        @Valid @RequestBody dto: AlterarSenhaDtoRequest,
+    ): ResponseEntity<FuncionarioDtoResponse> =
+        ResponseEntity.ok(funcionarioService.alterarSenha(id, dto))
 
     @PatchMapping("/{id}/inativar")
     fun deactivate(@PathVariable id: Long): ResponseEntity<FuncionarioDtoResponse> =

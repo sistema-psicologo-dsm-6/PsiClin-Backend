@@ -1,6 +1,8 @@
 package com.edu.psiclinbe.service
 
 import com.edu.psiclinbe.dto.request.PsicologoDtoRequest
+import com.edu.psiclinbe.dto.request.PsicologoDtoUpdateRequest
+import com.edu.psiclinbe.dto.request.AlterarSenhaDtoRequest
 import com.edu.psiclinbe.dto.response.PsicologoDtoResponse
 import com.edu.psiclinbe.mapper.PsicologoMapper
 import com.edu.psiclinbe.model.enums.Role
@@ -72,7 +74,7 @@ class PsicologoService(
 
     fun atualizar(
         id: Long,
-        dto: PsicologoDtoRequest
+        dto: PsicologoDtoUpdateRequest
     ): PsicologoDtoResponse {
 
         val psicologo = psicologoRepository.findById(id)
@@ -96,11 +98,21 @@ class PsicologoService(
             telefone = dto.telefone
             crp = dto.crp
             especialidade = dto.especialidade
+            ativo = dto.ativo
         }
 
         return psicologoMapper.toResponse(
             psicologoRepository.save(psicologo)
         )
+    }
+
+    fun alterarSenha(id: Long, dto: AlterarSenhaDtoRequest): PsicologoDtoResponse {
+        val psicologo = psicologoRepository.findById(id)
+            .orElseThrow {
+                NoSuchElementException("Psicólogo não encontrado com id: $id")
+            }
+        psicologo.senha = passwordEncoder.encode(dto.novaSenha)!!
+        return psicologoMapper.toResponse(psicologoRepository.save(psicologo))
     }
 
     fun inativar(id: Long): PsicologoDtoResponse {

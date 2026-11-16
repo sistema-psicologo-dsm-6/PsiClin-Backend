@@ -353,6 +353,16 @@ Content-Type: application/json
 }
 ```
 
+### Senhas de funcionários, psicólogos e recepcionistas
+
+A senha é obrigatória na criação e armazenada de forma codificada. Na edição (`PUT`), não envie senha: ela permanece inalterada. Para alterá-la, use `PATCH /{id}/senha` na rota correspondente (`/funcionarios`, `/psicologos` ou `/recepcionistas`), enviando:
+
+```json
+{ "novaSenha": "UmaNovaSenha123!" }
+```
+
+Essas operações de escrita exigem autenticação como ADMIN. As respostas da API não incluem senha.
+
 ### Testando a API
 
 - `docs/api-tests.http`: coleção para a extensão REST Client (usa porta 8081, faz login como ADMIN e inclui casos 401/403). Ajuste `@adminEmail` e `@adminSenha` no topo.

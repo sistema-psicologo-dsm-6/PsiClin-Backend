@@ -136,10 +136,18 @@ Content-Type: {{json}}
   "cpf": "{{criaPsicologo.response.body.$.cpf}}",
   "email": "{{criaPsicologo.response.body.$.email}}",
   "telefone": "{{criaPsicologo.response.body.$.telefone}}",
-  "senha": "ApiTest123!",
   "crp": "{{criaPsicologo.response.body.$.crp}}",
   "especialidade": "ApiTestTCC",
   "ativo": true
+}
+
+### Psicólogos - alterar senha
+PATCH {{baseUrl}}/psicologos/{{criaPsicologo.response.body.$.id}}/senha
+Authorization: Bearer {{token}}
+Content-Type: {{json}}
+
+{
+  "novaSenha": "ApiTestNovaSenha123!"
 }
 
 ### Psicólogos - inativar
@@ -210,8 +218,16 @@ Content-Type: {{json}}
   "cpf": "{{criaFuncionario.response.body.$.cpf}}",
   "email": "{{criaFuncionario.response.body.$.email}}",
   "telefone": "{{criaFuncionario.response.body.$.telefone}}",
-  "senha": "ApiTest123!",
   "ativo": true
+}
+
+### Funcionários - alterar senha
+PATCH {{baseUrl}}/funcionarios/{{criaFuncionario.response.body.$.id}}/senha
+Authorization: Bearer {{token}}
+Content-Type: {{json}}
+
+{
+  "novaSenha": "ApiTestNovaSenha123!"
 }
 
 ### Funcionários - inativar
@@ -260,9 +276,17 @@ Content-Type: {{json}}
   "cpf": "{{criaRecepcionista.response.body.$.cpf}}",
   "email": "{{criaRecepcionista.response.body.$.email}}",
   "telefone": "{{criaRecepcionista.response.body.$.telefone}}",
-  "senha": "ApiTest123!",
   "setor": "ApiTestAtualizado",
   "ativo": true
+}
+
+### Recepcionistas - alterar senha
+PATCH {{baseUrl}}/recepcionistas/{{criaRecepcionista.response.body.$.id}}/senha
+Authorization: Bearer {{token}}
+Content-Type: {{json}}
+
+{
+  "novaSenha": "ApiTestNovaSenha123!"
 }
 
 ### Recepcionistas - inativar

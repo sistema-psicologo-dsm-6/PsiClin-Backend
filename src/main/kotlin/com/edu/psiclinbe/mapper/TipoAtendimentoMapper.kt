@@ -23,5 +23,6 @@ class TipoAtendimentoMapper {
             descricao = tipoAtendimento.descricao,
             duracao = tipoAtendimento.duracao,
             ativo = tipoAtendimento.ativo,
+            dataCadastro = tipoAtendimento.dataCadastro,
         )
 }

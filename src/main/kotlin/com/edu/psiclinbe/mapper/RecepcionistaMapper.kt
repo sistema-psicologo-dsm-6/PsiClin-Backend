@@ -27,8 +27,8 @@ class RecepcionistaMapper {
             cpf = recepcionista.cpf,
             email = recepcionista.email,
             telefone = recepcionista.telefone,
-            senha = "",
             setor = recepcionista.setor,
             ativo = recepcionista.ativo,
+            dataCadastro = recepcionista.dataCadastro,
         )
 }

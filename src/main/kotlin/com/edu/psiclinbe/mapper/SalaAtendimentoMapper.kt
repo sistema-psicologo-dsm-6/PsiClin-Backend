@@ -23,5 +23,6 @@ class SalaAtendimentoMapper {
             descricao = sala.descricao,
             capacidade = sala.capacidade,
             ativo = sala.ativo,
+            dataCadastro = sala.dataCadastro,
         )
 }

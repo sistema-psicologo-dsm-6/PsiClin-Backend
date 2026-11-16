@@ -1,6 +1,8 @@
 package com.edu.psiclinbe.service
 
 import com.edu.psiclinbe.dto.request.FuncionarioDtoRequest
+import com.edu.psiclinbe.dto.request.FuncionarioDtoUpdateRequest
+import com.edu.psiclinbe.dto.request.AlterarSenhaDtoRequest
 import com.edu.psiclinbe.dto.response.FuncionarioDtoResponse
 import com.edu.psiclinbe.mapper.FuncionarioMapper
 import com.edu.psiclinbe.model.Funcionario
@@ -76,7 +78,7 @@ class FuncionarioService(
         return salvar(dto.copy(role = Role.ADMIN))
     }
 
-    fun atualizar(id: Long, dto: FuncionarioDtoRequest): FuncionarioDtoResponse {
+    fun atualizar(id: Long, dto: FuncionarioDtoUpdateRequest): FuncionarioDtoResponse {
         val funcionario = funcionarioRepository.findById(id)
             .orElseThrow { NoSuchElementException("Funcionário não encontrado com id: $id") }
 
@@ -86,11 +88,13 @@ class FuncionarioService(
         funcionario.telefone = dto.telefone
         funcionario.ativo = dto.ativo
 
-        if (dto.senha.isNotBlank()) {
-            funcionario.senha =
-                passwordEncoder.encode(dto.senha)!!
-        }
+        return funcionarioMapper.toResponse(funcionarioRepository.save(funcionario))
+    }
 
+    fun alterarSenha(id: Long, dto: AlterarSenhaDtoRequest): FuncionarioDtoResponse {
+        val funcionario = funcionarioRepository.findById(id)
+            .orElseThrow { NoSuchElementException("Funcionário não encontrado com id: $id") }
+        funcionario.senha = passwordEncoder.encode(dto.novaSenha)!!
         return funcionarioMapper.toResponse(funcionarioRepository.save(funcionario))
     }
 

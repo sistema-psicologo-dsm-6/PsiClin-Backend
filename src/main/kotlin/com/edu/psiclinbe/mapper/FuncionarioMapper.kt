@@ -25,8 +25,8 @@ class FuncionarioMapper {
             cpf = funcionario.cpf,
             email = funcionario.email,
             telefone = funcionario.telefone,
-            senha = null,
             ativo = funcionario.ativo,
             role = funcionario.role,
+            dataCadastro = funcionario.dataCadastro,
         )
 }

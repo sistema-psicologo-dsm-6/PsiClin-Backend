@@ -1,6 +1,8 @@
 ﻿package com.edu.psiclinbe.service
 
 import com.edu.psiclinbe.dto.request.RecepcionistaDtoRequest
+import com.edu.psiclinbe.dto.request.RecepcionistaDtoUpdateRequest
+import com.edu.psiclinbe.dto.request.AlterarSenhaDtoRequest
 import com.edu.psiclinbe.dto.response.RecepcionistaDtoResponse
 import com.edu.psiclinbe.mapper.RecepcionistaMapper
 import com.edu.psiclinbe.model.Recepcionista
@@ -35,13 +37,20 @@ class RecepcionistaService(
         return recepcionistaMapper.toResponse(salvo)
     }
 
-    fun atualizarRecepcionista(id: Long, dto: RecepcionistaDtoRequest): RecepcionistaDtoResponse {
+    fun atualizarRecepcionista(id: Long, dto: RecepcionistaDtoUpdateRequest): RecepcionistaDtoResponse {
         val recepcionista = buscarEntidade(id)
         recepcionista.setor = dto.setor
         recepcionista.telefone = dto.telefone
         recepcionista.nome = dto.nome
         recepcionista.email = dto.email
         recepcionista.cpf = dto.cpf
+        recepcionista.ativo = dto.ativo
+        return recepcionistaMapper.toResponse(recepcionistaRepository.save(recepcionista))
+    }
+
+    fun alterarSenha(id: Long, dto: AlterarSenhaDtoRequest): RecepcionistaDtoResponse {
+        val recepcionista = buscarEntidade(id)
+        recepcionista.senha = passwordEncoder.encode(dto.novaSenha)!!
         return recepcionistaMapper.toResponse(recepcionistaRepository.save(recepcionista))
     }
 
