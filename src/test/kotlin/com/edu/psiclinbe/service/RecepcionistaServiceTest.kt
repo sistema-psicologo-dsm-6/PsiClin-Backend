@@ -54,6 +54,14 @@ class RecepcionistaServiceTest {
     }
 
     @Test
+    fun `finds receptionist by authenticated email`() {
+        Mockito.`when`(repository.findByEmail(request.email)).thenReturn(recepcionista)
+        Mockito.`when`(mapper.toResponse(recepcionista)).thenReturn(response)
+
+        assertSame(response, service.buscarPorEmail(request.email))
+    }
+
+    @Test
     fun `encodes password and assigns receptionist role on create`() {
         Mockito.`when`(mapper.toModel(request)).thenReturn(recepcionista)
         Mockito.`when`(encoder.encode(request.senha)).thenReturn("hash")

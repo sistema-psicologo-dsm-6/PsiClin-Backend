@@ -2,7 +2,7 @@
   "_leia-me": [
     "Base URL: http://localhost:8080 (padrão; PORT/SERVER_PORT podem alterar). Não há cadastro público; a conta ADMIN inicial deve ser provisionada por processo operacional seguro.",
     "Autenticação: /auth/signin é público; use o token como Authorization: Bearer <token> nas rotas protegidas. /auth/signout exige autenticação e responde 204; como o token é stateless, descarte-o no cliente.",
-    "Perfis: /funcionarios/** = ADMIN; /psicologos/** GET = ADMIN|RECEPCIONISTA|PSICOLOGO, escrita = ADMIN; /recepcionistas/** GET = ADMIN|RECEPCIONISTA, escrita = ADMIN; /prontuarios/** e /evolucoes-clinicas/** = ADMIN|PSICOLOGO.",
+    "Perfis: /funcionarios/** = ADMIN; /psicologos/** GET = ADMIN|RECEPCIONISTA|PSICOLOGO, escrita = ADMIN; GET /recepcionistas/me = ADMIN|RECEPCIONISTA, demais /recepcionistas/** = ADMIN; /prontuarios/** e /evolucoes-clinicas/** = ADMIN|PSICOLOGO.",
     "Perfis: /horarios-disponiveis/** e /bloqueios-agenda/** GET = ADMIN|RECEPCIONISTA|PSICOLOGO, escrita = ADMIN|PSICOLOGO; /pagamentos/** = ADMIN|RECEPCIONISTA; /agendas/**, /pacientes/**, /convenios/**, /salas-atendimento/** e /tipos-atendimento/** GET = todos os perfis, escrita = ADMIN|RECEPCIONISTA. Outras rotas são negadas; sem autenticação = 401 e sem permissão = 403.",
     "Variável obrigatória: JWT_SECRET no .env (gere com 'openssl rand -base64 48'; veja o README).",
     "A coleção executável api-tests.http usa IDs devolvidos pela API e aponta para localhost:8080 por padrão.",

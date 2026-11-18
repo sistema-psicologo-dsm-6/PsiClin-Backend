@@ -72,14 +72,14 @@ class SecurityConfig(
                 it.requestMatchers("/auth/signin").permitAll()
                 it.requestMatchers("/auth/signout").authenticated()
 
-                 // Somente ADMIN gerencia usuários
+                 // Somente ADMIN acessa o módulo de funcionários
                  it.requestMatchers("/funcionarios/**").hasRole(admin)
 
                  // Equipe: leitura para todos, escrita só ADMIN
                  it.requestMatchers(HttpMethod.GET, "/psicologos/**")
                      .hasAnyRole(admin, recep, psi)
                  it.requestMatchers("/psicologos/**").hasRole(admin)
-                 it.requestMatchers(HttpMethod.GET, "/recepcionistas/**")
+                 it.requestMatchers(HttpMethod.GET, "/recepcionistas/me")
                      .hasAnyRole(admin, recep)
                  it.requestMatchers("/recepcionistas/**").hasRole(admin)
 

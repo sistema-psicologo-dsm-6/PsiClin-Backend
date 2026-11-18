@@ -377,7 +377,8 @@ A resposta é `{ "token": "..." }`. Envie o token em todas as demais requisiçõ
 | `PUT /funcionarios/{id}` | ADMIN; atualiza dados, role e senha (senha vazia mantém a atual) |
 | Demais `/funcionarios/**` | ADMIN |
 | `/psicologos/**` | GET: ADMIN, RECEPCIONISTA, PSICOLOGO; escrita: ADMIN |
-| `/recepcionistas/**` | GET: ADMIN, RECEPCIONISTA; escrita: ADMIN |
+| `GET /recepcionistas/me` | ADMIN, RECEPCIONISTA; retorna somente o cadastro da recepcionista autenticada |
+| Demais `/recepcionistas/**` | ADMIN |
 | `/prontuarios/**`, `/evolucoes-clinicas/**` | ADMIN, PSICOLOGO |
 | `/horarios-disponiveis/**`, `/bloqueios-agenda/**` | GET: todos os perfis; escrita: ADMIN, PSICOLOGO |
 | `/pagamentos/**` | ADMIN, RECEPCIONISTA |

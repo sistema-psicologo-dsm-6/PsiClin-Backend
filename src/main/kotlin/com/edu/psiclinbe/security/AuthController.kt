@@ -2,7 +2,7 @@ package com.edu.psiclinbe.security
 
 import com.edu.psiclinbe.dto.request.SigninRequest
 import com.edu.psiclinbe.dto.response.AuthResponse
-import com.edu.psiclinbe.service.FuncionarioService
+import com.edu.psiclinbe.model.enums.Role
 import org.springframework.http.ResponseEntity
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/auth")
 class AuthController(
     private val authenticationManager: AuthenticationManager,
-    private val funcionarioService: FuncionarioService,
     private val jwtUtil: JwtUtil
 ) {
 
@@ -23,12 +22,18 @@ class AuthController(
         @RequestBody request: SigninRequest
     ): ResponseEntity<AuthResponse> {
 
-        authenticationManager.authenticate(
+        val authentication = authenticationManager.authenticate(
             UsernamePasswordAuthenticationToken(
                 request.email,
                 request.senha
             )
         )
+
+        val roleAuthority = authentication.authorities
+            .firstOrNull { it.authority?.startsWith("ROLE_") == true }
+            ?.authority
+            ?: throw IllegalStateException("Perfil não encontrado na autenticação")
+        val role = Role.valueOf(roleAuthority.removePrefix("ROLE_"))
 
         val token =
             jwtUtil.generateToken(
@@ -36,7 +41,7 @@ class AuthController(
             )
 
         return ResponseEntity.ok(
-            AuthResponse(token)
+            AuthResponse(token, role)
         )
     }
 

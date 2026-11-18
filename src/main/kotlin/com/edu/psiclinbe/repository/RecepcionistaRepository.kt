@@ -9,4 +9,5 @@ interface RecepcionistaRepository: JpaRepository<Recepcionista, Long> {
 	@Query("SELECT r FROM Recepcionista r WHERE LOWER(r.setor) LIKE LOWER(CONCAT('%', :setor, '%'))")
 	fun findBySetorContainingIgnoreCase(@Param("setor") setor: String): List<Recepcionista>
 	fun findByAtivoTrue(): List<Recepcionista>
+	fun findByEmail(email: String): Recepcionista?
 }

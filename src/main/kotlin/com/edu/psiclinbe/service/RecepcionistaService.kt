@@ -21,6 +21,12 @@ class RecepcionistaService(
     fun buscarRecepcionista(id: Long): RecepcionistaDtoResponse =
         recepcionistaMapper.toResponse(buscarEntidade(id))
 
+    fun buscarPorEmail(email: String): RecepcionistaDtoResponse {
+        val recepcionista = recepcionistaRepository.findByEmail(email)
+            ?: throw NoSuchElementException("Recepcionista com e-mail $email não existe")
+        return recepcionistaMapper.toResponse(recepcionista)
+    }
+
     fun cadastrarRecepcionista(
         dto: RecepcionistaDtoRequest
     ): RecepcionistaDtoResponse {

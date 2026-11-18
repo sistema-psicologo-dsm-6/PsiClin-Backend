@@ -4,6 +4,7 @@ import com.edu.psiclinbe.dto.request.RecepcionistaDtoRequest
 import com.edu.psiclinbe.dto.response.RecepcionistaDtoResponse
 import com.edu.psiclinbe.service.RecepcionistaService
 import jakarta.validation.Valid
+import org.springframework.security.core.Authentication
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -29,6 +30,10 @@ class RecepcionistaController(
     @GetMapping("/ativos")
     fun indexActive(): ResponseEntity<List<RecepcionistaDtoResponse>> =
         ResponseEntity.ok(recepcionistaService.buscarRecepcionistasAtivos())
+
+    @GetMapping("/me")
+    fun current(authentication: Authentication): ResponseEntity<RecepcionistaDtoResponse> =
+        ResponseEntity.ok(recepcionistaService.buscarPorEmail(authentication.name))
 
     @GetMapping("/{id}")
     fun show(@PathVariable id: Long): ResponseEntity<RecepcionistaDtoResponse> =

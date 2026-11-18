@@ -20,6 +20,7 @@ Content-Type: {{json}}
 
 ###
 @token = {{login.response.body.$.token}}
+@role = {{login.response.body.$.role}}
 
 ### Auth - signin com senha errada (esperado 401)
 POST {{baseUrl}}/auth/signin
@@ -75,6 +76,14 @@ Authorization: Bearer {{loginRecep.response.body.$.token}}
 GET {{baseUrl}}/funcionarios
 Authorization: Bearer {{loginRecep.response.body.$.token}}
 
+### Seguranca - RECEPCIONISTA consulta o próprio perfil (esperado 200)
+GET {{baseUrl}}/recepcionistas/me
+Authorization: Bearer {{loginRecep.response.body.$.token}}
+
+### Seguranca - RECEPCIONISTA não lista outros recepcionistas (esperado 403)
+GET {{baseUrl}}/recepcionistas
+Authorization: Bearer {{loginRecep.response.body.$.token}}
+
 ### Psicólogos - criar
 # @name criaPsicologo
 POST {{baseUrl}}/psicologos
@@ -91,6 +100,20 @@ Content-Type: {{json}}
   "especialidade": "ApiTestTCC",
   "ativo": true
 }
+
+### Seguranca - signin como PSICOLOGO
+# @name loginPsi
+POST {{baseUrl}}/auth/signin
+Content-Type: {{json}}
+
+{
+  "email": "{{criaPsicologo.response.body.$.email}}",
+  "senha": "ApiTest123!"
+}
+
+### Seguranca - PSICOLOGO acessa funcionarios (esperado 403)
+GET {{baseUrl}}/funcionarios
+Authorization: Bearer {{loginPsi.response.body.$.token}}
 
 ### Psicólogos - listar
 GET {{baseUrl}}/psicologos
