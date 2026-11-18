@@ -1,6 +1,8 @@
 package com.edu.psiclinbe.controller
 
 import com.edu.psiclinbe.dto.request.RecepcionistaDtoRequest
+import com.edu.psiclinbe.dto.request.RecepcionistaDtoUpdateRequest
+import com.edu.psiclinbe.dto.request.AlterarSenhaRequest
 import com.edu.psiclinbe.dto.response.RecepcionistaDtoResponse
 import com.edu.psiclinbe.service.RecepcionistaService
 import jakarta.validation.Valid
@@ -52,7 +54,7 @@ class RecepcionistaController(
     @PutMapping("/{id}")
     fun update(
         @PathVariable id: Long,
-        @Valid @RequestBody dto: RecepcionistaDtoRequest,
+        @Valid @RequestBody dto: RecepcionistaDtoUpdateRequest,
     ): ResponseEntity<RecepcionistaDtoResponse> =
         ResponseEntity.ok(recepcionistaService.atualizarRecepcionista(id, dto))
 

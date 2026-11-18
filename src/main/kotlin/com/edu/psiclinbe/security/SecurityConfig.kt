@@ -1,5 +1,6 @@
 package com.edu.psiclinbe.security
 
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpMethod
@@ -12,6 +13,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
+import org.springframework.web.cors.CorsConfiguration
+import org.springframework.web.cors.CorsConfigurationSource
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 
 @EnableMethodSecurity
 @Configuration
@@ -50,11 +54,32 @@ class SecurityConfig(
     }
 
     @Bean
+    fun corsConfigurationSource(
+        @Value("\${app.cors.allowed-origins}") allowedOrigins: String
+    ): CorsConfigurationSource {
+        val corsConfiguration = CorsConfiguration().apply {
+            setAllowedOrigins(allowedOrigins.split(',')
+                .map(String::trim)
+                .filter(String::isNotEmpty))
+            setAllowedMethods(listOf("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"))
+            setAllowedHeaders(listOf("Authorization", "Content-Type", "Accept"))
+            setAllowCredentials(false)
+            setMaxAge(3600)
+        }
+
+        return UrlBasedCorsConfigurationSource().apply {
+            registerCorsConfiguration("/**", corsConfiguration)
+        }
+    }
+
+    @Bean
     fun securityFilterChain(
-        http: HttpSecurity
+        http: HttpSecurity,
+        corsConfigurationSource: CorsConfigurationSource
     ): SecurityFilterChain {
 
         return http
+            .cors { it.configurationSource(corsConfigurationSource) }
             .csrf { it.disable() }
 
             .sessionManagement {

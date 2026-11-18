@@ -4,6 +4,7 @@ import com.edu.psiclinbe.dto.request.FuncionarioDtoRequest
 import com.edu.psiclinbe.dto.response.FuncionarioDtoResponse
 import com.edu.psiclinbe.mapper.FuncionarioMapper
 import com.edu.psiclinbe.model.Funcionario
+import com.edu.psiclinbe.model.enums.Role
 import com.edu.psiclinbe.repository.FuncionarioRepository
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
@@ -17,30 +18,36 @@ class FuncionarioService(
 ) {
 
     fun listarTodos(): List<FuncionarioDtoResponse> =
-        funcionarioRepository.findAll().map(funcionarioMapper::toResponse)
+        funcionarioRepository.findAll()
+            .filter { it.role == Role.ADMIN }
+            .map(funcionarioMapper::toResponse)
 
     fun listarAtivos(): List<FuncionarioDtoResponse> =
-        funcionarioRepository.findByAtivoTrue().map(funcionarioMapper::toResponse)
+        funcionarioRepository.findByAtivoTrue()
+            .filter { it.role == Role.ADMIN }
+            .map(funcionarioMapper::toResponse)
 
     fun buscarPorId(id: Long): FuncionarioDtoResponse {
         val funcionario = funcionarioRepository.findById(id)
             .orElseThrow { NoSuchElementException("Funcionário não encontrado com id: $id") }
-        return funcionarioMapper.toResponse(funcionario)
+        return toAdminResponse(funcionario)
     }
 
     fun buscarPorNome(nome: String): List<FuncionarioDtoResponse> =
-        funcionarioRepository.buscarPorNomeParcial(nome).map(funcionarioMapper::toResponse)
+        funcionarioRepository.buscarPorNomeParcial(nome)
+            .filter { it.role == Role.ADMIN }
+            .map(funcionarioMapper::toResponse)
 
     fun buscarPorEmail(email: String): FuncionarioDtoResponse {
         val funcionario = funcionarioRepository.findByEmail(email)
             ?: throw NoSuchElementException("Funcionário não encontrado com e-mail: $email")
-        return funcionarioMapper.toResponse(funcionario)
+        return toAdminResponse(funcionario)
     }
 
     fun buscarPorCpf(cpf: String): FuncionarioDtoResponse {
         val funcionario = funcionarioRepository.findByCpf(cpf)
             ?: throw NoSuchElementException("Funcionário não encontrado com CPF: $cpf")
-        return funcionarioMapper.toResponse(funcionario)
+        return toAdminResponse(funcionario)
     }
 
     fun salvar(dto: FuncionarioDtoRequest): FuncionarioDtoResponse {
@@ -70,7 +77,6 @@ class FuncionarioService(
         funcionario.email = dto.email
         funcionario.telefone = dto.telefone
         funcionario.ativo = dto.ativo
-        funcionario.role = dto.role
 
         if (dto.senha.isNotBlank()) {
             funcionario.senha =
@@ -93,5 +99,12 @@ class FuncionarioService(
             throw NoSuchElementException("Funcionário não encontrado com id: $id")
         }
         funcionarioRepository.deleteById(id)
+    }
+
+    private fun toAdminResponse(funcionario: Funcionario): FuncionarioDtoResponse {
+        if (funcionario.role != Role.ADMIN) {
+            throw NoSuchElementException("Funcionário não encontrado")
+        }
+        return funcionarioMapper.toResponse(funcionario)
     }
 }

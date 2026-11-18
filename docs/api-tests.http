@@ -145,7 +145,7 @@ Content-Type: {{json}}
   "cpf": "{{criaPsicologo.response.body.$.cpf}}",
   "email": "{{criaPsicologo.response.body.$.email}}",
   "telefone": "{{criaPsicologo.response.body.$.telefone}}",
-  "senha": "ApiTest123!",
+  "senha": "ApiTestNovaSenha123!",
   "crp": "{{criaPsicologo.response.body.$.crp}}",
   "especialidade": "ApiTestTCC",
   "ativo": true
@@ -167,6 +167,7 @@ Content-Type: {{json}}
   "email": "api-funcionario-{{$guid}}@example.invalid",
   "telefone": "1199{{$timestamp}}",
   "senha": "ApiTest123!",
+  "role": "ADMIN",
   "ativo": true
 }
 
@@ -220,7 +221,6 @@ Content-Type: {{json}}
   "email": "{{criaFuncionario.response.body.$.email}}",
   "telefone": "{{criaFuncionario.response.body.$.telefone}}",
   "senha": "ApiTest123!",
-  "role": "PSICOLOGO",
   "ativo": true
 }
 
@@ -270,9 +270,18 @@ Content-Type: {{json}}
   "cpf": "{{criaRecepcionista.response.body.$.cpf}}",
   "email": "{{criaRecepcionista.response.body.$.email}}",
   "telefone": "{{criaRecepcionista.response.body.$.telefone}}",
-  "senha": "ApiTest123!",
+  "senha": "ApiTestNovaSenha123!",
   "setor": "ApiTestAtualizado",
   "ativo": true
+}
+
+### Recepcionistas - alterar somente a senha (opcional; esperado 204)
+PATCH {{baseUrl}}/recepcionistas/{{criaRecepcionista.response.body.$.id}}/senha
+Authorization: Bearer {{token}}
+Content-Type: {{json}}
+
+{
+  "novaSenha": "ApiTestNovaSenha123!"
 }
 
 ### Recepcionistas - inativar

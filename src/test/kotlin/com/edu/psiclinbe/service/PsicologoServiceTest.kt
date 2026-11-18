@@ -1,6 +1,7 @@
 package com.edu.psiclinbe.service
 
 import com.edu.psiclinbe.dto.request.PsicologoDtoRequest
+import com.edu.psiclinbe.dto.request.PsicologoDtoUpdateRequest
 import com.edu.psiclinbe.dto.response.PsicologoDtoResponse
 import com.edu.psiclinbe.mapper.PsicologoMapper
 import com.edu.psiclinbe.model.Funcionario
@@ -33,6 +34,14 @@ class PsicologoServiceTest {
         senha = "senha-segura",
         crp = "CRP123",
         especialidade = "Clínica"
+    )
+    private val updateRequest = PsicologoDtoUpdateRequest(
+        nome = request.nome,
+        cpf = request.cpf,
+        email = request.email,
+        telefone = request.telefone,
+        crp = request.crp,
+        especialidade = request.especialidade
     )
 
     @Test
@@ -108,15 +117,42 @@ class PsicologoServiceTest {
         Mockito.`when`(repository.save(psicologo)).thenReturn(psicologo)
         Mockito.`when`(mapper.toResponse(psicologo)).thenReturn(response)
 
-        assertSame(response, service.atualizar(1L, request))
+        assertSame(response, service.atualizar(1L, updateRequest))
         Mockito.verify(psicologo).especialidade = request.especialidade
+        Mockito.verify(psicologo).ativo = updateRequest.ativo
+        Mockito.verify(encoder, Mockito.never()).encode("")
+    }
+
+    @Test
+    fun `updates psychologist password only when supplied`() {
+        Mockito.`when`(psicologo.id).thenReturn(1L)
+        Mockito.`when`(repository.findById(1L)).thenReturn(Optional.of(psicologo))
+        Mockito.`when`(repository.save(psicologo)).thenReturn(psicologo)
+        Mockito.`when`(mapper.toResponse(psicologo)).thenReturn(response)
+        Mockito.`when`(encoder.encode("nova-senha")).thenReturn("hash-novo")
+
+        service.atualizar(1L, updateRequest.copy(senha = "nova-senha"))
+
+        Mockito.verify(psicologo).senha = "hash-novo"
+    }
+
+    @Test
+    fun `changes psychologist password through dedicated admin operation`() {
+        Mockito.`when`(repository.findById(1L)).thenReturn(Optional.of(psicologo))
+        Mockito.`when`(repository.save(psicologo)).thenReturn(psicologo)
+        Mockito.`when`(encoder.encode("senha-admin")).thenReturn("hash-admin")
+
+        service.atualizarSenha(1L, "senha-admin")
+
+        Mockito.verify(psicologo).senha = "hash-admin"
+        Mockito.verify(repository).save(psicologo)
     }
 
     @Test
     fun `rejects update for missing psychologist`() {
         Mockito.`when`(repository.findById(404L)).thenReturn(Optional.empty())
 
-        assertFailsWith<NoSuchElementException> { service.atualizar(404L, request) }
+        assertFailsWith<NoSuchElementException> { service.atualizar(404L, updateRequest) }
     }
 
     @Test

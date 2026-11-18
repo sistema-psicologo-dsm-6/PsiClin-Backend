@@ -32,19 +32,24 @@ class FuncionarioServiceTest {
 
     @Test
     fun `lists and searches employees`() {
-        Mockito.`when`(repository.findAll()).thenReturn(listOf(funcionario))
-        Mockito.`when`(repository.findByAtivoTrue()).thenReturn(listOf(funcionario))
+        val recepcionista = Mockito.mock(Funcionario::class.java)
+        Mockito.`when`(funcionario.role).thenReturn(Role.ADMIN)
+        Mockito.`when`(recepcionista.role).thenReturn(Role.RECEPCIONISTA)
+        Mockito.`when`(repository.findAll()).thenReturn(listOf(funcionario, recepcionista))
+        Mockito.`when`(repository.findByAtivoTrue()).thenReturn(listOf(funcionario, recepcionista))
         Mockito.`when`(repository.buscarPorNomeParcial("Admin"))
-            .thenReturn(listOf(funcionario))
+            .thenReturn(listOf(funcionario, recepcionista))
         Mockito.`when`(mapper.toResponse(funcionario)).thenReturn(response)
 
         assertEquals(listOf(response), service.listarTodos())
         assertEquals(listOf(response), service.listarAtivos())
         assertEquals(listOf(response), service.buscarPorNome("Admin"))
+        Mockito.verify(mapper, Mockito.never()).toResponse(recepcionista)
     }
 
     @Test
     fun `finds employee by id email and cpf`() {
+        Mockito.`when`(funcionario.role).thenReturn(Role.ADMIN)
         Mockito.`when`(repository.findById(1L)).thenReturn(Optional.of(funcionario))
         Mockito.`when`(repository.findByEmail(request.email)).thenReturn(funcionario)
         Mockito.`when`(repository.findByCpf(request.cpf)).thenReturn(funcionario)
@@ -53,6 +58,19 @@ class FuncionarioServiceTest {
         assertSame(response, service.buscarPorId(1L))
         assertSame(response, service.buscarPorEmail(request.email))
         assertSame(response, service.buscarPorCpf(request.cpf))
+    }
+
+    @Test
+    fun `hides non-admin employees from direct employee lookups`() {
+        val recepcionista = Mockito.mock(Funcionario::class.java)
+        Mockito.`when`(recepcionista.role).thenReturn(Role.RECEPCIONISTA)
+        Mockito.`when`(repository.findById(2L)).thenReturn(Optional.of(recepcionista))
+        Mockito.`when`(repository.findByEmail(request.email)).thenReturn(recepcionista)
+        Mockito.`when`(repository.findByCpf(request.cpf)).thenReturn(recepcionista)
+
+        assertFailsWith<NoSuchElementException> { service.buscarPorId(2L) }
+        assertFailsWith<NoSuchElementException> { service.buscarPorEmail(request.email) }
+        assertFailsWith<NoSuchElementException> { service.buscarPorCpf(request.cpf) }
     }
 
     @Test
@@ -94,15 +112,15 @@ class FuncionarioServiceTest {
     }
 
     @Test
-    fun `updates employee and only rehashes nonblank password`() {
+    fun `updates employee without changing role and only rehashes nonblank password`() {
         Mockito.`when`(repository.findById(1L)).thenReturn(Optional.of(funcionario))
         Mockito.`when`(repository.save(funcionario)).thenReturn(funcionario)
         Mockito.`when`(mapper.toResponse(funcionario)).thenReturn(response)
         Mockito.`when`(encoder.encode("nova-senha")).thenReturn("hash-novo")
 
-        assertSame(response, service.atualizar(1L, request.copy(senha = "")))
+        assertSame(response, service.atualizar(1L, request.copy(senha = "", role = Role.ADMIN)))
         Mockito.verify(encoder, Mockito.never()).encode("")
-        Mockito.verify(funcionario).role = request.role
+        Mockito.verify(funcionario, Mockito.never()).role = Role.ADMIN
         assertSame(response, service.atualizar(1L, request.copy(senha = "nova-senha")))
         Mockito.verify(encoder).encode("nova-senha")
     }

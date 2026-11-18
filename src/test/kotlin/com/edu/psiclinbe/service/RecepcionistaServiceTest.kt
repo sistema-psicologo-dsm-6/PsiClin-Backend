@@ -1,6 +1,7 @@
 package com.edu.psiclinbe.service
 
 import com.edu.psiclinbe.dto.request.RecepcionistaDtoRequest
+import com.edu.psiclinbe.dto.request.RecepcionistaDtoUpdateRequest
 import com.edu.psiclinbe.dto.response.RecepcionistaDtoResponse
 import com.edu.psiclinbe.mapper.RecepcionistaMapper
 import com.edu.psiclinbe.model.Recepcionista
@@ -28,6 +29,13 @@ class RecepcionistaServiceTest {
         telefone = "11999990000",
         senha = "senha-segura",
         setor = "Recepção"
+    )
+    private val updateRequest = RecepcionistaDtoUpdateRequest(
+        nome = request.nome,
+        cpf = request.cpf,
+        email = request.email,
+        telefone = request.telefone,
+        setor = request.setor
     )
 
     @Test
@@ -79,10 +87,26 @@ class RecepcionistaServiceTest {
         Mockito.`when`(repository.save(recepcionista)).thenReturn(recepcionista)
         Mockito.`when`(mapper.toResponse(recepcionista)).thenReturn(response)
 
-        assertSame(response, service.atualizarRecepcionista(1L, request))
-        Mockito.verify(recepcionista).setor = request.setor
+        assertSame(response, service.atualizarRecepcionista(1L, updateRequest))
+        Mockito.verify(recepcionista).setor = updateRequest.setor
+        Mockito.verify(encoder, Mockito.never()).encode("")
+        Mockito.`when`(encoder.encode("nova-senha")).thenReturn("hash-novo")
+        service.atualizarRecepcionista(1L, updateRequest.copy(senha = "nova-senha"))
+        Mockito.verify(recepcionista).senha = "hash-novo"
         assertSame(response, service.desativarRecepcionista(1L))
         Mockito.verify(recepcionista).ativo = false
+    }
+
+    @Test
+    fun `changes receptionist password through dedicated admin operation`() {
+        Mockito.`when`(repository.findById(1L)).thenReturn(Optional.of(recepcionista))
+        Mockito.`when`(repository.save(recepcionista)).thenReturn(recepcionista)
+        Mockito.`when`(encoder.encode("senha-admin")).thenReturn("hash-admin")
+
+        service.atualizarSenha(1L, "senha-admin")
+
+        Mockito.verify(recepcionista).senha = "hash-admin"
+        Mockito.verify(repository).save(recepcionista)
     }
 
     @Test

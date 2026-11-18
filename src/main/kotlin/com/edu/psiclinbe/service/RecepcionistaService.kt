@@ -1,6 +1,7 @@
 ﻿package com.edu.psiclinbe.service
 
 import com.edu.psiclinbe.dto.request.RecepcionistaDtoRequest
+import com.edu.psiclinbe.dto.request.RecepcionistaDtoUpdateRequest
 import com.edu.psiclinbe.dto.response.RecepcionistaDtoResponse
 import com.edu.psiclinbe.mapper.RecepcionistaMapper
 import com.edu.psiclinbe.model.Recepcionista
@@ -41,14 +42,24 @@ class RecepcionistaService(
         return recepcionistaMapper.toResponse(salvo)
     }
 
-    fun atualizarRecepcionista(id: Long, dto: RecepcionistaDtoRequest): RecepcionistaDtoResponse {
+    fun atualizarRecepcionista(id: Long, dto: RecepcionistaDtoUpdateRequest): RecepcionistaDtoResponse {
         val recepcionista = buscarEntidade(id)
         recepcionista.setor = dto.setor
         recepcionista.telefone = dto.telefone
         recepcionista.nome = dto.nome
         recepcionista.email = dto.email
         recepcionista.cpf = dto.cpf
+        dto.senha?.takeIf(String::isNotBlank)?.let {
+            recepcionista.senha = passwordEncoder.encode(it)!!
+        }
         return recepcionistaMapper.toResponse(recepcionistaRepository.save(recepcionista))
+    }
+
+    fun atualizarSenha(id: Long, novaSenha: String) {
+        require(novaSenha.isNotBlank()) { "A senha não pode estar vazia" }
+        val recepcionista = buscarEntidade(id)
+        recepcionista.senha = passwordEncoder.encode(novaSenha)!!
+        recepcionistaRepository.save(recepcionista)
     }
 
     fun desativarRecepcionista(id: Long): RecepcionistaDtoResponse {

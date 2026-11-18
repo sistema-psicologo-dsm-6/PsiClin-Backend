@@ -13,6 +13,7 @@ import static org.mockito.Mockito.when;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.edu.psiclinbe.dto.request.RecepcionistaDtoRequest;
+import com.edu.psiclinbe.dto.request.RecepcionistaDtoUpdateRequest;
 import com.edu.psiclinbe.dto.response.RecepcionistaDtoResponse;
 import com.edu.psiclinbe.mapper.RecepcionistaMapper;
 import com.edu.psiclinbe.model.Recepcionista;
@@ -29,6 +30,9 @@ class RecepcionistaServiceJavaTest {
     private final RecepcionistaDtoRequest request = new RecepcionistaDtoRequest(
             null, "Joana", "12345678900", "joana@example.com", "11999990000",
             "password", "Recepção", true);
+        private final RecepcionistaDtoUpdateRequest updateRequest = new RecepcionistaDtoUpdateRequest(
+            "Joana", "12345678900", "joana@example.com", "11999990000", null,
+            "Recepção", true);
 
     @Test
     void listsAndSearchesReceptionists() {
@@ -63,7 +67,7 @@ class RecepcionistaServiceJavaTest {
         when(mapper.toResponse(receptionist)).thenReturn(response);
 
         assertSame(response, service.buscarRecepcionista(1L));
-        assertSame(response, service.atualizarRecepcionista(1L, request));
+        assertSame(response, service.atualizarRecepcionista(1L, updateRequest));
         assertSame(response, service.desativarRecepcionista(1L));
         service.excluitRecepcionista(1L);
         assertThrows(RuntimeException.class, () -> service.buscarRecepcionista(404L));

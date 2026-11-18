@@ -186,6 +186,7 @@ As variáveis disponíveis são:
 | `DB_PASSWORD` | Senha do banco | Defina no `.env`; não use uma senha real no `.env.example` |
 | `SERVER_PORT` | Porta HTTP da aplicação | `8080` |
 | `JWT_SECRET` | Chave secreta usada para assinar os tokens JWT (mínimo de 32 caracteres) | **Obrigatória, sem valor padrão** |
+| `CORS_ALLOWED_ORIGINS` | Origins autorizadas para chamadas browser cross-origin, separadas por vírgula | `http://localhost:5173,http://localhost:3000,http://localhost:4200` |
 
 #### Gerando a `JWT_SECRET`
 
@@ -368,13 +369,17 @@ Content-Type: application/json
 { "email": "admin@psiclin.local", "senha": "Admin123!" }
 ```
 
-A resposta é `{ "token": "..." }`. Envie o token em todas as demais requisições: `Authorization: Bearer <token>`. Sem token ou com token inválido a API responde `401`; com um perfil sem permissão, `403`.
+A resposta é `{ "token": "...", "role": "ADMIN" }`. Envie o token em todas as demais requisições: `Authorization: Bearer <token>`. Sem token ou com token inválido a API responde `401`; com um perfil sem permissão, `403`.
 
 | Rota | Perfis com acesso |
 | --- | --- |
 | `/auth/signin` | Público |
+| `GET /funcionarios/**` | ADMIN; retorna somente registros com role `ADMIN` |
 | `POST /funcionarios` | ADMIN; cria funcionários/usuários. Se `role` for omitida, assume `RECEPCIONISTA` |
-| `PUT /funcionarios/{id}` | ADMIN; atualiza dados, role e senha (senha vazia mantém a atual) |
+| `PUT /funcionarios/{id}` | ADMIN; atualiza dados e senha (senha vazia mantém a atual), preservando a role atual |
+| `PUT /psicologos/{id}` | ADMIN; edita dados e, opcionalmente, a senha no mesmo pedido |
+| `PUT /recepcionistas/{id}` | ADMIN; edita dados e, opcionalmente, a senha no mesmo pedido |
+| `PATCH /recepcionistas/{id}/senha` | ADMIN; operação opcional exclusiva para alteração de senha |
 | Demais `/funcionarios/**` | ADMIN |
 | `/psicologos/**` | GET: ADMIN, RECEPCIONISTA, PSICOLOGO; escrita: ADMIN |
 | `GET /recepcionistas/me` | ADMIN, RECEPCIONISTA; retorna somente o cadastro da recepcionista autenticada |
@@ -388,7 +393,7 @@ Qualquer outra rota é negada.
 
 ### Gestão de usuários
 
-Não existe cadastro público. A conta ADMIN inicial deve ser provisionada fora das rotas HTTP por um processo operacional controlado. Depois, somente ADMIN pode criar usuários com `POST /funcionarios` e editar seus dados, role e senha com `PUT /funcionarios/{id}`.
+Não existe cadastro público. A conta ADMIN inicial deve ser provisionada fora das rotas HTTP por um processo operacional controlado. Depois, somente ADMIN pode criar usuários com `POST /funcionarios` e editar funcionários com as rotas da tabela. Nos PUT de psicólogos e recepcionistas, envie `senha` junto com os demais campos para alterá-la; se omitir o campo ou enviá-lo vazio/null, a senha atual é mantida. A role não é alterada pelo PUT. A rota PATCH de senha de recepcionista continua disponível para clientes que precisem alterar somente a senha.
 
 ### Testando a API
 
