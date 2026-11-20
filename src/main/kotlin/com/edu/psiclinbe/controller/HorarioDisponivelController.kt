@@ -15,6 +15,7 @@ import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.PutMapping
+import org.springframework.security.core.Authentication
 
 @RestController
 @RequestMapping("/horarios-disponiveis")
@@ -27,6 +28,14 @@ class HorarioDisponivelController(
         ResponseEntity.ok(
             service.listarTodos()
         )
+
+    @GetMapping("/ativos")
+    fun indexActive(): ResponseEntity<List<HorarioDisponivelDtoResponse>> =
+        ResponseEntity.ok(service.listarAtivos())
+
+    @GetMapping("/inativos")
+    fun indexInactive(): ResponseEntity<List<HorarioDisponivelDtoResponse>> =
+        ResponseEntity.ok(service.listarInativos())
 
     @GetMapping("/{id}")
     fun show(
@@ -74,10 +83,11 @@ class HorarioDisponivelController(
     @PutMapping("/{id}")
     fun update(
         @PathVariable id: Long,
-        @Valid @RequestBody dto: HorarioDisponivelDtoRequest
+        @Valid @RequestBody dto: HorarioDisponivelDtoRequest,
+        authentication: Authentication
     ): ResponseEntity<HorarioDisponivelDtoResponse> =
         ResponseEntity.ok(
-            service.atualizar(id, dto)
+            service.atualizar(id, dto, authentication)
         )
 
     @DeleteMapping("/{id}")

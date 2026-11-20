@@ -15,12 +15,10 @@ import jakarta.persistence.Column
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
-import org.hibernate.annotations.SQLRestriction
 import java.time.LocalTime
 
 @Entity
 @Table(name = "horarios_disponiveis")
-@SQLRestriction("ativo = true")
 open class HorarioDisponivel(
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
