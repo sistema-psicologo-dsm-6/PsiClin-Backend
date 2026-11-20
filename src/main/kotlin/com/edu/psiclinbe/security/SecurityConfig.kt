@@ -119,6 +119,14 @@ class SecurityConfig(
                      "/bloqueios-agenda/**"
                  ).hasAnyRole(admin, recep, psi)
                  it.requestMatchers(
+                     HttpMethod.PUT,
+                     "/horarios-disponiveis/**"
+                 ).hasAnyRole(admin, psi)
+                 it.requestMatchers(
+                     HttpMethod.DELETE,
+                     "/horarios-disponiveis/**"
+                 ).hasRole(admin)
+                 it.requestMatchers(
                      "/horarios-disponiveis/**",
                      "/bloqueios-agenda/**"
                  ).hasAnyRole(admin, psi)

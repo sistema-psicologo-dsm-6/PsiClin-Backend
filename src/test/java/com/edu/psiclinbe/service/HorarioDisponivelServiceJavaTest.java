@@ -32,7 +32,7 @@ class HorarioDisponivelServiceJavaTest {
     private final HorarioDisponivel schedule = mock(HorarioDisponivel.class);
     private final HorarioDisponivelDtoResponse response = mock(HorarioDisponivelDtoResponse.class);
     private final HorarioDisponivelDtoRequest request = new HorarioDisponivelDtoRequest(
-            null, 2L, "TERCA", LocalTime.of(9, 0), LocalTime.of(12, 0), "Manhã");
+            null, 2L, "TERCA", LocalTime.of(9, 0), LocalTime.of(12, 0), "Manhã", null);
 
     @Test
     void listsAndSearchesSchedules() {
@@ -65,7 +65,7 @@ class HorarioDisponivelServiceJavaTest {
         assertSame(response, service.salvar(request));
 
         HorarioDisponivelDtoRequest invalid = new HorarioDisponivelDtoRequest(
-                null, 2L, "TERCA", LocalTime.of(12, 0), LocalTime.of(9, 0), null);
+                null, 2L, "TERCA", LocalTime.of(12, 0), LocalTime.of(9, 0), null, null);
         assertThrows(IllegalArgumentException.class, () -> service.salvar(invalid));
 
         HorarioDisponivel existing = new HorarioDisponivel(
