@@ -16,6 +16,9 @@ import java.util.Optional
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertSame
+import org.springframework.security.access.AccessDeniedException
+import org.springframework.security.core.Authentication
+import org.springframework.security.core.authority.SimpleGrantedAuthority
 
 class HorarioDisponivelServiceTest {
     private val repository = Mockito.mock(HorarioDisponivelRepository::class.java)
@@ -88,6 +91,7 @@ class HorarioDisponivelServiceTest {
 
         val existing = Mockito.mock(HorarioDisponivel::class.java)
         Mockito.`when`(existing.id).thenReturn(5L)
+        Mockito.`when`(existing.ativo).thenReturn(true)
         Mockito.`when`(existing.horaInicio).thenReturn(LocalTime.of(10, 0))
         Mockito.`when`(existing.horaFim).thenReturn(LocalTime.of(11, 0))
         Mockito.`when`(psychologistRepository.findById(2L)).thenReturn(Optional.of(psychologist))
@@ -113,6 +117,31 @@ class HorarioDisponivelServiceTest {
         assertSame(response, service.atualizar(1L, request))
         Mockito.verify(horario).horaInicio = request.horaInicio
         service.deletar(1L)
+        Mockito.verify(horario).ativo = false
+    }
+
+    @Test
+    fun `allows only admin to change schedule status`() {
+        val inactiveRequest = request.copy(ativo = false)
+        Mockito.`when`(repository.findById(1L)).thenReturn(Optional.of(horario))
+        Mockito.`when`(psychologist.id).thenReturn(2L)
+        Mockito.`when`(psychologistRepository.findById(2L)).thenReturn(Optional.of(psychologist))
+        Mockito.`when`(repository.findByPsicologoIdAndDiaSemana(2L, DiaSemana.TERCA))
+            .thenReturn(listOf(horario))
+        Mockito.`when`(repository.save(horario)).thenReturn(horario)
+        Mockito.`when`(mapper.toResponse(horario)).thenReturn(response)
+
+        val psychologistAuthentication = Mockito.mock(Authentication::class.java)
+        Mockito.`when`(psychologistAuthentication.authorities)
+            .thenReturn(listOf(SimpleGrantedAuthority("ROLE_PSICOLOGO")))
+        assertFailsWith<AccessDeniedException> {
+            service.atualizar(1L, inactiveRequest, psychologistAuthentication)
+        }
+
+        val adminAuthentication = Mockito.mock(Authentication::class.java)
+        Mockito.`when`(adminAuthentication.authorities)
+            .thenReturn(listOf(SimpleGrantedAuthority("ROLE_ADMIN")))
+        assertSame(response, service.atualizar(1L, inactiveRequest, adminAuthentication))
         Mockito.verify(horario).ativo = false
     }
 
