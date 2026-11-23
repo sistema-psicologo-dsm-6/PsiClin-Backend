@@ -39,6 +39,7 @@ open class TipoAtendimento(
     var dataCadastro: LocalDateTime = LocalDateTime.now(),
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "modalidade", nullable = false, length = 20)
+    @Column(name = "modalidade", nullable = false, length = 20,
+        columnDefinition = "varchar(20) NOT NULL DEFAULT 'PRESENCIAL'")
     var modalidade: ModalidadesAgendamento = ModalidadesAgendamento.PRESENCIAL,
 )
