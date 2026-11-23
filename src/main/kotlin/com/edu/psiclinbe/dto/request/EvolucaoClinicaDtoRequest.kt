@@ -22,4 +22,5 @@ data class EvolucaoClinicaDtoRequest(
     @field:NotBlank(message = "A descricao nao pode estar vazia")
     @field:Size(max = 5000, message = "A descricao deve ter no maximo 5000 caracteres")
     val descricao: String?,
+    val ativo: Boolean = true,
 )

@@ -10,6 +10,7 @@ import static org.mockito.Mockito.mock;
 
 import com.edu.psiclinbe.model.enums.AgendaStatus;
 import com.edu.psiclinbe.model.enums.DiaSemana;
+import com.edu.psiclinbe.model.enums.ModalidadesAgendamento;
 import com.edu.psiclinbe.model.enums.PagamentoStatus;
 import com.edu.psiclinbe.model.enums.ProntuarioStatus;
 import com.edu.psiclinbe.model.enums.Role;
@@ -52,7 +53,8 @@ class DomainEntityValidationJavaTest {
         SalaAtendimento room = new SalaAtendimento(
                 null, "Sala", "Consultório", 0, true, LocalDateTime.now());
         TipoAtendimento type = new TipoAtendimento(
-                null, "A", "Atendimento", "50 min", true, LocalDateTime.now());
+                null, "A", "Atendimento", "50 min", true, LocalDateTime.now(),
+                ModalidadesAgendamento.PRESENCIAL);
 
         assertInvalid(room, "capacidade");
         assertInvalid(type, "nome");

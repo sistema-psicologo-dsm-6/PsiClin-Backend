@@ -49,6 +49,7 @@ class RecepcionistaService(
         recepcionista.nome = dto.nome
         recepcionista.email = dto.email
         recepcionista.cpf = dto.cpf
+        recepcionista.ativo = dto.ativo
         dto.senha?.takeIf(String::isNotBlank)?.let {
             recepcionista.senha = passwordEncoder.encode(it)!!
         }

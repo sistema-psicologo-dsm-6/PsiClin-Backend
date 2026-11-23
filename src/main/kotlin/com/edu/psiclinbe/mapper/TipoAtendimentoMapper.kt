@@ -14,6 +14,7 @@ class TipoAtendimentoMapper {
             descricao = dto.descricao,
             duracao = dto.duracao,
             ativo = dto.ativo,
+            modalidade = dto.modalidade,
         )
 
     fun toResponse(tipoAtendimento: TipoAtendimento): TipoAtendimentoDtoResponse =
@@ -23,5 +24,6 @@ class TipoAtendimentoMapper {
             descricao = tipoAtendimento.descricao,
             duracao = tipoAtendimento.duracao,
             ativo = tipoAtendimento.ativo,
+            modalidade = tipoAtendimento.modalidade,
         )
 }

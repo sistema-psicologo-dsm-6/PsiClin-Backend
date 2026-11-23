@@ -1,5 +1,6 @@
 package com.edu.psiclinbe.dto.response
 
+import com.edu.psiclinbe.model.enums.ModalidadesAgendamento
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
 
@@ -9,4 +10,5 @@ data class TipoAtendimentoDtoResponse(
     val descricao: String = "",
     val duracao: String = "",
     val ativo: Boolean = true,
+    val modalidade: ModalidadesAgendamento = ModalidadesAgendamento.PRESENCIAL,
 )

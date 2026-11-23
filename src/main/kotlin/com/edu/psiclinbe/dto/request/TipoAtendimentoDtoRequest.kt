@@ -1,5 +1,6 @@
 package com.edu.psiclinbe.dto.request
 
+import com.edu.psiclinbe.model.enums.ModalidadesAgendamento
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
 
@@ -13,4 +14,5 @@ data class TipoAtendimentoDtoRequest(
     @field:NotBlank(message = "A duracao nao pode estar vazia")
     val duracao: String = "",
     val ativo: Boolean = true,
+    val modalidade: ModalidadesAgendamento = ModalidadesAgendamento.PRESENCIAL,
 )

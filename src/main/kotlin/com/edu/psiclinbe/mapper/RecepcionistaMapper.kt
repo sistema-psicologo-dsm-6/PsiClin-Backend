@@ -29,6 +29,7 @@ class RecepcionistaMapper {
             telefone = recepcionista.telefone,
             senha = "",
             setor = recepcionista.setor,
+            dataCadastro = recepcionista.dataCadastro,
             ativo = recepcionista.ativo,
             role = recepcionista.role,
         )

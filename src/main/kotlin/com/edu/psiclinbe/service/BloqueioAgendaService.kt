@@ -110,6 +110,7 @@ class BloqueioAgendaService(
             this.dataHoraInicio = dto.dataHoraInicio
             this.dataHoraFim = dto.dataHoraFim
             this.motivo = dto.motivo
+            this.ativo = dto.ativo
         }
 
         return bloqueioAgendaMapper.toResponse(

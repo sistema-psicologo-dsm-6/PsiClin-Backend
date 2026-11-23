@@ -68,6 +68,7 @@ class EvolucaoClinicaService(
         evolucao.agenda = agenda
         evolucao.dataRegistro = dto.dataRegistro
         evolucao.descricao = dto.descricao
+        evolucao.ativo = dto.ativo
 
         return evolucaoClinicaMapper.toResponse(evolucaoClinicaRepository.save(evolucao))
     }

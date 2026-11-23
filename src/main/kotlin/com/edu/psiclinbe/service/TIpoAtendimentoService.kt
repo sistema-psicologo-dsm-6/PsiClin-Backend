@@ -28,6 +28,8 @@ class TIpoAtendimentoService(
         tipo.nome = dto.nome
         tipo.descricao = dto.descricao
         tipo.duracao = dto.duracao
+        tipo.ativo = dto.ativo
+        tipo.modalidade = dto.modalidade
         return tipoAtendimentoMapper.toResponse(tipoAtendimentoRepository.save(tipo))
     }
 

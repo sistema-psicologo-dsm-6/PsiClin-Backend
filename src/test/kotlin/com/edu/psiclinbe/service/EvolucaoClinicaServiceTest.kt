@@ -110,9 +110,10 @@ class EvolucaoClinicaServiceTest {
         Mockito.`when`(repository.save(evolucao)).thenReturn(evolucao)
         Mockito.`when`(mapper.toResponse(evolucao)).thenReturn(response)
 
-        assertSame(response, service.atualizar(10L, request))
+        assertSame(response, service.atualizar(10L, request.copy(ativo = false)))
         Mockito.verify(evolucao).descricao = request.descricao
         Mockito.verify(evolucao).dataRegistro = request.dataRegistro
+        Mockito.verify(evolucao).ativo = false
     }
 
     @Test

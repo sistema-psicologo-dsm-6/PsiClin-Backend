@@ -1,7 +1,10 @@
 package com.edu.psiclinbe.model
 
+import com.edu.psiclinbe.model.enums.ModalidadesAgendamento
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
@@ -33,5 +36,9 @@ open class TipoAtendimento(
     @Column(name = "ativo")
     var ativo: Boolean = true,
     @Column(nullable = false)
-    var dataCadastro: LocalDateTime = LocalDateTime.now()
+    var dataCadastro: LocalDateTime = LocalDateTime.now(),
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "modalidade", nullable = false, length = 20)
+    var modalidade: ModalidadesAgendamento = ModalidadesAgendamento.PRESENCIAL,
 )

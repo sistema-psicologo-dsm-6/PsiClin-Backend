@@ -18,4 +18,5 @@ data class BloqueioAgendaDtoRequest(
     @field:NotBlank(message = "O motivo do bloqueio nao pode estar vazio")
     @field:Size(max = 500, message = "O motivo do bloqueio deve ter no maximo 500 caracteres")
     val motivo: String = "",
+    val ativo: Boolean = true,
 )

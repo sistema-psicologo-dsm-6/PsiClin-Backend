@@ -38,7 +38,7 @@ class EvolucaoClinicaServiceJavaTest {
     private final Agenda agenda = mock(Agenda.class);
     private final EvolucaoClinicaDtoResponse response = mock(EvolucaoClinicaDtoResponse.class);
     private final EvolucaoClinicaDtoRequest request = new EvolucaoClinicaDtoRequest(
-            null, 1L, 2L, 3L, LocalDateTime.of(2026, 11, 3, 10, 0), "Evolução");
+            null, 1L, 2L, 3L, LocalDateTime.of(2026, 11, 3, 10, 0), "Evolução", true);
 
     @Test
     void listsAndSearchesClinicalEvolutions() {

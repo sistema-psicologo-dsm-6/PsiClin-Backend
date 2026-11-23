@@ -15,6 +15,7 @@ import com.edu.psiclinbe.dto.request.TipoAtendimentoDtoRequest;
 import com.edu.psiclinbe.dto.response.TipoAtendimentoDtoResponse;
 import com.edu.psiclinbe.mapper.TipoAtendimentoMapper;
 import com.edu.psiclinbe.model.TipoAtendimento;
+import com.edu.psiclinbe.model.enums.ModalidadesAgendamento;
 import com.edu.psiclinbe.repository.TipoAtendimentoRepository;
 
 class TipoAtendimentoServiceJavaTest {
@@ -24,7 +25,8 @@ class TipoAtendimentoServiceJavaTest {
     private final TipoAtendimento type = mock(TipoAtendimento.class);
     private final TipoAtendimentoDtoResponse response = mock(TipoAtendimentoDtoResponse.class);
     private final TipoAtendimentoDtoRequest request = new TipoAtendimentoDtoRequest(
-            null, "Psicoterapia", "Atendimento clínico", "50 minutos", true);
+            null, "Psicoterapia", "Atendimento clínico", "50 minutos", true,
+            ModalidadesAgendamento.ONLINE);
 
     @Test
     void listsAndSearchesTypes() {
@@ -48,6 +50,7 @@ class TipoAtendimentoServiceJavaTest {
         assertSame(response, service.cadastrarTipoAtendimento(request));
         assertSame(response, service.atualizarTipoAtendimento(1L, request));
         verify(type).setDuracao(request.getDuracao());
+        verify(type).setModalidade(request.getModalidade());
         assertSame(response, service.desativarTipoAtendimento(1L));
         verify(type).setAtivo(false);
     }

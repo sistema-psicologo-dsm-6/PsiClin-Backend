@@ -21,6 +21,7 @@ class BloqueioAgendaMapper {
             dataHoraInicio = dto.dataHoraInicio,
             dataHoraFim = dto.dataHoraFim,
             motivo = dto.motivo,
+            ativo = dto.ativo,
         )
     }
 

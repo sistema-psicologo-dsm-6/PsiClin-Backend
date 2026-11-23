@@ -28,6 +28,7 @@ class EvolucaoClinicaMapper {
             agenda = agenda,
             dataRegistro = dto.dataRegistro,
             descricao = dto.descricao,
+            ativo = dto.ativo,
         )
     }
 

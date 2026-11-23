@@ -33,7 +33,7 @@ class BloqueioAgendaServiceJavaTest {
     private final LocalDateTime start = LocalDateTime.of(2026, 11, 3, 10, 0);
     private final LocalDateTime end = LocalDateTime.of(2026, 11, 3, 11, 0);
     private final BloqueioAgendaDtoRequest request = new BloqueioAgendaDtoRequest(
-            0L, 2L, start, end, "Indisponibilidade");
+            0L, 2L, start, end, "Indisponibilidade", true);
 
     @Test
     void listsAndSearchesBlocks() {
@@ -61,7 +61,7 @@ class BloqueioAgendaServiceJavaTest {
         assertSame(response, service.salvar(request));
 
         BloqueioAgendaDtoRequest invalid = new BloqueioAgendaDtoRequest(
-                0L, 2L, end, start, "Invalido");
+                0L, 2L, end, start, "Invalido", true);
         assertThrows(IllegalArgumentException.class, () -> service.salvar(invalid));
 
         BloqueioAgenda existing = new BloqueioAgenda(

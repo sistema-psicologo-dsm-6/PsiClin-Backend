@@ -105,9 +105,9 @@ class BloqueioAgendaServiceTest {
         Mockito.`when`(repository.save(bloqueio)).thenReturn(bloqueio)
         Mockito.`when`(mapper.toResponse(bloqueio)).thenReturn(response)
 
-        assertSame(response, service.atualizar(1L, request))
-        service.deletar(1L)
+        assertSame(response, service.atualizar(1L, request.copy(ativo = false)))
         Mockito.verify(bloqueio).ativo = false
+        service.deletar(1L)
         Mockito.verify(repository, Mockito.times(2)).save(bloqueio)
     }
 

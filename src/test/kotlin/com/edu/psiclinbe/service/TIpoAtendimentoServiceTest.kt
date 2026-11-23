@@ -4,6 +4,7 @@ import com.edu.psiclinbe.dto.request.TipoAtendimentoDtoRequest
 import com.edu.psiclinbe.dto.response.TipoAtendimentoDtoResponse
 import com.edu.psiclinbe.mapper.TipoAtendimentoMapper
 import com.edu.psiclinbe.model.TipoAtendimento
+import com.edu.psiclinbe.model.enums.ModalidadesAgendamento
 import com.edu.psiclinbe.repository.TipoAtendimentoRepository
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito
@@ -21,7 +22,8 @@ class TIpoAtendimentoServiceTest {
     private val request = TipoAtendimentoDtoRequest(
         nome = "Psicoterapia",
         descricao = "Atendimento clínico",
-        duracao = "50 minutos"
+        duracao = "50 minutos",
+        modalidade = ModalidadesAgendamento.ONLINE
     )
 
     @Test
@@ -65,6 +67,8 @@ class TIpoAtendimentoServiceTest {
 
         assertSame(response, service.atualizarTipoAtendimento(1L, request))
         Mockito.verify(tipo).nome = request.nome
+        Mockito.verify(tipo).modalidade = request.modalidade
+        Mockito.verify(tipo).ativo = request.ativo
         assertSame(response, service.desativarTipoAtendimento(1L))
         Mockito.verify(tipo).ativo = false
     }
