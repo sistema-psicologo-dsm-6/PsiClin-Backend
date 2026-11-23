@@ -107,4 +107,15 @@ class FuncionarioService(
         }
         return funcionarioMapper.toResponse(funcionario)
     }
+
+    @Transactional
+    fun criarAdminInicial(dto: FuncionarioDtoRequest): FuncionarioDtoResponse {
+        if (funcionarioRepository.count() > 0) {
+            throw org.springframework.web.server.ResponseStatusException(
+                org.springframework.http.HttpStatus.CONFLICT,
+                "Já existe um funcionário inicial cadastrado",
+            )
+        }
+        return salvar(dto.copy(role = Role.ADMIN, ativo = true))
+    }
 }

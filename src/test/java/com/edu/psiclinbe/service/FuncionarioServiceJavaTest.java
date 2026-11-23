@@ -3,11 +3,14 @@ package com.edu.psiclinbe.service;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.edu.psiclinbe.dto.request.FuncionarioDtoRequest;
 import com.edu.psiclinbe.dto.response.FuncionarioDtoResponse;
@@ -26,6 +29,7 @@ class FuncionarioServiceJavaTest {
 
     @Test
     void listsEmployeesAndRejectsDuplicateEmailCpf() {
+        when(funcionario.getRole()).thenReturn(Role.ADMIN);
         when(repository.findAll()).thenReturn(List.of(funcionario));
         when(repository.findByAtivoTrue()).thenReturn(List.of(funcionario));
         when(repository.buscarPorNomeParcial("Ana")).thenReturn(List.of(funcionario));
@@ -41,6 +45,50 @@ class FuncionarioServiceJavaTest {
             IllegalArgumentException.class,
             () -> service.salvar(request));
         assertEquals("Já existe um funcionário com este e-mail e CPF", error.getMessage());
+    }
+
+    @Test
+    void bootstrapInitialAdminAndRejectAfterDatabaseInitialized() {
+        FuncionarioDtoRequest adminRequest = request(Role.RECEPCIONISTA);
+        when(repository.count()).thenReturn(0L);
+        when(repository.findByEmailAndCpf(adminRequest.getEmail(), adminRequest.getCpf()))
+                .thenReturn(null);
+        when(encoder.encode(adminRequest.getSenha())).thenReturn("hash");
+        when(repository.save(org.mockito.ArgumentMatchers.any(Funcionario.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+        when(mapper.toResponse(org.mockito.ArgumentMatchers.any(Funcionario.class))).thenReturn(response);
+
+        assertSame(response, service.criarAdminInicial(adminRequest));
+
+        when(repository.count()).thenReturn(1L);
+        ResponseStatusException exception = assertThrows(
+                ResponseStatusException.class,
+                () -> service.criarAdminInicial(adminRequest));
+        assertEquals(HttpStatus.CONFLICT, exception.getStatusCode());
+    }
+
+    @Test
+    void createsInitialAdminOnlyWhenDatabaseIsEmpty() {
+        FuncionarioDtoRequest request = request(Role.RECEPCIONISTA);
+        when(repository.count()).thenReturn(0L);
+        when(repository.findByEmailAndCpf(request.getEmail(), request.getCpf())).thenReturn(null);
+        when(encoder.encode(request.getSenha())).thenReturn("hash");
+        when(repository.save(org.mockito.ArgumentMatchers.any(Funcionario.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+        when(mapper.toResponse(org.mockito.ArgumentMatchers.any(Funcionario.class))).thenReturn(response);
+
+        assertSame(response, service.criarAdminInicial(request));
+
+        org.mockito.ArgumentCaptor<Funcionario> captor =
+                org.mockito.ArgumentCaptor.forClass(Funcionario.class);
+        org.mockito.Mockito.verify(repository).save(captor.capture());
+        assertEquals(Role.ADMIN, captor.getValue().getRole());
+
+        when(repository.count()).thenReturn(1L);
+        ResponseStatusException error = assertThrows(
+                ResponseStatusException.class,
+                () -> service.criarAdminInicial(request));
+        assertEquals(HttpStatus.CONFLICT, error.getStatusCode());
     }
 
     private FuncionarioDtoRequest request(Role role) {

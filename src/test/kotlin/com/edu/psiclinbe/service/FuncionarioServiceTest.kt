@@ -153,4 +153,33 @@ class FuncionarioServiceTest {
         Mockito.`when`(repository.findById(404L)).thenReturn(Optional.empty())
         assertFailsWith<NoSuchElementException> { service.inativar(404L) }
     }
+
+    @Test
+    fun `creates initial administrator only on empty database`() {
+        Mockito.`when`(repository.count()).thenReturn(0)
+        Mockito.`when`(repository.findByEmailAndCpf(request.email, request.cpf)).thenReturn(null)
+        Mockito.`when`(encoder.encode(request.senha)).thenReturn("hash")
+        Mockito.`when`(repository.save(Mockito.any(Funcionario::class.java) ?: funcionario))
+            .thenAnswer { it.getArgument(0) }
+        Mockito.`when`(mapper.toResponse(Mockito.any(Funcionario::class.java) ?: funcionario)).thenReturn(response)
+
+        assertSame(response, service.criarAdminInicial(request.copy(role = Role.RECEPCIONISTA)))
+
+        val captor = ArgumentCaptor.forClass(Funcionario::class.java)
+        Mockito.verify(repository).save(captor.capture())
+        assertEquals(Role.ADMIN, captor.value.role)
+        assertEquals(true, captor.value.ativo)
+    }
+
+    @Test
+    fun `rejects initial administrator when a employee already exists`() {
+        Mockito.`when`(repository.count()).thenReturn(1)
+
+        val error = assertFailsWith<org.springframework.web.server.ResponseStatusException> {
+            service.criarAdminInicial(request)
+        }
+
+        assertEquals(org.springframework.http.HttpStatus.CONFLICT, error.statusCode)
+        Mockito.verify(repository, Mockito.never()).save(Mockito.any(Funcionario::class.java) ?: funcionario)
+    }
 }

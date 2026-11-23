@@ -3,18 +3,21 @@ package com.edu.psiclinbe.security
 import com.edu.psiclinbe.dto.request.SigninRequest
 import com.edu.psiclinbe.dto.response.AuthResponse
 import com.edu.psiclinbe.model.enums.Role
+import com.edu.psiclinbe.dto.request.FuncionarioDtoRequest
+import com.edu.psiclinbe.dto.response.FuncionarioDtoResponse
+import com.edu.psiclinbe.service.FuncionarioService
+import jakarta.validation.Valid
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/auth")
 class AuthController(
     private val authenticationManager: AuthenticationManager,
-    private val jwtUtil: JwtUtil
+    private val jwtUtil: JwtUtil,
+    private val funcionarioService: FuncionarioService,
 ) {
 
     @PostMapping("/signin")
@@ -48,4 +51,12 @@ class AuthController(
     @PostMapping("/signout")
     fun signout(): ResponseEntity<Void> =
         ResponseEntity.noContent().build()
+
+    @PostMapping("/signup")
+    fun signup(
+        @Valid @RequestBody dto: FuncionarioDtoRequest,
+    ): ResponseEntity<FuncionarioDtoResponse> {
+        val funcionario = funcionarioService.criarAdminInicial(dto)
+        return ResponseEntity.status(HttpStatus.CREATED).body(funcionario)
+    }
 }

@@ -94,7 +94,7 @@ class SecurityConfig(
                 val recep = "RECEPCIONISTA"
                 val psi = "PSICOLOGO"
 
-                it.requestMatchers("/auth/signin").permitAll()
+                it.requestMatchers("/auth/signin", "/auth/signup").permitAll()
                 it.requestMatchers("/auth/signout").authenticated()
 
                  // Somente ADMIN acessa o módulo de funcionários
