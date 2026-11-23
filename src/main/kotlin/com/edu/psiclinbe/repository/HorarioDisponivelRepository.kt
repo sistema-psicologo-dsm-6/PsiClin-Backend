@@ -29,6 +29,10 @@ interface HorarioDisponivelRepository
         diaSemana: DiaSemana
     ): List<HorarioDisponivel>
 
+    fun findByAtivoTrue(): List<HorarioDisponivel>
+
+    fun findByAtivoFalse(): List<HorarioDisponivel>
+
     fun existsByPsicologoIdAndDiaSemanaAndHoraInicioAndHoraFim(
         psicologoId: Long,
         diaSemana: DiaSemana,

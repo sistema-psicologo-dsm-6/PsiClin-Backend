@@ -24,4 +24,5 @@ data class HorarioDisponivelDtoRequest(
     val horaFim: LocalTime,
     @field:Size(max = 500, message = "A descricao deve ter no maximo 500 caracteres")
     val descricao: String? = null,
+    val ativo: Boolean? = null,
 )

@@ -10,6 +10,8 @@ import com.edu.psiclinbe.repository.PsicologoRepository
 import com.edu.psiclinbe.validation.ValidarDataInicioFim
 import org.springframework.stereotype.Service
 import java.time.LocalTime
+import org.springframework.security.access.AccessDeniedException
+import org.springframework.security.core.Authentication
 
 @Service
 class HorarioDisponivelService(
@@ -21,6 +23,14 @@ class HorarioDisponivelService(
 
     fun listarTodos(): List<HorarioDisponivelDtoResponse> =
         horarioDisponivelRepository.findAll()
+            .map(horarioDisponivelMapper::toResponse)
+
+    fun listarAtivos(): List<HorarioDisponivelDtoResponse> =
+        horarioDisponivelRepository.findByAtivoTrue()
+            .map(horarioDisponivelMapper::toResponse)
+
+    fun listarInativos(): List<HorarioDisponivelDtoResponse> =
+        horarioDisponivelRepository.findByAtivoFalse()
             .map(horarioDisponivelMapper::toResponse)
 
     fun buscarPorId(id: Long): HorarioDisponivelDtoResponse =
@@ -80,7 +90,22 @@ class HorarioDisponivelService(
     fun atualizar(
         id: Long,
         dto: HorarioDisponivelDtoRequest
+    ): HorarioDisponivelDtoResponse =
+        atualizar(id, dto, null)
+
+    fun atualizar(
+        id: Long,
+        dto: HorarioDisponivelDtoRequest,
+        authentication: Authentication? = null
     ): HorarioDisponivelDtoResponse {
+
+        if (dto.ativo != null) {
+            val isAdmin = authentication?.authorities
+                ?.any { it.authority == "ROLE_ADMIN" } == true
+            if (!isAdmin) {
+                throw AccessDeniedException("Somente ADMIN pode alterar o status")
+            }
+        }
 
         val horario = horarioDisponivelRepository.findById(id)
             .orElseThrow {
@@ -110,6 +135,7 @@ class HorarioDisponivelService(
             horaInicio = dto.horaInicio
             horaFim = dto.horaFim
             descricao = dto.descricao
+            dto.ativo?.let { status -> ativo = status }
         }
 
         return horarioDisponivelMapper.toResponse(
@@ -153,7 +179,7 @@ class HorarioDisponivelService(
                 psicologoId,
                 DiaSemana.valueOf(diaSemana)
             )
-                .filter { it.id != horarioIdIgnorar }
+                .filter { it.ativo && it.id != horarioIdIgnorar }
                 .any {
                     it.horaInicio.isBefore(fim) &&
                             inicio.isBefore(it.horaFim)
