@@ -18,6 +18,7 @@ import org.springframework.context.annotation.Configuration
     ),
     servers = [
         Server(url = "http://localhost:8080", description = "Servidor local"),
+        Server(url = "https://psiclin-backend.onrender.com/", description = "Servidor de produção"),
     ],
 )
 @SecurityScheme(
