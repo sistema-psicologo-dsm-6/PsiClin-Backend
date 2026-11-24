@@ -5,6 +5,8 @@ import com.edu.psiclinbe.dto.request.RecepcionistaDtoUpdateRequest
 import com.edu.psiclinbe.dto.request.AlterarSenhaRequest
 import com.edu.psiclinbe.dto.response.RecepcionistaDtoResponse
 import com.edu.psiclinbe.service.RecepcionistaService
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
+import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import org.springframework.security.core.Authentication
 import org.springframework.http.HttpStatus
@@ -22,6 +24,8 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/recepcionistas")
+@Tag(name = "Recepcionistas", description = "Cadastro e gestão de recepcionistas")
+@SecurityRequirement(name = "bearerAuth")
 class RecepcionistaController(
     private val recepcionistaService: RecepcionistaService,
 ) {

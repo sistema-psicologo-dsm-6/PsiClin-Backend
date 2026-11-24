@@ -405,3 +405,22 @@ Não existe cadastro público. A conta ADMIN inicial deve ser provisionada fora 
 - Nunca commit as credenciais reais no `.env`, no `application.yaml` ou em outros arquivos versionados.
 - Use senhas específicas para cada ambiente.
 - Em produção, prefira variáveis de ambiente gerenciadas pela infraestrutura ou um serviço de secrets.
+
+## Documentação da API (Swagger/OpenAPI)
+
+A API gera a especificação OpenAPI automaticamente a partir dos controllers, DTOs e validações.
+
+- Swagger UI: `http://localhost:8080/swagger-ui.html`
+- OpenAPI JSON: `http://localhost:8080/v3/api-docs`
+- Login para obter token: `POST /auth/signin`
+- Bootstrap do primeiro administrador: `POST /auth/signup`, permitido somente enquanto não houver funcionários
+
+No Swagger UI:
+
+1. Execute `POST /auth/signin` com as credenciais válidas.
+2. Copie o campo `token` da resposta.
+3. Clique em **Authorize**.
+4. Informe `Bearer <token>` ou somente o token, conforme a interface; o esquema configurado usa `Bearer` JWT.
+5. Execute os endpoints permitidos ao perfil autenticado.
+
+O contrato é regenerado a cada inicialização da aplicação e não precisa ser mantido manualmente em arquivo separado.

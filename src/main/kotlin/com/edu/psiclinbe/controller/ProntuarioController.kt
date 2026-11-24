@@ -4,6 +4,8 @@ import com.edu.psiclinbe.dto.request.ProntuarioDtoRequest
 import com.edu.psiclinbe.dto.response.ProntuarioDtoResponse
 import com.edu.psiclinbe.model.enums.ProntuarioStatus
 import com.edu.psiclinbe.service.ProntuarioService
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
+import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -19,6 +21,8 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/prontuarios")
+@Tag(name = "Prontuários", description = "Prontuários clínicos")
+@SecurityRequirement(name = "bearerAuth")
 class ProntuarioController(
     private val prontuarioService: ProntuarioService,
 ) {

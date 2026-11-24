@@ -27,3 +27,12 @@ app:
 
 server:
   port: ${PORT:${SERVER_PORT:8080}}
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: method
+    tags-sorter: alpha
+    doc-expansion: none

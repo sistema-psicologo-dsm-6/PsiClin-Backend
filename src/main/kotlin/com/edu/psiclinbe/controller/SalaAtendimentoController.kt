@@ -3,6 +3,8 @@ package com.edu.psiclinbe.controller
 import com.edu.psiclinbe.dto.request.SalaAtendimentoDtoRequest
 import com.edu.psiclinbe.dto.response.SalaAtendimentoDtoResponse
 import com.edu.psiclinbe.service.SalaAtendimentoService
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
+import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -19,6 +21,8 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/salas-atendimento")
+@Tag(name = "Salas de Atendimento", description = "Salas disponíveis para a clínica")
+@SecurityRequirement(name = "bearerAuth")
 class SalaAtendimentoController(
     private val salaAtendimentoService: SalaAtendimentoService,
 ) {

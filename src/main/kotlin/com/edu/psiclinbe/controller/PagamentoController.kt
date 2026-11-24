@@ -4,6 +4,8 @@ import com.edu.psiclinbe.dto.request.PagamentoDtoRequest
 import com.edu.psiclinbe.dto.response.PagamentoDtoResponse
 import com.edu.psiclinbe.model.enums.PagamentoStatus
 import com.edu.psiclinbe.service.PagamentoService
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
+import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -19,6 +21,8 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/pagamentos")
+@Tag(name = "Pagamentos", description = "Pagamentos e formas de pagamento")
+@SecurityRequirement(name = "bearerAuth")
 class PagamentoController(
     private val pagamentoService: PagamentoService,
 ) {

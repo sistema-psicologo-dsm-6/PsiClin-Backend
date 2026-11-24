@@ -11,6 +11,8 @@ import com.edu.psiclinbe.service.PacienteService
 import com.edu.psiclinbe.service.PsicologoService
 import com.edu.psiclinbe.service.SalaAtendimentoService
 import com.edu.psiclinbe.service.TIpoAtendimentoService
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
+import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -20,6 +22,8 @@ import java.time.LocalTime
 
 @RestController
 @RequestMapping("/agendas")
+@Tag(name = "Agenda", description = "Agendamentos e seus status")
+@SecurityRequirement(name = "bearerAuth")
 class AgendaController(
     private val agendaService: AgendaService,
     private val pacienteService: PacienteService,

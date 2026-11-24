@@ -3,10 +3,14 @@ package com.edu.psiclinbe.controller
 import com.edu.psiclinbe.dto.request.EvolucaoClinicaDtoRequest
 import com.edu.psiclinbe.dto.response.EvolucaoClinicaDtoResponse
 import com.edu.psiclinbe.service.EvolucaoClinicaService
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
+import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+@Tag(name = "Evoluções Clínicas", description = "Evoluções registradas nos prontuários")
+@SecurityRequirement(name = "bearerAuth")
 @RestController
 @RequestMapping("/evolucoes-clinicas")
 class EvolucaoClinicaController(

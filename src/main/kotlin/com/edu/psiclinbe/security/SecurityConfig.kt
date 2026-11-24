@@ -95,6 +95,11 @@ class SecurityConfig(
                 val psi = "PSICOLOGO"
 
                 it.requestMatchers("/auth/signin", "/auth/signup").permitAll()
+                it.requestMatchers(
+                    "/v3/api-docs/**",
+                    "/swagger-ui/**",
+                    "/swagger-ui.html"
+                ).permitAll()
                 it.requestMatchers("/auth/signout").authenticated()
 
                  // Somente ADMIN acessa o módulo de funcionários

@@ -3,14 +3,19 @@ package com.edu.psiclinbe.controller
 import com.edu.psiclinbe.dto.request.BloqueioAgendaDtoRequest
 import com.edu.psiclinbe.dto.response.BloqueioAgendaDtoResponse
 import com.edu.psiclinbe.service.BloqueioAgendaService
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
+import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.time.LocalDateTime
+
 @RestController
 @RequestMapping("/bloqueios-agenda")
+@Tag(name = "Bloqueios de Agenda", description = "Intervalos bloqueados na agenda")
+@SecurityRequirement(name = "bearerAuth")
 class BloqueioAgendaController(
     private val service: BloqueioAgendaService
 ) {

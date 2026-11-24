@@ -1,24 +1,19 @@
 package com.edu.psiclinbe.controller
 
+import com.edu.psiclinbe.dto.request.AlterarSenhaRequest
 import com.edu.psiclinbe.dto.request.PsicologoDtoRequest
 import com.edu.psiclinbe.dto.request.PsicologoDtoUpdateRequest
-import com.edu.psiclinbe.dto.request.AlterarSenhaRequest
 import com.edu.psiclinbe.dto.response.PsicologoDtoResponse
 import com.edu.psiclinbe.service.PsicologoService
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
+import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.DeleteMapping
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PatchMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.PutMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
+@Tag(name = "Psicólogos", description = "Cadastro e gestão de psicólogos")
+@SecurityRequirement(name = "bearerAuth")
 @RestController
 @RequestMapping("/psicologos")
 class PsicologoController(

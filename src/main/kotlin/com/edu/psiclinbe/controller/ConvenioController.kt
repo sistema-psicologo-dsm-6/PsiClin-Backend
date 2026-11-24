@@ -3,11 +3,15 @@ package com.edu.psiclinbe.controller
 import com.edu.psiclinbe.dto.request.ConvenioDtoRequest
 import com.edu.psiclinbe.dto.response.ConvenioDtoResponse
 import com.edu.psiclinbe.service.ConvenioService
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
+import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
+@Tag(name = "Convênios", description = "Operadoras e planos de atendimento")
+@SecurityRequirement(name = "bearerAuth")
 @RestController
 @RequestMapping("/convenios")
 class ConvenioController(

@@ -6,6 +6,7 @@ import com.edu.psiclinbe.model.enums.Role
 import com.edu.psiclinbe.dto.request.FuncionarioDtoRequest
 import com.edu.psiclinbe.dto.response.FuncionarioDtoResponse
 import com.edu.psiclinbe.service.FuncionarioService
+import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -14,6 +15,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/auth")
+@Tag(name = "Autenticação", description = "Login, bootstrap do administrador inicial e logout")
 class AuthController(
     private val authenticationManager: AuthenticationManager,
     private val jwtUtil: JwtUtil,
