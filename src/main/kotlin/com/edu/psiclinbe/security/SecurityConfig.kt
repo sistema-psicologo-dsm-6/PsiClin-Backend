@@ -94,7 +94,7 @@ class SecurityConfig(
                 val recep = "RECEPCIONISTA"
                 val psi = "PSICOLOGO"
 
-                it.requestMatchers("/auth/signin", "/auth/signup").permitAll()
+                it.requestMatchers(HttpMethod.POST, "/auth/signin", "/auth/signup").permitAll()
                 it.requestMatchers(
                     "/v3/api-docs/**",
                     "/swagger-ui/**",
