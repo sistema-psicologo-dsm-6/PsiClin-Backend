@@ -65,8 +65,15 @@ class SalaAtendimentoServiceTest {
 
         assertSame(response, service.atualizarSala(1L, request))
         Mockito.verify(sala).nome = request.nome
-        assertSame(response, service.desativarSala(1L))
+
+        assertSame(response, service.atualizarSala(1L, request.copy(ativo = false)))
         Mockito.verify(sala).ativo = false
+
+        assertSame(response, service.atualizarSala(1L, request.copy(ativo = true)))
+        Mockito.verify(sala, Mockito.times(2)).ativo = true
+
+        assertSame(response, service.desativarSala(1L))
+        Mockito.verify(sala, Mockito.times(2)).ativo = false
     }
 
     @Test
