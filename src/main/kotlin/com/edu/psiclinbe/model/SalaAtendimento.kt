@@ -6,6 +6,11 @@ import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Table
 import jakarta.persistence.Column
+import jakarta.persistence.CollectionTable
+import jakarta.persistence.ElementCollection
+import jakarta.persistence.FetchType
+import jakarta.persistence.JoinColumn
+import jakarta.persistence.OrderColumn
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Positive
 import jakarta.validation.constraints.Size
@@ -29,5 +34,13 @@ open class SalaAtendimento(
     var capacidade: Int?,
     var ativo: Boolean = true,
     @Column(nullable = false)
-    var dataCadastro: LocalDateTime = LocalDateTime.now()
+    var dataCadastro: LocalDateTime = LocalDateTime.now(),
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(
+        name = "salas_atendimento_recursos",
+        joinColumns = [JoinColumn(name = "sala_id")]
+    )
+    @OrderColumn(name = "ordem")
+    @Column(name = "recurso", nullable = false)
+    var recursosDisponiveis: MutableList<String> = mutableListOf()
 )

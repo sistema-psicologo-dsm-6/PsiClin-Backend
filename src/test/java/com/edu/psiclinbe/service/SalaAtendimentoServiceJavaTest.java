@@ -24,7 +24,7 @@ class SalaAtendimentoServiceJavaTest {
     private final SalaAtendimento room = mock(SalaAtendimento.class);
     private final SalaAtendimentoDtoResponse response = mock(SalaAtendimentoDtoResponse.class);
     private final SalaAtendimentoDtoRequest request = new SalaAtendimentoDtoRequest(
-            null, "Sala 1", "Consultório", 1, true);
+            null, "Sala 1", "Consultório", 1, true, List.of("Divã"));
 
     @Test
     void listsAndSearchesRooms() {
@@ -49,6 +49,7 @@ class SalaAtendimentoServiceJavaTest {
         assertSame(response, service.atualizarSala(1L, request));
         verify(room).setNome(request.getNome());
         verify(room).setCapacidade(request.getCapacidade());
+        verify(room).setRecursosDisponiveis(request.getRecursosDisponiveis());
     }
 
     @Test

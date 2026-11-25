@@ -436,7 +436,8 @@ Content-Type: {{json}}
   "nome": "ApiTestSala{{$timestamp}}",
   "descricao": "ApiTestDescricaoSala",
   "capacidade": 3,
-  "ativo": true
+  "ativo": true,
+  "recursosDisponiveis": ["Divã", "Brinquedos terapêuticos", "Computador", "Acessibilidade para cadeira de rodas"]
 }
 
 ### Salas de atendimento - criar fixture para alias de exclusão
@@ -449,7 +450,8 @@ Content-Type: {{json}}
   "nome": "ApiTestSalaAlias{{$timestamp}}",
   "descricao": "ApiTestDescricaoSalaAlias",
   "capacidade": 2,
-  "ativo": true
+  "ativo": true,
+  "recursosDisponiveis": []
 }
 
 ### Salas de atendimento - listar
@@ -477,7 +479,8 @@ Content-Type: {{json}}
   "nome": "ApiTestSalaAtualizada",
   "descricao": "ApiTestDescricaoSalaAtualizada",
   "capacidade": 4,
-  "ativo": true
+  "ativo": true,
+  "recursosDisponiveis": ["Computador", "Acessibilidade para cadeira de rodas"]
 }
 
 ### Salas de atendimento - inativar

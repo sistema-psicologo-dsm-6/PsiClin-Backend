@@ -10,4 +10,5 @@ data class SalaAtendimentoDtoResponse(
     val descricao: String?,
     val capacidade: Int? = 0,
     val ativo: Boolean = true,
+    val recursosDisponiveis: List<String> = emptyList(),
 )

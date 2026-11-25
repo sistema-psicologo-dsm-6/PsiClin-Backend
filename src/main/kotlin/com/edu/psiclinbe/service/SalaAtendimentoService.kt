@@ -26,6 +26,7 @@ class SalaAtendimentoService(
         sala.capacidade = dto.capacidade
         sala.descricao = dto.descricao
         sala.ativo = dto.ativo
+        sala.recursosDisponiveis = dto.recursosDisponiveis.toMutableList()
         return salaMapper.toResponse(salaRepository.save(sala))
     }
 

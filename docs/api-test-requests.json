@@ -397,7 +397,8 @@
           "nome": "Sala 1",
           "descricao": "Sala individual",
           "capacidade": 3,
-          "ativo": true
+          "ativo": true,
+          "recursosDisponiveis": ["Divã", "Brinquedos terapêuticos", "Computador", "Acessibilidade para cadeira de rodas"]
         }
       },
       {
@@ -408,7 +409,8 @@
           "nome": "Sala para teste de alias",
           "descricao": "Sala de teste",
           "capacidade": 2,
-          "ativo": true
+          "ativo": true,
+          "recursosDisponiveis": []
         }
       },
       {
@@ -439,7 +441,8 @@
           "nome": "Sala 1",
           "descricao": "Sala individual reformada",
           "capacidade": 4,
-          "ativo": true
+          "ativo": true,
+          "recursosDisponiveis": ["Computador", "Acessibilidade para cadeira de rodas"]
         }
       },
       {

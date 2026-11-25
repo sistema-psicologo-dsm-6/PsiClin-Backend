@@ -21,7 +21,8 @@ class SalaAtendimentoServiceTest {
     private val request = SalaAtendimentoDtoRequest(
         nome = "Sala 1",
         descricao = "Atendimento individual",
-        capacidade = 1
+        capacidade = 1,
+        recursosDisponiveis = listOf("Divã", "Computador")
     )
 
     @Test
@@ -65,6 +66,7 @@ class SalaAtendimentoServiceTest {
 
         assertSame(response, service.atualizarSala(1L, request))
         Mockito.verify(sala).nome = request.nome
+        Mockito.verify(sala).recursosDisponiveis = request.recursosDisponiveis.toMutableList()
 
         assertSame(response, service.atualizarSala(1L, request.copy(ativo = false)))
         Mockito.verify(sala).ativo = false

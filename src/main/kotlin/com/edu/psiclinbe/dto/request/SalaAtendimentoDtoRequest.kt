@@ -14,4 +14,5 @@ data class SalaAtendimentoDtoRequest(
     @field:Positive(message = "A capacidade deve ser maior que zero")
     val capacidade: Int? = null,
     val ativo: Boolean = true,
+    val recursosDisponiveis: List<String> = emptyList(),
 )

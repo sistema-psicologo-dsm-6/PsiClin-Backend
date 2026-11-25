@@ -50,7 +50,7 @@ class DomainEntityValidationJavaTest {
     @Test
     void roomAndServiceTypeRequireValidNamesAndCapacity() {
         SalaAtendimento room = new SalaAtendimento(
-                null, "Sala", "Consultório", 0, true, LocalDateTime.now());
+                null, "Sala", "Consultório", 0, true, LocalDateTime.now(), java.util.List.of());
         TipoAtendimento type = new TipoAtendimento(
                 null, "A", "Atendimento", "50 min", true, LocalDateTime.now());
 

@@ -14,6 +14,7 @@ class SalaAtendimentoMapper {
             descricao = dto.descricao,
             capacidade = requireNotNull(dto.capacidade),
             ativo = dto.ativo,
+            recursosDisponiveis = dto.recursosDisponiveis.toMutableList(),
         )
 
     fun toResponse(sala: SalaAtendimento): SalaAtendimentoDtoResponse =
@@ -23,5 +24,6 @@ class SalaAtendimentoMapper {
             descricao = sala.descricao,
             capacidade = sala.capacidade,
             ativo = sala.ativo,
+            recursosDisponiveis = sala.recursosDisponiveis.toList(),
         )
 }
