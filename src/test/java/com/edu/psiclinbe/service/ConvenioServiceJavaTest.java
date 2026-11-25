@@ -7,6 +7,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -24,6 +25,11 @@ class ConvenioServiceJavaTest {
     private final ConvenioService service = new ConvenioService(repository, mapper);
     private final Convenio convenio = mock(Convenio.class);
     private final ConvenioDtoResponse response = mock(ConvenioDtoResponse.class);
+
+    @BeforeEach
+    void markAgreementActive() {
+        when(convenio.getAtivo()).thenReturn(true);
+    }
 
     @Test
     void mapsAgreementListsAndSearches() {

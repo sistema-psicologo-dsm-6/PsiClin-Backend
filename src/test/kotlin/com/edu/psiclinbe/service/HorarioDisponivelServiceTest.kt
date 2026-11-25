@@ -45,6 +45,7 @@ class HorarioDisponivelServiceTest {
         Mockito.`when`(repository.findByPsicologoId(2L)).thenReturn(listOf(horario))
         Mockito.`when`(repository.findByPsicologoIdAndDiaSemana(2L, DiaSemana.TERCA))
             .thenReturn(listOf(horario))
+        Mockito.`when`(horario.ativo).thenReturn(true)
         Mockito.`when`(mapper.toResponse(horario)).thenReturn(response)
 
         assertEquals(listOf(response), service.listarTodos())
@@ -60,9 +61,49 @@ class HorarioDisponivelServiceTest {
         }
         Mockito.`when`(repository.findById(404L)).thenReturn(Optional.empty())
         Mockito.`when`(repository.findById(1L)).thenReturn(Optional.of(horario))
+        Mockito.`when`(horario.ativo).thenReturn(true)
         Mockito.`when`(mapper.toResponse(horario)).thenReturn(response)
         assertSame(response, service.buscarPorId(1L))
         assertFailsWith<NoSuchElementException> { service.buscarPorId(404L) }
+    }
+
+    @Test
+    fun `hides inactive schedules from non-admin users`() {
+        val activeSchedule = Mockito.mock(HorarioDisponivel::class.java)
+        val inactiveSchedule = Mockito.mock(HorarioDisponivel::class.java)
+        Mockito.`when`(activeSchedule.ativo).thenReturn(true)
+        Mockito.`when`(inactiveSchedule.ativo).thenReturn(false)
+        Mockito.`when`(repository.findAll()).thenReturn(listOf(activeSchedule, inactiveSchedule))
+        Mockito.`when`(repository.findByAtivoFalse()).thenReturn(listOf(inactiveSchedule))
+        Mockito.`when`(repository.findById(2L)).thenReturn(Optional.of(inactiveSchedule))
+        Mockito.`when`(mapper.toResponse(activeSchedule)).thenReturn(response)
+        Mockito.`when`(mapper.toResponse(inactiveSchedule)).thenReturn(response)
+
+        val receptionistAuthentication = Mockito.mock(Authentication::class.java)
+        Mockito.`when`(receptionistAuthentication.authorities)
+            .thenReturn(listOf(SimpleGrantedAuthority("ROLE_RECEPCIONISTA")))
+        val psychologistAuthentication = Mockito.mock(Authentication::class.java)
+        Mockito.`when`(psychologistAuthentication.authorities)
+            .thenReturn(listOf(SimpleGrantedAuthority("ROLE_PSICOLOGO")))
+        val adminAuthentication = Mockito.mock(Authentication::class.java)
+        Mockito.`when`(adminAuthentication.authorities)
+            .thenReturn(listOf(SimpleGrantedAuthority("ROLE_ADMIN")))
+
+        assertEquals(listOf(response), service.listarTodos(receptionistAuthentication))
+        assertEquals(listOf(response), service.listarTodos(psychologistAuthentication))
+        assertFailsWith<NoSuchElementException> {
+            service.buscarPorId(2L, receptionistAuthentication)
+        }
+        assertFailsWith<NoSuchElementException> {
+            service.buscarPorId(2L, psychologistAuthentication)
+        }
+        assertFailsWith<AccessDeniedException> {
+            service.listarInativos(receptionistAuthentication)
+        }
+        assertFailsWith<AccessDeniedException> {
+            service.listarInativos(psychologistAuthentication)
+        }
+        assertEquals(listOf(response), service.listarInativos(adminAuthentication))
     }
 
     @Test
@@ -106,6 +147,7 @@ class HorarioDisponivelServiceTest {
     @Test
     fun `updates schedule ignores itself and deactivates it`() {
         Mockito.`when`(horario.id).thenReturn(1L)
+        Mockito.`when`(horario.ativo).thenReturn(true)
         Mockito.`when`(repository.findById(1L)).thenReturn(Optional.of(horario))
         Mockito.`when`(psychologist.id).thenReturn(2L)
         Mockito.`when`(psychologistRepository.findById(2L)).thenReturn(Optional.of(psychologist))
@@ -118,6 +160,20 @@ class HorarioDisponivelServiceTest {
         Mockito.verify(horario).horaInicio = request.horaInicio
         service.deletar(1L)
         Mockito.verify(horario).ativo = false
+    }
+
+    @Test
+    fun `non-admin cannot update an inactive schedule`() {
+        Mockito.`when`(repository.findById(1L)).thenReturn(Optional.of(horario))
+        Mockito.`when`(horario.ativo).thenReturn(false)
+        val psychologistAuthentication = Mockito.mock(Authentication::class.java)
+        Mockito.`when`(psychologistAuthentication.authorities)
+            .thenReturn(listOf(SimpleGrantedAuthority("ROLE_PSICOLOGO")))
+
+        assertFailsWith<NoSuchElementException> {
+            service.atualizar(1L, request, psychologistAuthentication)
+        }
+        Mockito.verify(repository, Mockito.never()).save(Mockito.any())
     }
 
     @Test

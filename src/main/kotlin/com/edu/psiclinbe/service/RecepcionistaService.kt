@@ -17,7 +17,8 @@ class RecepcionistaService(
     private val passwordEncoder: PasswordEncoder,
 ) {
     fun listarTodos(): List<RecepcionistaDtoResponse> =
-        recepcionistaRepository.findAll().map { recepcionistaMapper.toResponse(it) }
+        ActiveRecordVisibility.filter(recepcionistaRepository.findAll()) { it.ativo }
+            .map { recepcionistaMapper.toResponse(it) }
 
     fun buscarRecepcionista(id: Long): RecepcionistaDtoResponse =
         recepcionistaMapper.toResponse(buscarEntidade(id))
@@ -25,6 +26,10 @@ class RecepcionistaService(
     fun buscarPorEmail(email: String): RecepcionistaDtoResponse {
         val recepcionista = recepcionistaRepository.findByEmail(email)
             ?: throw NoSuchElementException("Recepcionista com e-mail $email não existe")
+        ActiveRecordVisibility.requireVisible(
+            recepcionista.ativo,
+            "Recepcionista com e-mail $email não existe"
+        )
         return recepcionistaMapper.toResponse(recepcionista)
     }
 
@@ -74,7 +79,8 @@ class RecepcionistaService(
     }
 
     fun buscarPorSetor(setor: String): List<RecepcionistaDtoResponse> =
-        recepcionistaRepository.findBySetorContainingIgnoreCase(setor).map { recepcionistaMapper.toResponse(it) }
+        ActiveRecordVisibility.filter(recepcionistaRepository.findBySetorContainingIgnoreCase(setor)) { it.ativo }
+            .map { recepcionistaMapper.toResponse(it) }
 
     fun buscarRecepcionistasAtivos(): List<RecepcionistaDtoResponse> =
         recepcionistaRepository.findByAtivoTrue().map { recepcionistaMapper.toResponse(it) }
@@ -82,4 +88,7 @@ class RecepcionistaService(
     private fun buscarEntidade(id: Long): Recepcionista =
         recepcionistaRepository.findById(id)
             .orElseThrow { NoSuchElementException("Recepcionista $id não existe") }
+            .also {
+                ActiveRecordVisibility.requireVisible(it.ativo, "Recepcionista $id não existe")
+            }
 }

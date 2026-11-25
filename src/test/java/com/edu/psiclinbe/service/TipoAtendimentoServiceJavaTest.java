@@ -6,6 +6,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -27,6 +28,11 @@ class TipoAtendimentoServiceJavaTest {
     private final TipoAtendimentoDtoRequest request = new TipoAtendimentoDtoRequest(
             null, "Psicoterapia", "Atendimento clínico", "50 minutos", true,
             ModalidadesAgendamento.ONLINE);
+
+    @BeforeEach
+    void markTypeActive() {
+        when(type.getAtivo()).thenReturn(true);
+    }
 
     @Test
     void listsAndSearchesTypes() {

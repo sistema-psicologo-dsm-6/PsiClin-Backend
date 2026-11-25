@@ -15,7 +15,7 @@ class ConvenioService(
 ) {
 
     fun listarTodos(): List<ConvenioDtoResponse> =
-        convenioRepository.findAll()
+        ActiveRecordVisibility.filter(convenioRepository.findAll()) { it.ativo }
             .map(convenioMapper::toResponse)
 
     fun listarAtivos(): List<ConvenioDtoResponse> =
@@ -29,6 +29,7 @@ class ConvenioService(
             .orElseThrow {
                 NoSuchElementException("Convenio não encontrado com ID: $id")
             }
+        ActiveRecordVisibility.requireVisible(convenio.ativo, "Convênio não encontrado com ID: $id")
         return convenioMapper.toResponse(
             convenio
         )
@@ -39,6 +40,7 @@ class ConvenioService(
     ): List<ConvenioDtoResponse> =
         convenioRepository
             .buscarPorNomeParcial(nome)
+            .let { ActiveRecordVisibility.filter(it) { convenio -> convenio.ativo } }
             .map(convenioMapper::toResponse)
 
     fun buscarPorCnpj(
@@ -50,6 +52,7 @@ class ConvenioService(
                 ?: throw NoSuchElementException(
                     "Convênio não encontrado com CNPJ: $cnpj"
                 )
+            ActiveRecordVisibility.requireVisible(convenio.ativo, "Convênio não encontrado com CNPJ: $cnpj")
 
         return convenioMapper.toResponse(convenio)
     }
@@ -59,6 +62,7 @@ class ConvenioService(
     ): List<ConvenioDtoResponse> =
         convenioRepository
             .findByTelefoneContainingIgnoreCase(telefone)
+            .let { ActiveRecordVisibility.filter(it) { convenio -> convenio.ativo } }
             .map(convenioMapper::toResponse)
 
     fun salvar(
@@ -87,6 +91,7 @@ class ConvenioService(
             .orElseThrow {
                 NoSuchElementException("Convenio não encontrado com ID: $id")
             }
+        ActiveRecordVisibility.requireVisible(convenio.ativo, "Convênio não encontrado com ID: $id")
         convenioRepository.findByCnpj(dto.cnpj)?.let {
             if (it.id != id) {
                 throw IllegalArgumentException(

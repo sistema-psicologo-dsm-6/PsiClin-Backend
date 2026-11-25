@@ -9,6 +9,7 @@ import com.edu.psiclinbe.model.Psicologo
 import com.edu.psiclinbe.model.enums.Role
 import com.edu.psiclinbe.repository.FuncionarioRepository
 import com.edu.psiclinbe.repository.PsicologoRepository
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -43,6 +44,11 @@ class PsicologoServiceTest {
         crp = request.crp,
         especialidade = request.especialidade
     )
+
+    @BeforeEach
+    fun markPsychologistActive() {
+        Mockito.`when`(psicologo.ativo).thenReturn(true)
+    }
 
     @Test
     fun `lists and searches psychologists`() {

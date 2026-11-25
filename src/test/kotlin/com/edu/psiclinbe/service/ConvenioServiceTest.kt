@@ -5,6 +5,7 @@ import com.edu.psiclinbe.dto.response.ConvenioDtoResponse
 import com.edu.psiclinbe.mapper.ConvenioMapper
 import com.edu.psiclinbe.model.Convenio
 import com.edu.psiclinbe.repository.ConvenioRepository
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito
 import java.util.Optional
@@ -24,6 +25,11 @@ class ConvenioServiceTest {
         telefone = "11999990000",
         percentualCobertura = 80.0
     )
+
+    @BeforeEach
+    fun markAgreementActive() {
+        Mockito.`when`(convenio.ativo).thenReturn(true)
+    }
 
     @Test
     fun `lists all active and matching agreements`() {

@@ -13,7 +13,8 @@ class TIpoAtendimentoService(
     private val tipoAtendimentoMapper: TipoAtendimentoMapper,
 ) {
     fun listarTodosTiposAtendimento(): List<TipoAtendimentoDtoResponse> =
-        tipoAtendimentoRepository.findAll().map { tipoAtendimentoMapper.toResponse(it) }
+        ActiveRecordVisibility.filter(tipoAtendimentoRepository.findAll()) { it.ativo }
+            .map { tipoAtendimentoMapper.toResponse(it) }
 
     fun buscarTipoAtendimentoPorId(id: Long): TipoAtendimentoDtoResponse =
         tipoAtendimentoMapper.toResponse(buscarEntidade(id))
@@ -44,7 +45,8 @@ class TIpoAtendimentoService(
     }
 
     fun buscarTipoAtendimentoPeloNome(nome: String): List<TipoAtendimentoDtoResponse> =
-        tipoAtendimentoRepository.findByNomeContainingIgnoreCase(nome).map { tipoAtendimentoMapper.toResponse(it) }
+        ActiveRecordVisibility.filter(tipoAtendimentoRepository.findByNomeContainingIgnoreCase(nome)) { it.ativo }
+            .map { tipoAtendimentoMapper.toResponse(it) }
 
     fun buscarTiposAtendimetnoAtivos(): List<TipoAtendimentoDtoResponse> =
         tipoAtendimentoRepository.findByAtivoTrue().map { tipoAtendimentoMapper.toResponse(it) }
@@ -52,4 +54,10 @@ class TIpoAtendimentoService(
     private fun buscarEntidade(id: Long): TipoAtendimento =
         tipoAtendimentoRepository.findById(id)
             .orElseThrow { NoSuchElementException("Não foi possível encontrar o tipo de atendimento de id: $id") }
+            .also {
+                ActiveRecordVisibility.requireVisible(
+                    it.ativo,
+                    "Não foi possível encontrar o tipo de atendimento de id: $id"
+                )
+            }
 }

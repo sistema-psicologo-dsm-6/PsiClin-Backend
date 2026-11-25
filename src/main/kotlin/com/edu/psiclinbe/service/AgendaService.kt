@@ -95,7 +95,7 @@ class AgendaService(
             .filter { sobrepoe(inicioDia, fimDia, it.dataHoraInicio, it.dataHoraFim) }
         val disponiveis = mutableSetOf<LocalTime>()
 
-        horarios.forEach { horario ->
+        horarios.filter { it.ativo }.forEach { horario ->
             var inicioSlot = data.atTime(horario.horaInicio)
             val fimHorario = data.atTime(horario.horaFim)
 
@@ -365,7 +365,8 @@ class AgendaService(
         val dentroDaGrade = horarioDisponivelRepository
             .findByPsicologoIdAndDiaSemana(psicologoId, diaSemana)
             .any { horario ->
-                !inicio.toLocalTime().isBefore(horario.horaInicio) &&
+                horario.ativo &&
+                    !inicio.toLocalTime().isBefore(horario.horaInicio) &&
                     !fim.toLocalTime().isAfter(horario.horaFim)
             }
 

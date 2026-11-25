@@ -7,6 +7,7 @@ import com.edu.psiclinbe.mapper.RecepcionistaMapper
 import com.edu.psiclinbe.model.Recepcionista
 import com.edu.psiclinbe.model.enums.Role
 import com.edu.psiclinbe.repository.RecepcionistaRepository
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -37,6 +38,11 @@ class RecepcionistaServiceTest {
         telefone = request.telefone,
         setor = request.setor
     )
+
+    @BeforeEach
+    fun markReceptionistActive() {
+        Mockito.`when`(recepcionista.ativo).thenReturn(true)
+    }
 
     @Test
     fun `lists and searches receptionists`() {

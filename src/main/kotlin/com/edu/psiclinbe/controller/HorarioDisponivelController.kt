@@ -20,9 +20,9 @@ class HorarioDisponivelController(
 ) {
 
     @GetMapping
-    fun index(): ResponseEntity<List<HorarioDisponivelDtoResponse>> =
+    fun index(authentication: Authentication): ResponseEntity<List<HorarioDisponivelDtoResponse>> =
         ResponseEntity.ok(
-            service.listarTodos()
+            service.listarTodos(authentication)
         )
 
     @GetMapping("/ativos")
@@ -30,40 +30,47 @@ class HorarioDisponivelController(
         ResponseEntity.ok(service.listarAtivos())
 
     @GetMapping("/inativos")
-    fun indexInactive(): ResponseEntity<List<HorarioDisponivelDtoResponse>> =
-        ResponseEntity.ok(service.listarInativos())
+    fun indexInactive(
+        authentication: Authentication
+    ): ResponseEntity<List<HorarioDisponivelDtoResponse>> =
+        ResponseEntity.ok(service.listarInativos(authentication))
 
     @GetMapping("/{id}")
     fun show(
-        @PathVariable id: Long
+        @PathVariable id: Long,
+        authentication: Authentication
     ): ResponseEntity<HorarioDisponivelDtoResponse> =
         ResponseEntity.ok(
-            service.buscarPorId(id)
+            service.buscarPorId(id, authentication)
         )
 
     @GetMapping("/por-descricao")
     fun indexByDescription(
-        @RequestParam termo: String
+        @RequestParam termo: String,
+        authentication: Authentication
     ): ResponseEntity<List<HorarioDisponivelDtoResponse>> =
-        ResponseEntity.ok(service.buscarPorDescricao(termo))
+        ResponseEntity.ok(service.buscarPorDescricao(termo, authentication))
 
     @GetMapping("/por-psicologo/{psicologoId}")
     fun indexByPsychologist(
-        @PathVariable psicologoId: Long
+        @PathVariable psicologoId: Long,
+        authentication: Authentication
     ): ResponseEntity<List<HorarioDisponivelDtoResponse>> =
         ResponseEntity.ok(
-            service.buscarPorPsicologo(psicologoId)
+            service.buscarPorPsicologo(psicologoId, authentication)
         )
 
     @GetMapping("/por-psicologo/{psicologoId}/dia/{diaSemana}")
     fun indexByPsychologistAndWeekday(
         @PathVariable psicologoId: Long,
-        @PathVariable diaSemana: String
+        @PathVariable diaSemana: String,
+        authentication: Authentication
     ): ResponseEntity<List<HorarioDisponivelDtoResponse>> =
         ResponseEntity.ok(
             service.buscarPorPsicologoEDia(
                 psicologoId,
-                diaSemana
+                diaSemana,
+                authentication
             )
         )
 

@@ -19,7 +19,7 @@ class PsicologoService(
 ) {
 
     fun listarTodos(): List<PsicologoDtoResponse> =
-        psicologoRepository.findAll()
+        ActiveRecordVisibility.filter(psicologoRepository.findAll()) { it.ativo }
             .map(psicologoMapper::toResponse)
 
     fun listarAtivos(): List<PsicologoDtoResponse> =
@@ -27,14 +27,15 @@ class PsicologoService(
             .map(psicologoMapper::toResponse)
 
     fun buscarPorId(id: Long): PsicologoDtoResponse =
-        psicologoMapper.toResponse(
-            psicologoRepository.findById(id)
-                .orElseThrow {
-                    NoSuchElementException(
-                        "Psicólogo não encontrado com id: $id"
-                    )
-                }
-        )
+        psicologoRepository.findById(id)
+            .orElseThrow { NoSuchElementException("Psicólogo não encontrado com id: $id") }
+            .also {
+                ActiveRecordVisibility.requireVisible(
+                    it.ativo,
+                    "Psicólogo não encontrado com id: $id"
+                )
+            }
+            .let(psicologoMapper::toResponse)
 
     fun buscarPorCrp(crp: String): PsicologoDtoResponse {
 
@@ -42,12 +43,15 @@ class PsicologoService(
             ?: throw NoSuchElementException(
                 "Psicólogo não encontrado com CRP: $crp"
             )
+        ActiveRecordVisibility.requireVisible(psicologo.ativo, "Psicólogo não encontrado com CRP: $crp")
 
         return psicologoMapper.toResponse(psicologo)
     }
 
     fun buscarPorEspecialidade(especialidade: String): List<PsicologoDtoResponse> =
-        psicologoRepository.findByEspecialidadeContainingIgnoreCase(especialidade)
+        ActiveRecordVisibility.filter(
+            psicologoRepository.findByEspecialidadeContainingIgnoreCase(especialidade)
+        ) { it.ativo }
             .map(psicologoMapper::toResponse)
 
     fun salvar(dto: PsicologoDtoRequest): PsicologoDtoResponse {
@@ -102,6 +106,7 @@ class PsicologoService(
                 senha = passwordEncoder.encode(it)!!
             }
         }
+        ActiveRecordVisibility.requireVisible(psicologo.ativo, "Psicólogo não encontrado com id: $id")
 
         return psicologoMapper.toResponse(
             psicologoRepository.save(psicologo)

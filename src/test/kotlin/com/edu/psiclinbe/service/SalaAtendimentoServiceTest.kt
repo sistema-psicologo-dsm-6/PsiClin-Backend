@@ -5,6 +5,7 @@ import com.edu.psiclinbe.dto.response.SalaAtendimentoDtoResponse
 import com.edu.psiclinbe.mapper.SalaAtendimentoMapper
 import com.edu.psiclinbe.model.SalaAtendimento
 import com.edu.psiclinbe.repository.SalaAtendimentoRepository
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito
 import java.util.Optional
@@ -23,6 +24,11 @@ class SalaAtendimentoServiceTest {
         descricao = "Atendimento individual",
         capacidade = 1
     )
+
+    @BeforeEach
+    fun markRoomActive() {
+        Mockito.`when`(sala.ativo).thenReturn(true)
+    }
 
     @Test
     fun `lists rooms by all name and active state`() {

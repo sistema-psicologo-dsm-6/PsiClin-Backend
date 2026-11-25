@@ -7,6 +7,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -23,6 +24,11 @@ class PacienteServiceJavaTest {
     private final PacienteService service = new PacienteService(repository, mapper);
     private final Paciente paciente = mock(Paciente.class);
     private final PacienteDtoResponse response = mock(PacienteDtoResponse.class);
+
+    @BeforeEach
+    void markPatientActive() {
+        when(paciente.getAtivo()).thenReturn(true);
+    }
 
     @Test
     void listsAndSearchesPatients() {

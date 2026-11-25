@@ -6,6 +6,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -25,6 +26,11 @@ class SalaAtendimentoServiceJavaTest {
     private final SalaAtendimentoDtoResponse response = mock(SalaAtendimentoDtoResponse.class);
     private final SalaAtendimentoDtoRequest request = new SalaAtendimentoDtoRequest(
             null, "Sala 1", "Consultório", 1, true);
+
+    @BeforeEach
+    void markRoomActive() {
+        when(room.getAtivo()).thenReturn(true);
+    }
 
     @Test
     void listsAndSearchesRooms() {

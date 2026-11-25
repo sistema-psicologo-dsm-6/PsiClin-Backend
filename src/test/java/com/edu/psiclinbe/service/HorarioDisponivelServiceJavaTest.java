@@ -42,6 +42,7 @@ class HorarioDisponivelServiceJavaTest {
         when(repository.findByPsicologoIdAndDiaSemana(2L, DiaSemana.TERCA))
                 .thenReturn(List.of(schedule));
         when(repository.findById(1L)).thenReturn(Optional.of(schedule));
+        when(schedule.getAtivo()).thenReturn(true);
         when(mapper.toResponse(schedule)).thenReturn(response);
 
         assertEquals(List.of(response), service.listarTodos());
@@ -79,6 +80,7 @@ class HorarioDisponivelServiceJavaTest {
     @Test
     void updatesAndDeactivatesSchedule() {
         when(schedule.getId()).thenReturn(1L);
+                when(schedule.getAtivo()).thenReturn(true);
         when(repository.findById(1L)).thenReturn(Optional.of(schedule));
         when(psychologist.getId()).thenReturn(2L);
         when(psychologistRepository.findById(2L)).thenReturn(Optional.of(psychologist));

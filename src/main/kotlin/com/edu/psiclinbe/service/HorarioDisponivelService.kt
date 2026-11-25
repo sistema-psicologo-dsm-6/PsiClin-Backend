@@ -21,44 +21,78 @@ class HorarioDisponivelService(
     private val validarDataInicioFim: ValidarDataInicioFim
 ) {
 
-    fun listarTodos(): List<HorarioDisponivelDtoResponse> =
+    @JvmOverloads
+    fun listarTodos(
+        authentication: Authentication? = null
+    ): List<HorarioDisponivelDtoResponse> =
         horarioDisponivelRepository.findAll()
+            .filter { podeVisualizarInativos(authentication) || it.ativo }
             .map(horarioDisponivelMapper::toResponse)
 
     fun listarAtivos(): List<HorarioDisponivelDtoResponse> =
         horarioDisponivelRepository.findByAtivoTrue()
             .map(horarioDisponivelMapper::toResponse)
 
-    fun listarInativos(): List<HorarioDisponivelDtoResponse> =
-        horarioDisponivelRepository.findByAtivoFalse()
+    @JvmOverloads
+    fun listarInativos(
+        authentication: Authentication? = null
+    ): List<HorarioDisponivelDtoResponse> {
+        if (!podeVisualizarInativos(authentication)) {
+            throw AccessDeniedException("Somente ADMIN pode visualizar horários inativos")
+        }
+
+        return horarioDisponivelRepository.findByAtivoFalse()
             .map(horarioDisponivelMapper::toResponse)
+    }
 
-    fun buscarPorId(id: Long): HorarioDisponivelDtoResponse =
-        horarioDisponivelMapper.toResponse(
-            horarioDisponivelRepository.findById(id)
-                .orElseThrow {
-                    NoSuchElementException(
-                        "Horário disponível não encontrado com id: $id"
-                    )
-                }
-        )
+    @JvmOverloads
+    fun buscarPorId(
+        id: Long,
+        authentication: Authentication? = null
+    ): HorarioDisponivelDtoResponse {
+        val horario = horarioDisponivelRepository.findById(id)
+            .orElseThrow {
+                NoSuchElementException("Horário disponível não encontrado com id: $id")
+            }
+        if (!podeVisualizarInativos(authentication) && !horario.ativo) {
+            throw NoSuchElementException("Horário disponível não encontrado com id: $id")
+        }
 
-    fun buscarPorDescricao(termo: String): List<HorarioDisponivelDtoResponse> =
+        return horarioDisponivelMapper.toResponse(horario)
+    }
+
+    @JvmOverloads
+    fun buscarPorDescricao(
+        termo: String,
+        authentication: Authentication? = null
+    ): List<HorarioDisponivelDtoResponse> =
         horarioDisponivelRepository.buscarPorDescricao(termo)
+            .filter { podeVisualizarInativos(authentication) || it.ativo }
             .map(horarioDisponivelMapper::toResponse)
 
-    fun buscarPorPsicologo(psicologoId: Long): List<HorarioDisponivelDtoResponse> =
+    @JvmOverloads
+    fun buscarPorPsicologo(
+        psicologoId: Long,
+        authentication: Authentication? = null
+    ): List<HorarioDisponivelDtoResponse> =
         horarioDisponivelRepository.findByPsicologoId(psicologoId)
+            .filter { podeVisualizarInativos(authentication) || it.ativo }
             .map(horarioDisponivelMapper::toResponse)
 
+    @JvmOverloads
     fun buscarPorPsicologoEDia(
         psicologoId: Long,
-        diaSemana: String
+        diaSemana: String,
+        authentication: Authentication? = null
     ): List<HorarioDisponivelDtoResponse> =
         horarioDisponivelRepository.findByPsicologoIdAndDiaSemana(
             psicologoId,
             DiaSemana.valueOf(diaSemana)
-        ).map(horarioDisponivelMapper::toResponse)
+        ).filter { podeVisualizarInativos(authentication) || it.ativo }
+            .map(horarioDisponivelMapper::toResponse)
+
+    private fun podeVisualizarInativos(authentication: Authentication?): Boolean =
+        authentication?.authorities?.any { it.authority == "ROLE_ADMIN" } == true
 
     fun salvar(dto: HorarioDisponivelDtoRequest): HorarioDisponivelDtoResponse {
 
@@ -98,10 +132,10 @@ class HorarioDisponivelService(
         dto: HorarioDisponivelDtoRequest,
         authentication: Authentication? = null
     ): HorarioDisponivelDtoResponse {
+        val isAdmin = authentication?.authorities
+            ?.any { it.authority == "ROLE_ADMIN" } == true
 
         if (dto.ativo != null) {
-            val isAdmin = authentication?.authorities
-                ?.any { it.authority == "ROLE_ADMIN" } == true
             if (!isAdmin) {
                 throw AccessDeniedException("Somente ADMIN pode alterar o status")
             }
@@ -113,6 +147,9 @@ class HorarioDisponivelService(
                     "Horário disponível não encontrado com id: $id"
                 )
             }
+        if (!isAdmin && !horario.ativo) {
+            throw NoSuchElementException("Horário disponível não encontrado com id: $id")
+        }
 
         validarDataInicioFim.validarHorario(
             dto.horaInicio,

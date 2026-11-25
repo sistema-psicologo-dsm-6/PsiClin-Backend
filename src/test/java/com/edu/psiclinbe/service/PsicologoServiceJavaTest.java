@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -26,6 +27,11 @@ class PsicologoServiceJavaTest {
             repository, employeeRepository, mapper, encoder);
     private final Psicologo psychologist = mock(Psicologo.class);
     private final PsicologoDtoResponse response = mock(PsicologoDtoResponse.class);
+
+    @BeforeEach
+    void markPsychologistActive() {
+        when(psychologist.getAtivo()).thenReturn(true);
+    }
 
     @Test
     void listsPsychologistsAndRejectsDuplicateCrp() {

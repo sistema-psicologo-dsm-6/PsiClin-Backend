@@ -13,7 +13,7 @@ class PacienteService(
 ) {
 
     fun listarTodos(): List<PacienteDtoResponse> =
-        pacienteRepository.findAll()
+        ActiveRecordVisibility.filter(pacienteRepository.findAll()) { it.ativo }
             .map(pacienteMapper::toResponse)
 
     fun listarAtivos(): List<PacienteDtoResponse> =
@@ -21,17 +21,18 @@ class PacienteService(
             .map(pacienteMapper::toResponse)
 
     fun buscarPorId(id: Long): PacienteDtoResponse =
-        pacienteMapper.toResponse(
-            pacienteRepository.findById(id)
-                .orElseThrow {
-                    NoSuchElementException(
-                        "Paciente não encontrado com id: $id"
-                    )
-                }
-        )
+        pacienteRepository.findById(id)
+            .orElseThrow { NoSuchElementException("Paciente não encontrado com id: $id") }
+            .also {
+                ActiveRecordVisibility.requireVisible(
+                    it.ativo,
+                    "Paciente não encontrado com id: $id"
+                )
+            }
+            .let(pacienteMapper::toResponse)
 
     fun buscarPorNome(nome: String): List<PacienteDtoResponse> =
-        pacienteRepository.buscarPorNomeParcial(nome)
+        ActiveRecordVisibility.filter(pacienteRepository.buscarPorNomeParcial(nome)) { it.ativo }
             .map(pacienteMapper::toResponse)
 
     fun buscarPorCpf(cpf: String): PacienteDtoResponse {
@@ -40,6 +41,7 @@ class PacienteService(
             ?: throw NoSuchElementException(
                 "Paciente não encontrado com CPF: $cpf"
             )
+        ActiveRecordVisibility.requireVisible(paciente.ativo, "Paciente não encontrado com CPF: $cpf")
 
         return pacienteMapper.toResponse(paciente)
     }
@@ -50,6 +52,7 @@ class PacienteService(
             ?: throw NoSuchElementException(
                 "Paciente não encontrado com e-mail: $email"
             )
+        ActiveRecordVisibility.requireVisible(paciente.ativo, "Paciente não encontrado com e-mail: $email")
 
         return pacienteMapper.toResponse(paciente)
     }
@@ -94,6 +97,7 @@ class PacienteService(
                 )
             }
         }
+        ActiveRecordVisibility.requireVisible(paciente.ativo, "Paciente não encontrado com id: $id")
 
         pacienteRepository.findByEmail(dto.email)?.let {
             if (it.id != id) {

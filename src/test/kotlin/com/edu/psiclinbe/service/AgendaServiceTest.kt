@@ -74,6 +74,13 @@ class AgendaServiceTest {
             horaInicio = LocalTime.of(9, 0),
             horaFim = LocalTime.of(12, 0)
         )
+        val horarioInativo = HorarioDisponivel(
+            psicologo = psicologo,
+            diaSemana = DiaSemana.TERCA,
+            horaInicio = LocalTime.of(12, 0),
+            horaFim = LocalTime.of(13, 0),
+            ativo = false
+        )
         val agenda = agenda(
             psicologo,
             LocalDateTime.of(data, LocalTime.of(9, 0)),
@@ -91,7 +98,7 @@ class AgendaServiceTest {
             .thenReturn(Optional.of(psicologo))
         Mockito.`when`(
             horarioRepository.findByPsicologoIdAndDiaSemana(psicologoId, DiaSemana.TERCA)
-        ).thenReturn(listOf(horario))
+        ).thenReturn(listOf(horario, horarioInativo))
         Mockito.`when`(agendaRepository.findByPsicologoId(psicologoId))
             .thenReturn(listOf(agenda))
         Mockito.`when`(bloqueioRepository.findByPsicologoIdAndAtivoTrue(psicologoId))
@@ -260,6 +267,22 @@ class AgendaServiceTest {
     fun `rejects appointment outside psychologist weekly schedule`() {
         val dto = requisicao()
         prepararRelacionamentos(dto, horarios = emptyList())
+
+        assertFailsWith<IllegalArgumentException> { service.salvar(dto) }
+        Mockito.verify(agendaRepository, Mockito.never()).save(Mockito.any())
+    }
+
+    @Test
+    fun `rejects appointment within inactive psychologist schedule`() {
+        val dto = requisicao()
+        val horarioInativo = HorarioDisponivel(
+            psicologo = psicologo,
+            diaSemana = DiaSemana.TERCA,
+            horaInicio = LocalTime.of(9, 0),
+            horaFim = LocalTime.of(12, 0),
+            ativo = false
+        )
+        prepararRelacionamentos(dto, horarios = listOf(horarioInativo))
 
         assertFailsWith<IllegalArgumentException> { service.salvar(dto) }
         Mockito.verify(agendaRepository, Mockito.never()).save(Mockito.any())

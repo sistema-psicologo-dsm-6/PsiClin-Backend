@@ -13,7 +13,8 @@ class SalaAtendimentoService(
     private val salaMapper: SalaAtendimentoMapper,
 ) {
     fun listarTodasAsSalas(): List<SalaAtendimentoDtoResponse> =
-        salaRepository.findAll().map { salaMapper.toResponse(it) }
+        ActiveRecordVisibility.filter(salaRepository.findAll()) { it.ativo }
+            .map { salaMapper.toResponse(it) }
 
     fun buscarSala(id: Long): SalaAtendimentoDtoResponse = salaMapper.toResponse(buscarEntidade(id))
 
@@ -28,6 +29,7 @@ class SalaAtendimentoService(
         return salaMapper.toResponse(salaRepository.save(sala))
     }
 
+
     fun desativarSala(id: Long): SalaAtendimentoDtoResponse {
         val sala = buscarEntidade(id)
         sala.ativo = false
@@ -39,7 +41,8 @@ class SalaAtendimentoService(
     }
 
     fun buscarSalaPorNome(nome: String): List<SalaAtendimentoDtoResponse> =
-        salaRepository.buscarPorNomeParcial(nome).map { salaMapper.toResponse(it) }
+        ActiveRecordVisibility.filter(salaRepository.buscarPorNomeParcial(nome)) { it.ativo }
+            .map { salaMapper.toResponse(it) }
 
     fun buscarSalasAtivas(): List<SalaAtendimentoDtoResponse> =
         salaRepository.findByAtivoTrue().map { salaMapper.toResponse(it) }
@@ -47,4 +50,10 @@ class SalaAtendimentoService(
     private fun buscarEntidade(id: Long): SalaAtendimento =
         salaRepository.findById(id)
             .orElseThrow { NoSuchElementException("Não foi possível encontrar a sala de id: $id") }
+            .also {
+                ActiveRecordVisibility.requireVisible(
+                    it.ativo,
+                    "Não foi possível encontrar a sala de id: $id"
+                )
+            }
 }

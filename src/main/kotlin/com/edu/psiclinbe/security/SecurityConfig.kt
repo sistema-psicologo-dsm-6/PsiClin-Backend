@@ -120,6 +120,10 @@ class SecurityConfig(
                  // Disponibilidade: PSICOLOGO edita, RECEPCIONISTA consulta
                  it.requestMatchers(
                      HttpMethod.GET,
+                     "/horarios-disponiveis/inativos"
+                 ).hasRole(admin)
+                 it.requestMatchers(
+                     HttpMethod.GET,
                      "/horarios-disponiveis/**",
                      "/bloqueios-agenda/**"
                  ).hasAnyRole(admin, recep, psi)

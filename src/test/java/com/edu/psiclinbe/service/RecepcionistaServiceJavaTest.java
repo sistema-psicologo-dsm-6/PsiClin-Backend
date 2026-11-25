@@ -6,6 +6,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -33,6 +34,11 @@ class RecepcionistaServiceJavaTest {
         private final RecepcionistaDtoUpdateRequest updateRequest = new RecepcionistaDtoUpdateRequest(
             "Joana", "12345678900", "joana@example.com", "11999990000", null,
             "Recepção", true);
+
+    @BeforeEach
+    void markReceptionistActive() {
+        when(receptionist.getAtivo()).thenReturn(true);
+    }
 
     @Test
     void listsAndSearchesReceptionists() {

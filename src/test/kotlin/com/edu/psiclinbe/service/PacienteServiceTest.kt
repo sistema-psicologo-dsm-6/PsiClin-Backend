@@ -5,8 +5,12 @@ import com.edu.psiclinbe.dto.response.PacienteDtoResponse
 import com.edu.psiclinbe.mapper.PacienteMapper
 import com.edu.psiclinbe.model.Paciente
 import com.edu.psiclinbe.repository.PacienteRepository
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.authority.SimpleGrantedAuthority
+import org.springframework.security.core.context.SecurityContextHolder
 import java.time.LocalDate
 import java.util.Optional
 import kotlin.test.assertEquals
@@ -29,6 +33,11 @@ class PacienteServiceTest {
         observacoes = ""
     )
 
+    @BeforeEach
+    fun markPatientActive() {
+        Mockito.`when`(paciente.ativo).thenReturn(true)
+    }
+
     @Test
     fun `lists patients by all active name`() {
         Mockito.`when`(repository.findAll()).thenReturn(listOf(paciente))
@@ -40,6 +49,32 @@ class PacienteServiceTest {
         assertEquals(listOf(response), service.listarTodos())
         assertEquals(listOf(response), service.listarAtivos())
         assertEquals(listOf(response), service.buscarPorNome("Ana"))
+    }
+
+    @Test
+    fun `hides inactive patients from receptionists and psychologists`() {
+        val activePatient = Mockito.mock(Paciente::class.java)
+        val inactivePatient = Mockito.mock(Paciente::class.java)
+        val inactiveResponse = Mockito.mock(PacienteDtoResponse::class.java)
+        Mockito.`when`(activePatient.ativo).thenReturn(true)
+        Mockito.`when`(inactivePatient.ativo).thenReturn(false)
+        Mockito.`when`(repository.findAll()).thenReturn(listOf(activePatient, inactivePatient))
+        Mockito.`when`(repository.findById(2L)).thenReturn(Optional.of(inactivePatient))
+        Mockito.`when`(mapper.toResponse(activePatient)).thenReturn(response)
+        Mockito.`when`(mapper.toResponse(inactivePatient)).thenReturn(inactiveResponse)
+
+        withRole("ROLE_RECEPCIONISTA") {
+            assertEquals(listOf(response), service.listarTodos())
+            assertFailsWith<NoSuchElementException> { service.buscarPorId(2L) }
+        }
+        withRole("ROLE_PSICOLOGO") {
+            assertEquals(listOf(response), service.listarTodos())
+            assertFailsWith<NoSuchElementException> { service.buscarPorId(2L) }
+        }
+        withRole("ROLE_ADMIN") {
+            assertEquals(listOf(response, inactiveResponse), service.listarTodos())
+            assertSame(inactiveResponse, service.buscarPorId(2L))
+        }
     }
 
     @Test
@@ -142,5 +177,21 @@ class PacienteServiceTest {
         assertFailsWith<NoSuchElementException> { service.deletar(404L) }
         Mockito.`when`(repository.findById(404L)).thenReturn(Optional.empty())
         assertFailsWith<NoSuchElementException> { service.inativar(404L) }
+    }
+
+    private fun withRole(role: String, action: () -> Unit) {
+        val previousContext = SecurityContextHolder.getContext()
+        val context = SecurityContextHolder.createEmptyContext()
+        context.authentication = UsernamePasswordAuthenticationToken(
+            "test-user",
+            "",
+            listOf(SimpleGrantedAuthority(role))
+        )
+        SecurityContextHolder.setContext(context)
+        try {
+            action()
+        } finally {
+            SecurityContextHolder.setContext(previousContext)
+        }
     }
 }

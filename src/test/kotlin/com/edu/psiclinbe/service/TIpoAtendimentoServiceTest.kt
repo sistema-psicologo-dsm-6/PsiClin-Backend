@@ -6,6 +6,7 @@ import com.edu.psiclinbe.mapper.TipoAtendimentoMapper
 import com.edu.psiclinbe.model.TipoAtendimento
 import com.edu.psiclinbe.model.enums.ModalidadesAgendamento
 import com.edu.psiclinbe.repository.TipoAtendimentoRepository
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito
 import java.util.Optional
@@ -25,6 +26,11 @@ class TIpoAtendimentoServiceTest {
         duracao = "50 minutos",
         modalidade = ModalidadesAgendamento.ONLINE
     )
+
+    @BeforeEach
+    fun markTypeActive() {
+        Mockito.`when`(tipo.ativo).thenReturn(true)
+    }
 
     @Test
     fun `lists types by all name and active state`() {
