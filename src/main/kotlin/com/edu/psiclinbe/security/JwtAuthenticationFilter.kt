@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource
 import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
@@ -21,19 +22,17 @@ class JwtAuthenticationFilter(
         filterChain: FilterChain
     ) {
 
-        val authHeader =
-            request.getHeader("Authorization")
+        val authHeader = request.getHeader("Authorization")?.trim()
 
         if (
             authHeader == null ||
-            !authHeader.startsWith("Bearer ")
+            !authHeader.regionMatches(0, "Bearer ", 0, 7, true)
         ) {
             filterChain.doFilter(request, response)
             return
         }
 
-        val token =
-            authHeader.substring(7)
+        val token = authHeader.substring(7).trim()
 
         val email = try {
             jwtUtil.extractUsername(token)
@@ -43,33 +42,33 @@ class JwtAuthenticationFilter(
 
         if (
             email != null &&
-            SecurityContextHolder
-                .getContext()
-                .authentication == null
+            !token.isBlank() &&
+            SecurityContextHolder.getContext().authentication == null
         ) {
-
-            val userDetails = try {
+            val userDetails = runCatching {
                 userDetailsService.loadUserByUsername(email)
-            } catch (e: Exception) {
-                null
-            }
+            }.getOrNull()
 
-            if (userDetails != null && jwtUtil.validateToken(token, userDetails.username)) {
+            val principal = userDetails
+            val authorities = userDetails?.authorities
+                ?: jwtUtil.extractRole(token)
+                    ?.takeIf { it in listOf("ADMIN", "RECEPCIONISTA", "PSICOLOGO") }
+                    ?.let { listOf(SimpleGrantedAuthority("ROLE_$it")) }
 
-                val authentication =
-                    UsernamePasswordAuthenticationToken(
-                        userDetails,
-                        null,
-                        userDetails.authorities
-                    )
+            if (
+                authorities != null &&
+                jwtUtil.validateToken(token, email)
+            ) {
+                val authentication = UsernamePasswordAuthenticationToken(
+                    principal ?: email,
+                    null,
+                    authorities
+                )
 
                 authentication.details =
-                    WebAuthenticationDetailsSource()
-                        .buildDetails(request)
+                    WebAuthenticationDetailsSource().buildDetails(request)
 
-                SecurityContextHolder
-                    .getContext()
-                    .authentication = authentication
+                SecurityContextHolder.getContext().authentication = authentication
             }
         }
 

@@ -28,7 +28,7 @@ class AuthControllerTest {
         ).thenReturn(authentication)
         Mockito.`when`(authentication.authorities)
             .thenReturn(listOf(SimpleGrantedAuthority("ROLE_ADMIN")))
-        Mockito.`when`(jwtUtil.generateToken("admin@example.com")).thenReturn("jwt-token")
+        Mockito.`when`(jwtUtil.generateToken("admin@example.com", "ADMIN")).thenReturn("jwt-token")
 
         val response = controller.signin(
             SigninRequest(email = "admin@example.com", senha = "senha")

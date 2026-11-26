@@ -37,7 +37,7 @@ class AgendaMapper {
             dataHoraInicio = dto.dataHoraInicio,
             dataHoraFim = dto.dataHoraFim,
             status = dto.status,
-            observacoes = dto.observacoes
+            observacoes = dto.observacoes?.takeIf { it.isNotBlank() }
         )
     }
 

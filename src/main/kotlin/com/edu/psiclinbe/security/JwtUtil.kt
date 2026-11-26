@@ -14,11 +14,13 @@ class JwtUtil(
 ) {
 
     fun generateToken(
-        username: String
+        username: String,
+        role: String
     ): String {
 
         return Jwts.builder()
             .setSubject(username)
+            .claim("role", role)
             .setIssuedAt(Date())
             .setExpiration(
                 Date(
@@ -33,6 +35,14 @@ class JwtUtil(
             .compact()
     }
 
+    fun generateToken(username: String): String =
+        Jwts.builder()
+            .setSubject(username)
+            .setIssuedAt(Date())
+            .setExpiration(Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24))
+            .signWith(Keys.hmacShaKeyFor(secretKey.toByteArray()), SignatureAlgorithm.HS256)
+            .compact()
+
     fun extractUsername(
         token: String
     ): String {
@@ -40,6 +50,11 @@ class JwtUtil(
         return extractAllClaims(token)
             .subject
     }
+
+    fun extractRole(token: String): String? =
+        runCatching {
+            extractAllClaims(token)["role"] as? String
+        }.getOrNull()
 
     fun validateToken(
         token: String,

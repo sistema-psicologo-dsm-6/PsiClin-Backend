@@ -28,5 +28,5 @@ data class AgendaDtoRequest(
     @field:NotNull(message = "O status da agenda e obrigatorio")
     val status: AgendaStatus,
     @field:Size(max = 2000, message = "As observacoes devem ter no maximo 2000 caracteres")
-    val observacoes: String = "",
+    val observacoes: String? = null,
 )

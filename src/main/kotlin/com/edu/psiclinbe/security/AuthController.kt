@@ -42,7 +42,8 @@ class AuthController(
 
         val token =
             jwtUtil.generateToken(
-                request.email
+                request.email,
+                role.name
             )
 
         return ResponseEntity.ok(
