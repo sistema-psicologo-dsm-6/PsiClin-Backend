@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Size
 import java.time.LocalDateTime
 
 data class BloqueioAgendaDtoRequest(
-    val id: Long,
+    val id: Long? = null,
     @field:NotNull(message = "O psicologo e obrigatorio")
     @field:Positive(message = "O id do psicologo deve ser maior que zero")
     val psicologoId: Long,
