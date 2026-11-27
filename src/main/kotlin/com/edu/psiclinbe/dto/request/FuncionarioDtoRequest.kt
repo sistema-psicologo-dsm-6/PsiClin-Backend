@@ -15,8 +15,7 @@ data class FuncionarioDtoRequest(
     val email: String = "",
     @field:NotBlank(message = "O telefone nao pode estar vazio")
     val telefone: String = "",
-    @field:NotBlank(message = "A senha nao pode estar vazia")
-    val senha: String = "",
+    val senha: String? = null,
     val ativo: Boolean = true,
     val role: Role = Role.RECEPCIONISTA,
 )

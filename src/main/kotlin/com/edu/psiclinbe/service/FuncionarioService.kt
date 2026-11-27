@@ -51,6 +51,9 @@ class FuncionarioService(
     }
 
     fun salvar(dto: FuncionarioDtoRequest): FuncionarioDtoResponse {
+        val senhaNova = dto.senha?.takeIf { it.isNotBlank() }
+            ?: throw IllegalArgumentException("A senha não pode estar vazia")
+
         funcionarioRepository.findByEmailAndCpf(dto.email, dto.cpf)?.let {
             throw IllegalArgumentException("Já existe um funcionário com este e-mail e CPF")
         }
@@ -60,7 +63,7 @@ class FuncionarioService(
             cpf = dto.cpf,
             email = dto.email,
             telefone = dto.telefone,
-            senha = passwordEncoder.encode(dto.senha)!!,
+            senha = passwordEncoder.encode(senhaNova)!!,
             ativo = dto.ativo,
             role = dto.role
         )
@@ -78,9 +81,9 @@ class FuncionarioService(
         funcionario.telefone = dto.telefone
         funcionario.ativo = dto.ativo
 
-        if (dto.senha.isNotBlank()) {
+        if (!dto.senha.isNullOrBlank()) {
             funcionario.senha =
-                passwordEncoder.encode(dto.senha)!!
+                passwordEncoder.encode(dto.senha!!)!!
         }
 
         return funcionarioMapper.toResponse(funcionarioRepository.save(funcionario))

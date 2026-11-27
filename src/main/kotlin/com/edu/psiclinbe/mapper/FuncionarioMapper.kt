@@ -13,7 +13,7 @@ class FuncionarioMapper {
         cpf = dto.cpf,
         email = dto.email,
         telefone = dto.telefone,
-        senha = dto.senha,
+        senha = dto.senha.orEmpty(),
         ativo = dto.ativo,
         role = dto.role,
     )
