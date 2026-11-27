@@ -16,13 +16,15 @@ class ProntuarioService(
     private val prontuarioMapper: ProntuarioMapper,
 ) {
     fun buscarPorPaciente(id: Long): List<ProntuarioDtoResponse> =
-        prontuarioRepository.findByPacienteId(id).map { prontuarioMapper.toResponse(it) }
+        ActiveRecordVisibility.filter(prontuarioRepository.findByPacienteId(id)) { it.ativo }
+            .map { prontuarioMapper.toResponse(it) }
 
     fun buscarPorPacienteEStatus(paciente: Long, status: ProntuarioStatus): List<ProntuarioDtoResponse> =
-        prontuarioRepository.findByPacienteIdAndStatus(paciente, status).map { prontuarioMapper.toResponse(it) }
+        ActiveRecordVisibility.filter(prontuarioRepository.findByPacienteIdAndStatus(paciente, status)) { it.ativo }
+            .map { prontuarioMapper.toResponse(it) }
 
     fun buscarPorQueixaPrincipal(termo: String): List<ProntuarioDtoResponse> =
-        prontuarioRepository.buscarPorQueixaPrincipal(termo)
+        ActiveRecordVisibility.filter(prontuarioRepository.buscarPorQueixaPrincipal(termo)) { it.ativo }
             .map(prontuarioMapper::toResponse)
 
     fun cadastrarProntuario(dto: ProntuarioDtoRequest): ProntuarioDtoResponse {
@@ -31,7 +33,8 @@ class ProntuarioService(
     }
 
     fun listarProntuarios(): List<ProntuarioDtoResponse> =
-        prontuarioRepository.findAll().map { prontuarioMapper.toResponse(it) }
+        ActiveRecordVisibility.filter(prontuarioRepository.findAll()) { it.ativo }
+            .map { prontuarioMapper.toResponse(it) }
 
     fun buscarProntuario(id: Long): ProntuarioDtoResponse =
         prontuarioMapper.toResponse(buscarEntidade(id))
@@ -54,14 +57,18 @@ class ProntuarioService(
         }
     }
 
-    private fun buscarEntidade(id: Long): Prontuario =
-        prontuarioRepository.findById(id)
+    private fun buscarEntidade(id: Long): Prontuario {
+        val prontuario = prontuarioRepository.findById(id)
             .orElseThrow { NoSuchElementException("Prontuário não encontrado com o id: $id.") }
+        ActiveRecordVisibility.requireVisible(prontuario.ativo, "Prontuário não encontrado com o id: $id.")
+        return prontuario
+    }
 
     private fun montar(dto: ProntuarioDtoRequest): Prontuario {
         val pacienteId = requireNotNull(dto.pacienteId)
         val paciente = pacienteRepository.findById(pacienteId)
             .orElseThrow { NoSuchElementException("Paciente não encontrado com o id: $pacienteId.") }
+        ActiveRecordVisibility.requireVisible(paciente.ativo, "Paciente não encontrado com o id: $pacienteId.")
         return prontuarioMapper.toModel(dto, paciente)
     }
 }

@@ -25,8 +25,7 @@ class HorarioDisponivelService(
     fun listarTodos(
         authentication: Authentication? = null
     ): List<HorarioDisponivelDtoResponse> =
-        horarioDisponivelRepository.findAll()
-            .filter { podeVisualizarInativos(authentication) || it.ativo }
+        horarioDisponivelRepository.findByAtivoTrue()
             .map(horarioDisponivelMapper::toResponse)
 
     fun listarAtivos(): List<HorarioDisponivelDtoResponse> =
@@ -36,14 +35,7 @@ class HorarioDisponivelService(
     @JvmOverloads
     fun listarInativos(
         authentication: Authentication? = null
-    ): List<HorarioDisponivelDtoResponse> {
-        if (!podeVisualizarInativos(authentication)) {
-            throw AccessDeniedException("Somente ADMIN pode visualizar horários inativos")
-        }
-
-        return horarioDisponivelRepository.findByAtivoFalse()
-            .map(horarioDisponivelMapper::toResponse)
-    }
+    ): List<HorarioDisponivelDtoResponse> = emptyList()
 
     @JvmOverloads
     fun buscarPorId(
@@ -51,13 +43,8 @@ class HorarioDisponivelService(
         authentication: Authentication? = null
     ): HorarioDisponivelDtoResponse {
         val horario = horarioDisponivelRepository.findById(id)
-            .orElseThrow {
-                NoSuchElementException("Horário disponível não encontrado com id: $id")
-            }
-        if (!podeVisualizarInativos(authentication) && !horario.ativo) {
-            throw NoSuchElementException("Horário disponível não encontrado com id: $id")
-        }
-
+            .orElseThrow { NoSuchElementException("Horário disponível não encontrado com id: $id") }
+        ActiveRecordVisibility.requireVisible(horario.ativo, "Horário disponível não encontrado com id: $id")
         return horarioDisponivelMapper.toResponse(horario)
     }
 
@@ -67,7 +54,7 @@ class HorarioDisponivelService(
         authentication: Authentication? = null
     ): List<HorarioDisponivelDtoResponse> =
         horarioDisponivelRepository.buscarPorDescricao(termo)
-            .filter { podeVisualizarInativos(authentication) || it.ativo }
+            .filter { it.ativo }
             .map(horarioDisponivelMapper::toResponse)
 
     @JvmOverloads
@@ -76,7 +63,7 @@ class HorarioDisponivelService(
         authentication: Authentication? = null
     ): List<HorarioDisponivelDtoResponse> =
         horarioDisponivelRepository.findByPsicologoId(psicologoId)
-            .filter { podeVisualizarInativos(authentication) || it.ativo }
+            .filter { it.ativo }
             .map(horarioDisponivelMapper::toResponse)
 
     @JvmOverloads
@@ -88,7 +75,7 @@ class HorarioDisponivelService(
         horarioDisponivelRepository.findByPsicologoIdAndDiaSemana(
             psicologoId,
             DiaSemana.valueOf(diaSemana)
-        ).filter { podeVisualizarInativos(authentication) || it.ativo }
+        ).filter { it.ativo }
             .map(horarioDisponivelMapper::toResponse)
 
     private fun podeVisualizarInativos(authentication: Authentication?): Boolean =

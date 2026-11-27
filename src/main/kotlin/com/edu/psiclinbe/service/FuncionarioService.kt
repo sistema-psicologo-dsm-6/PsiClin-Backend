@@ -19,7 +19,7 @@ class FuncionarioService(
 
     fun listarTodos(): List<FuncionarioDtoResponse> =
         funcionarioRepository.findAll()
-            .filter { it.role == Role.ADMIN }
+            .filter { it.role == Role.ADMIN && it.ativo }
             .map(funcionarioMapper::toResponse)
 
     fun listarAtivos(): List<FuncionarioDtoResponse> =
@@ -30,23 +30,26 @@ class FuncionarioService(
     fun buscarPorId(id: Long): FuncionarioDtoResponse {
         val funcionario = funcionarioRepository.findById(id)
             .orElseThrow { NoSuchElementException("Funcionário não encontrado com id: $id") }
+        ActiveRecordVisibility.requireVisible(funcionario.ativo, "Funcionário não encontrado com id: $id")
         return toAdminResponse(funcionario)
     }
 
     fun buscarPorNome(nome: String): List<FuncionarioDtoResponse> =
         funcionarioRepository.buscarPorNomeParcial(nome)
-            .filter { it.role == Role.ADMIN }
+            .filter { it.role == Role.ADMIN && it.ativo }
             .map(funcionarioMapper::toResponse)
 
     fun buscarPorEmail(email: String): FuncionarioDtoResponse {
         val funcionario = funcionarioRepository.findByEmail(email)
             ?: throw NoSuchElementException("Funcionário não encontrado com e-mail: $email")
+        ActiveRecordVisibility.requireVisible(funcionario.ativo, "Funcionário não encontrado com e-mail: $email")
         return toAdminResponse(funcionario)
     }
 
     fun buscarPorCpf(cpf: String): FuncionarioDtoResponse {
         val funcionario = funcionarioRepository.findByCpf(cpf)
             ?: throw NoSuchElementException("Funcionário não encontrado com CPF: $cpf")
+        ActiveRecordVisibility.requireVisible(funcionario.ativo, "Funcionário não encontrado com CPF: $cpf")
         return toAdminResponse(funcionario)
     }
 

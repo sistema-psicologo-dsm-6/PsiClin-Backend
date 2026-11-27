@@ -53,21 +53,18 @@ class AgendaService(
     )
 
     fun listarTodos(): List<AgendaDtoResponse> =
-        agendaRepository.findAll()
+        ActiveRecordVisibility.filter(agendaRepository.findAll()) { it.ativo }
             .map(agendaMapper::toResponse)
 
-    fun buscarPorId(id: Long): AgendaDtoResponse =
-        agendaMapper.toResponse(
-            agendaRepository.findById(id)
-                .orElseThrow {
-                    NoSuchElementException(
-                        "Agendamento não encontrado com id: $id"
-                    )
-                }
-        )
+    fun buscarPorId(id: Long): AgendaDtoResponse {
+        val agenda = agendaRepository.findById(id)
+            .orElseThrow { NoSuchElementException("Agendamento não encontrado com id: $id") }
+        ActiveRecordVisibility.requireVisible(agenda.ativo, "Agendamento não encontrado com id: $id")
+        return agendaMapper.toResponse(agenda)
+    }
 
     fun buscarPorObservacoes(termo: String): List<AgendaDtoResponse> =
-        agendaRepository.buscarPorObservacoes(termo)
+        ActiveRecordVisibility.filter(agendaRepository.buscarPorObservacoes(termo)) { it.ativo }
             .map(agendaMapper::toResponse)
 
     fun listarHorariosDisponiveis(
@@ -89,7 +86,7 @@ class AgendaService(
         val horarios = horarioDisponivelRepository
             .findByPsicologoIdAndDiaSemana(psicologoId, diaSemana(data.dayOfWeek))
         val agendas = agendaRepository.findByPsicologoId(psicologoId)
-            .filter { it.status in statusQueReservamHorario }
+            .filter { it.ativo }
         val bloqueios = bloqueioAgendaRepository
             .findByPsicologoIdAndAtivoTrue(psicologoId)
             .filter { sobrepoe(inicioDia, fimDia, it.dataHoraInicio, it.dataHoraFim) }
@@ -168,6 +165,8 @@ class AgendaService(
                 )
             }
 
+        ActiveRecordVisibility.requireVisible(agenda.ativo, "Agendamento não encontrado com id: $id")
+
         validarDataInicioFim.validarDataHora(
             dto.dataHoraInicio,
             dto.dataHoraFim
@@ -218,6 +217,8 @@ class AgendaService(
                 )
             }
 
+        ActiveRecordVisibility.requireVisible(agenda.ativo, "Agendamento não encontrado com id: $id")
+
         if (status in statusQueReservamHorario &&
             agenda.status !in statusQueReservamHorario
         ) {
@@ -247,6 +248,7 @@ class AgendaService(
             .orElseThrow {
                 NoSuchElementException("Agendamento não encontrado com id: $id")
             }
+        ActiveRecordVisibility.requireVisible(agenda.ativo, "Agendamento não encontrado com id: $id")
         agenda.ativo = false
         agendaRepository.save(agenda)
     }
@@ -320,7 +322,7 @@ class AgendaService(
 
         val conflitoPsicologo =
             agendaRepository.findByPsicologoId(psicologoId)
-                .filter { it.id != agendaIdIgnorar }
+                .filter { it.id != agendaIdIgnorar && it.ativo }
                 .any {
                     it.status in statusQueReservamHorario &&
                     sobrepoe(inicio, fim, it.dataHoraInicio, it.dataHoraFim)
@@ -336,7 +338,7 @@ class AgendaService(
 
             val conflitoSala =
                 agendaRepository.findBySalaId(salaId)
-                    .filter { it.id != agendaIdIgnorar }
+                    .filter { it.id != agendaIdIgnorar && it.ativo }
                     .any {
                         it.status in statusQueReservamHorario &&
                         sobrepoe(inicio, fim, it.dataHoraInicio, it.dataHoraFim)

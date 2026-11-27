@@ -55,7 +55,7 @@ class SalaAtendimentoController(
     ): ResponseEntity<SalaAtendimentoDtoResponse> =
         ResponseEntity.ok(salaAtendimentoService.atualizarSala(id, dto))
 
-    @PatchMapping("/{id}/inativar")
+    @DeleteMapping("/{id}/inativar")
     fun deactivate(@PathVariable id: Long): ResponseEntity<SalaAtendimentoDtoResponse> =
         ResponseEntity.ok(salaAtendimentoService.desativarSala(id))
 

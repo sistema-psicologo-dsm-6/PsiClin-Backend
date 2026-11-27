@@ -23,28 +23,26 @@ class EvolucaoClinicaService(
 ) {
 
     fun listarTodos(): List<EvolucaoClinicaDtoResponse> =
-        evolucaoClinicaRepository.findAll().map(evolucaoClinicaMapper::toResponse)
+        ActiveRecordVisibility.filter(evolucaoClinicaRepository.findAll()) { it.ativo }
+            .map(evolucaoClinicaMapper::toResponse)
 
     fun buscarPorId(id: Long): EvolucaoClinicaDtoResponse =
         evolucaoClinicaMapper.toResponse(buscarEvolucao(id))
 
     fun buscarPorDescricao(termo: String): List<EvolucaoClinicaDtoResponse> =
-        evolucaoClinicaRepository.buscarPorDescricao(termo)
+        ActiveRecordVisibility.filter(evolucaoClinicaRepository.buscarPorDescricao(termo)) { it.ativo }
             .map(evolucaoClinicaMapper::toResponse)
 
     fun buscarPorProntuario(prontuarioId: Long): List<EvolucaoClinicaDtoResponse> =
-        evolucaoClinicaRepository.findByProntuarioId(prontuarioId)
+        ActiveRecordVisibility.filter(evolucaoClinicaRepository.findByProntuarioId(prontuarioId)) { it.ativo }
             .map(evolucaoClinicaMapper::toResponse)
 
     fun buscarPorPsicologo(psicologoId: Long): List<EvolucaoClinicaDtoResponse> =
-        evolucaoClinicaRepository.findByPsicologoId(psicologoId)
+        ActiveRecordVisibility.filter(evolucaoClinicaRepository.findByPsicologoId(psicologoId)) { it.ativo }
             .map(evolucaoClinicaMapper::toResponse)
 
-    fun buscarPorAgenda(
-        agendaId: Long
-    ): List<EvolucaoClinicaDtoResponse> =
-        evolucaoClinicaRepository
-            .findByAgendaId(agendaId)
+    fun buscarPorAgenda(agendaId: Long): List<EvolucaoClinicaDtoResponse> =
+        ActiveRecordVisibility.filter(evolucaoClinicaRepository.findByAgendaId(agendaId)) { it.ativo }
             .map(evolucaoClinicaMapper::toResponse)
 
     fun salvar(dto: EvolucaoClinicaDtoRequest): EvolucaoClinicaDtoResponse {
@@ -85,19 +83,31 @@ class EvolucaoClinicaService(
         }
     }
 
-    private fun buscarEvolucao(id: Long): EvolucaoClinica =
-        evolucaoClinicaRepository.findById(id)
+    private fun buscarEvolucao(id: Long): EvolucaoClinica {
+        val evolucao = evolucaoClinicaRepository.findById(id)
             .orElseThrow { NoSuchElementException("Evolução clínica não encontrada com id: $id") }
+        ActiveRecordVisibility.requireVisible(evolucao.ativo, "Evolução clínica não encontrada com id: $id")
+        return evolucao
+    }
 
-    private fun buscarProntuario(id: Long): Prontuario =
-        prontuarioRepository.findById(id)
+    private fun buscarProntuario(id: Long): Prontuario {
+        val prontuario = prontuarioRepository.findById(id)
             .orElseThrow { NoSuchElementException("Prontuário não encontrado com id: $id") }
+        ActiveRecordVisibility.requireVisible(prontuario.ativo, "Prontuário não encontrado com id: $id")
+        return prontuario
+    }
 
-    private fun buscarPsicologo(id: Long): Psicologo =
-        psicologoRepository.findById(id)
+    private fun buscarPsicologo(id: Long): Psicologo {
+        val psicologo = psicologoRepository.findById(id)
             .orElseThrow { NoSuchElementException("Psicólogo não encontrado com id: $id") }
+        ActiveRecordVisibility.requireVisible(psicologo.ativo, "Psicólogo não encontrado com id: $id")
+        return psicologo
+    }
 
-    private fun buscarAgenda(id: Long): Agenda =
-        agendaRepository.findById(id)
+    private fun buscarAgenda(id: Long): Agenda {
+        val agenda = agendaRepository.findById(id)
             .orElseThrow { NoSuchElementException("Agenda não encontrada com id: $id") }
+        ActiveRecordVisibility.requireVisible(agenda.ativo, "Agenda não encontrada com id: $id")
+        return agenda
+    }
 }
