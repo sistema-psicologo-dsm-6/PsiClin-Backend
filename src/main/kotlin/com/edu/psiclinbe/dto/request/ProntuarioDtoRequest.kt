@@ -15,4 +15,5 @@ data class ProntuarioDtoRequest(
     val queixaPrincipal: String = "",
     @field:NotNull(message = "O status do prontuario e obrigatorio")
     val status: ProntuarioStatus? = null,
+    val ativo: Boolean = true,
 )

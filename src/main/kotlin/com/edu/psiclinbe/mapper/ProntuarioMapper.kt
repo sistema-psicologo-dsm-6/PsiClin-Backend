@@ -18,6 +18,7 @@ class ProntuarioMapper {
             dataAbertura = requireNotNull(dto.dataAbertura),
             queixaPrincipal = dto.queixaPrincipal,
             status = requireNotNull(dto.status),
+            ativo = dto.ativo,
         )
 
     fun toResponse(prontuario: Prontuario): ProntuarioDtoResponse =

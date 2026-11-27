@@ -31,7 +31,7 @@ class ProntuarioServiceJavaTest {
     private final ProntuarioDtoResponse response = mock(ProntuarioDtoResponse.class);
     private final ProntuarioDtoRequest request = new ProntuarioDtoRequest(
             null, 1L, LocalDateTime.of(2026, 11, 3, 9, 0),
-            "Ansiedade", ProntuarioStatus.ATIVO);
+            "Ansiedade", ProntuarioStatus.ATIVO, true);
 
     @Test
     void listsRecordsByPatientStatusComplaintAndAll() {
